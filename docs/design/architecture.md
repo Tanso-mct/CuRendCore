@@ -1,5 +1,5 @@
 # Architecture
-This file explains what roles CUDA, Direct3D, Direct2D, and Windows API each play in CuRendCore and also explains about data flow between these components.
+This file describes the overview of the entire project.
 
 ## Components
 ### CUDA
