@@ -8,18 +8,18 @@ public:
     ExampleWndCtrl();
     ~ExampleWndCtrl() override;
 
-    HRESULT OnCreate() override;
-    HRESULT OnSetFocus() override;
-    HRESULT OnKillFocus() override;
-    HRESULT OnMinimize() override;
-    HRESULT OnMaximize() override;
-    HRESULT OnRestored() override;
-    HRESULT OnPaint() override;
-    HRESULT OnMove() override;
-    HRESULT OnClose() override;
-    HRESULT OnDestroy() override;
-    HRESULT OnKeyDown() override;
-    HRESULT OnKeyUp() override;
-    HRESULT OnMouse() override;
+    HRESULT OnCreate(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) override;
+    HRESULT OnSetFocus(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) override;
+    HRESULT OnKillFocus(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) override;
+    HRESULT OnMinimize(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) override;
+    HRESULT OnMaximize(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) override;
+    HRESULT OnRestored(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) override;
+    HRESULT OnPaint(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) override;
+    HRESULT OnMove(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) override;
+    HRESULT OnClose(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) override;
+    HRESULT OnDestroy(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) override;
+    HRESULT OnKeyDown(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) override;
+    HRESULT OnKeyUp(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) override;
+    HRESULT OnMouse(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) override;
 };
 

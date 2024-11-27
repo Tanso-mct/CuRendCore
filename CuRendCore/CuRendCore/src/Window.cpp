@@ -54,6 +54,8 @@ CRC_SLOT WindowFactory::CreateWindowCRC(WNDATTR wattr)
         newWnd->wattr.hInstance,
         NULL
     );
+    creatingWnd = nullptr;
+    
     if (!newWnd->hWnd) return E_FAIL;
 
     return (CRC_SLOT)(windows.size() - 1);
@@ -88,37 +90,37 @@ LRESULT CALLBACK WindowFactory::WindowProc(HWND hWnd, UINT msg, WPARAM wParam, L
     if (wParam == SC_MINIMIZE)
     {
         WindowFactory* wf = WindowFactory::GetInstance();
-        wf->windows[wf->slots[hWnd]]->ctrl->OnMinimize();
+        wf->windows[wf->slots[hWnd]]->ctrl->OnMinimize(hWnd, msg, wParam, lParam);
     }
 
     switch (msg){
         case WM_SIZE:
         {
             WindowFactory* wf = WindowFactory::GetInstance();
-            if (wParam == SIZE_MINIMIZED) wf->windows[wf->slots[hWnd]]->ctrl->OnMinimize();
-            else if (wParam == SIZE_MAXIMIZED) wf->windows[wf->slots[hWnd]]->ctrl->OnMaximize();
-            else if (wParam == SIZE_RESTORED) wf->windows[wf->slots[hWnd]]->ctrl->OnRestored();
+            if (wParam == SIZE_MINIMIZED) wf->windows[wf->slots[hWnd]]->ctrl->OnMinimize(hWnd, msg, wParam, lParam);
+            else if (wParam == SIZE_MAXIMIZED) wf->windows[wf->slots[hWnd]]->ctrl->OnMaximize(hWnd, msg, wParam, lParam);
+            else if (wParam == SIZE_RESTORED) wf->windows[wf->slots[hWnd]]->ctrl->OnRestored(hWnd, msg, wParam, lParam);
         }
             break;
 
         case WM_SETFOCUS:
         {
             WindowFactory* wf = WindowFactory::GetInstance();
-            wf->windows[wf->slots[hWnd]]->ctrl->OnSetFocus();
+            wf->windows[wf->slots[hWnd]]->ctrl->OnSetFocus(hWnd, msg, wParam, lParam);
         }
             break;
 
         case WM_KILLFOCUS:
         {
             WindowFactory* wf = WindowFactory::GetInstance();
-            wf->windows[wf->slots[hWnd]]->ctrl->OnKillFocus();
+            wf->windows[wf->slots[hWnd]]->ctrl->OnKillFocus(hWnd, msg, wParam, lParam);
         }
             break;
 
         case WM_CREATE:
         {
             WindowFactory* wf = WindowFactory::GetInstance();
-            wf->creatingWnd->ctrl->OnCreate();
+            wf->creatingWnd->ctrl->OnCreate(hWnd, msg, wParam, lParam);
             wf->creatingWnd->hWnd = hWnd;
 
             wf->slots[wf->creatingWnd->hWnd] = wf->windows.size();
@@ -129,28 +131,28 @@ LRESULT CALLBACK WindowFactory::WindowProc(HWND hWnd, UINT msg, WPARAM wParam, L
         case WM_PAINT:
         {
             WindowFactory* wf = WindowFactory::GetInstance();
-            wf->windows[wf->slots[hWnd]]->ctrl->OnPaint();
+            wf->windows[wf->slots[hWnd]]->ctrl->OnPaint(hWnd, msg, wParam, lParam);
         }
             break;
 
         case WM_MOVE:
         {
             WindowFactory* wf = WindowFactory::GetInstance();
-            wf->windows[wf->slots[hWnd]]->ctrl->OnMove();
+            wf->windows[wf->slots[hWnd]]->ctrl->OnMove(hWnd, msg, wParam, lParam);
         }
             break;
 
         case WM_CLOSE:
         {
             WindowFactory* wf = WindowFactory::GetInstance();
-            wf->windows[wf->slots[hWnd]]->ctrl->OnClose();
+            wf->windows[wf->slots[hWnd]]->ctrl->OnClose(hWnd, msg, wParam, lParam);
         }
             return DefWindowProc(hWnd, msg, wParam, lParam);
 
         case WM_DESTROY:
         {
             WindowFactory* wf = WindowFactory::GetInstance();
-            wf->windows[wf->slots[hWnd]]->ctrl->OnDestroy();   
+            wf->windows[wf->slots[hWnd]]->ctrl->OnDestroy(hWnd, msg, wParam, lParam);   
         }
             break;
 
@@ -158,7 +160,7 @@ LRESULT CALLBACK WindowFactory::WindowProc(HWND hWnd, UINT msg, WPARAM wParam, L
         case WM_KEYDOWN:
         {
             WindowFactory* wf = WindowFactory::GetInstance();
-            wf->windows[wf->slots[hWnd]]->ctrl->OnKeyDown();
+            wf->windows[wf->slots[hWnd]]->ctrl->OnKeyDown(hWnd, msg, wParam, lParam);
         }
             break;
 
@@ -166,7 +168,7 @@ LRESULT CALLBACK WindowFactory::WindowProc(HWND hWnd, UINT msg, WPARAM wParam, L
         case WM_KEYUP:
         {
             WindowFactory* wf = WindowFactory::GetInstance();
-            wf->windows[wf->slots[hWnd]]->ctrl->OnKeyUp();
+            wf->windows[wf->slots[hWnd]]->ctrl->OnKeyUp(hWnd, msg, wParam, lParam);
         }
             break;
 
@@ -182,7 +184,7 @@ LRESULT CALLBACK WindowFactory::WindowProc(HWND hWnd, UINT msg, WPARAM wParam, L
         case WM_MOUSEMOVE:
         {
             WindowFactory* wf = WindowFactory::GetInstance();
-            wf->windows[wf->slots[hWnd]]->ctrl->OnMouse();
+            wf->windows[wf->slots[hWnd]]->ctrl->OnMouse(hWnd, msg, wParam, lParam);
         }
             break;
             

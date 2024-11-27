@@ -47,19 +47,19 @@ public:
     WindowController() = default;
     virtual ~WindowController() = default;
 
-    virtual HRESULT OnCreate(){ return S_OK; };
-    virtual HRESULT OnSetFocus(){ return S_OK; };
-    virtual HRESULT OnKillFocus(){ return S_OK; };
-    virtual HRESULT OnMinimize(){ return S_OK; };
-    virtual HRESULT OnMaximize(){ return S_OK; };
-    virtual HRESULT OnRestored(){ return S_OK; };
-    virtual HRESULT OnPaint(){ return S_OK; };
-    virtual HRESULT OnMove(){ return S_OK; };
-    virtual HRESULT OnClose(){ return S_OK; };
-    virtual HRESULT OnDestroy(){PostQuitMessage(0); return S_OK; };
-    virtual HRESULT OnKeyDown(){ return S_OK; };
-    virtual HRESULT OnKeyUp(){ return S_OK; };
-    virtual HRESULT OnMouse(){ return S_OK; };
+    virtual HRESULT OnCreate(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam){ return S_OK; };
+    virtual HRESULT OnSetFocus(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam){ return S_OK; };
+    virtual HRESULT OnKillFocus(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam){ return S_OK; };
+    virtual HRESULT OnMinimize(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam){ return S_OK; };
+    virtual HRESULT OnMaximize(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam){ return S_OK; };
+    virtual HRESULT OnRestored(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam){ return S_OK; };
+    virtual HRESULT OnPaint(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam){ return S_OK; };
+    virtual HRESULT OnMove(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam){ return S_OK; };
+    virtual HRESULT OnClose(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam){ return S_OK; };
+    virtual HRESULT OnDestroy(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam){PostQuitMessage(0); return S_OK; };
+    virtual HRESULT OnKeyDown(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam){ return S_OK; };
+    virtual HRESULT OnKeyUp(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam){ return S_OK; };
+    virtual HRESULT OnMouse(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam){ return S_OK; };
 };
 
 class CRC_API WindowFactory
