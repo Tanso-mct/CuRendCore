@@ -5,6 +5,10 @@
 #include <vector>
 #include <memory>
 #include <unordered_map>
+#include <string>
+
+#include "Math.cuh"
+#include "Input.h"
 
 namespace CRC 
 {
@@ -43,8 +47,11 @@ public:
 
 class CRC_API WindowController
 {
+protected:
+    Input* input;
+
 public:
-    WindowController() = default;
+    WindowController();
     virtual ~WindowController() = default;
 
     virtual HRESULT OnCreate(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam){ return S_OK; };
@@ -60,6 +67,8 @@ public:
     virtual HRESULT OnKeyDown(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam){ return S_OK; };
     virtual HRESULT OnKeyUp(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam){ return S_OK; };
     virtual HRESULT OnMouse(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam){ return S_OK; };
+
+    friend class WindowFactory;
 };
 
 class CRC_API WindowFactory
@@ -73,7 +82,9 @@ private:
 
 public:
     ~WindowFactory();
+
     static WindowFactory* GetInstance();
+    static void ReleaseInstance();
 
     CRC_SLOT CreateWindowCRC(WNDATTR wattr);
     HRESULT DestroyWindowCRC(CRC_SLOT slot);

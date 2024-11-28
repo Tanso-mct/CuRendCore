@@ -13,12 +13,18 @@ Window::~Window()
 {
 }
 
+WindowController::WindowController()
+{
+    input = Input::GetInstance();
+}
+
 WindowFactory::WindowFactory()
 {
 }
 
 WindowFactory::~WindowFactory()
 {
+
 }
 
 WindowFactory *WindowFactory::GetInstance()
@@ -29,6 +35,16 @@ WindowFactory *WindowFactory::GetInstance()
     if (instance == nullptr) instance = new WindowFactory();
 
     return instance;
+}
+
+void WindowFactory::ReleaseInstance()
+{
+    WindowFactory* instance = GetInstance();
+    if (instance != nullptr)
+    {
+        delete instance;
+        instance = nullptr;
+    }
 }
 
 CRC_SLOT WindowFactory::CreateWindowCRC(WNDATTR wattr)
@@ -132,6 +148,7 @@ LRESULT CALLBACK WindowFactory::WindowProc(HWND hWnd, UINT msg, WPARAM wParam, L
         {
             WindowFactory* wf = WindowFactory::GetInstance();
             wf->windows[wf->slots[hWnd]]->ctrl->OnPaint(hWnd, msg, wParam, lParam);
+            wf->windows[wf->slots[hWnd]]->ctrl->input->Update();
         }
             break;
 
@@ -160,6 +177,7 @@ LRESULT CALLBACK WindowFactory::WindowProc(HWND hWnd, UINT msg, WPARAM wParam, L
         case WM_KEYDOWN:
         {
             WindowFactory* wf = WindowFactory::GetInstance();
+            wf->windows[wf->slots[hWnd]]->ctrl->input->ProcessKeyDown(hWnd, msg, wParam, lParam);
             wf->windows[wf->slots[hWnd]]->ctrl->OnKeyDown(hWnd, msg, wParam, lParam);
         }
             break;
@@ -168,6 +186,7 @@ LRESULT CALLBACK WindowFactory::WindowProc(HWND hWnd, UINT msg, WPARAM wParam, L
         case WM_KEYUP:
         {
             WindowFactory* wf = WindowFactory::GetInstance();
+            wf->windows[wf->slots[hWnd]]->ctrl->input->ProcessKeyUp(hWnd, msg, wParam, lParam);
             wf->windows[wf->slots[hWnd]]->ctrl->OnKeyUp(hWnd, msg, wParam, lParam);
         }
             break;
@@ -184,6 +203,7 @@ LRESULT CALLBACK WindowFactory::WindowProc(HWND hWnd, UINT msg, WPARAM wParam, L
         case WM_MOUSEMOVE:
         {
             WindowFactory* wf = WindowFactory::GetInstance();
+            wf->windows[wf->slots[hWnd]]->ctrl->input->ProcessMouse(hWnd, msg, wParam, lParam);
             wf->windows[wf->slots[hWnd]]->ctrl->OnMouse(hWnd, msg, wParam, lParam);
         }
             break;

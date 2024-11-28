@@ -10,15 +10,21 @@ CuRendCore::CuRendCore()
     sceneFc = std::make_shared<SceneFactory>();
     resourceFc = std::make_shared<ResourceFactory>();
     binderFc = std::make_shared<BinderFactory>();
+
+    // Initialize the input.
+    input = Input::GetInstance();
 }
 
 CuRendCore::~CuRendCore()
 {
     // Release the factories.
-    if (windowFc != nullptr) delete windowFc;
+    if (windowFc != nullptr) windowFc->ReleaseInstance();
     if (sceneFc != nullptr) sceneFc.reset();
     if (resourceFc != nullptr) resourceFc.reset();
     if (binderFc != nullptr) binderFc.reset();
+
+    // Release the input.
+    if (input != nullptr) input->ReleaseInstance();
 }
 
 CuRendCore* CuRendCore::GetInstance()
@@ -38,7 +44,11 @@ void CuRendCore::ReleaseInstance()
 {
     // Implementation of the Singleton pattern.
     CuRendCore* instance = GetInstance();
-    if (instance != nullptr) delete instance;
+    if (instance != nullptr)
+    {
+        delete instance;
+        instance = nullptr;
+    }
 }
 
 int CuRendCore::Run(HINSTANCE hInstance, int nCmdShow)

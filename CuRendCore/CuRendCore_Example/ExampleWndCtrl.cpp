@@ -49,6 +49,41 @@ HRESULT ExampleWndCtrl::OnRestored(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lP
 HRESULT ExampleWndCtrl::OnPaint(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
     // OutputDebugStringA("ExampleWndCtrl::OnPaint()\n");
+
+    // if (input->IsKeyDown(CRC_KEY_MSG_ESCAPE))
+    // {
+    //     OutputDebugStringA("KeyDown ESC\n");
+    // }
+
+    // if (input->GetKeyText() != "")
+    // {
+    //     OutputDebugStringA(input->GetKeyText().c_str());
+    //     OutputDebugStringA("\n");
+    // }
+
+    // if (input->IsKeyDouble(CRC_KEY_MSG_A))
+    // {
+    //     OutputDebugStringA("Double A\n");
+    // }
+
+    // if (input->IsMouse(CRC_MOUSE_MSG_LBTN))
+    // {
+    //     OutputDebugStringA("LBTN\n");
+    // }
+
+    // if (input->IsMouseDouble(CRC_MOUSE_MSG_LBTN))
+    // {
+    //     OutputDebugStringA("Double LBTN\n");
+    // }
+
+    // int mouseWheel = input->GetMouseWheelDelta();
+    // if (mouseWheel != 0)
+    // {
+    //     OutputDebugStringA("Mouse Wheel: ");
+    //     OutputDebugStringA(std::to_string(mouseWheel).c_str());
+    //     OutputDebugStringA("\n");
+    // }
+
     return S_OK;
 }
 

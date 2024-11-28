@@ -29,6 +29,9 @@ public:
     std::shared_ptr<ResourceFactory> resourceFc;
     std::shared_ptr<BinderFactory> binderFc;
 
+    // Input
+    Input* input;
+
     int Run(HINSTANCE hInstance, int nCmdShow);
 };
 
