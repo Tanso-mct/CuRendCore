@@ -25,9 +25,9 @@ public:
 
     // Various factories. Managed collectively in this class.
     WindowFactory* windowFc;
-    std::shared_ptr<SceneFactory> sceneFc;
-    std::shared_ptr<ResourceFactory> resourceFc;
-    std::shared_ptr<BinderFactory> binderFc;
+    SceneFactory* sceneFc;
+    ResourceFactory* resourceFc;
+    BinderFactory* binderFc;
 
     // Input
     Input* input;

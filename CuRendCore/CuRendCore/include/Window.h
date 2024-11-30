@@ -9,6 +9,7 @@
 
 #include "Math.cuh"
 #include "Input.h"
+#include "Scene.h"
 
 namespace CRC 
 {
@@ -49,6 +50,7 @@ class CRC_API WindowController
 {
 protected:
     Input* input;
+    std::shared_ptr<SceneController> sceneCtrl;
 
 public:
     WindowController();
@@ -74,7 +76,7 @@ public:
 class CRC_API WindowFactory
 {
 private:
-    WindowFactory();
+    WindowFactory() = default;
     std::vector<std::shared_ptr<Window>> windows;
     std::unordered_map<HWND, CRC_SLOT> slots;
 
@@ -89,6 +91,8 @@ public:
     CRC_SLOT CreateWindowCRC(WNDATTR wattr);
     HRESULT DestroyWindowCRC(CRC_SLOT slot);
     HRESULT ShowWindowCRC(CRC_SLOT slot, int nCmdShow);
+
+    HRESULT SetSceneCtrl(CRC_SLOT slot, std::shared_ptr<SceneController> sceneCtrl);
 
     static LRESULT CALLBACK WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 };

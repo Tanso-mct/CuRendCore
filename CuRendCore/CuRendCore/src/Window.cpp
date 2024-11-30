@@ -11,15 +11,12 @@ Window::Window(WNDATTR wattr)
 
 Window::~Window()
 {
+    if (ctrl != nullptr) ctrl.reset();
 }
 
 WindowController::WindowController()
 {
     input = Input::GetInstance();
-}
-
-WindowFactory::WindowFactory()
-{
 }
 
 WindowFactory::~WindowFactory()
@@ -99,6 +96,14 @@ HRESULT WindowFactory::ShowWindowCRC(CRC_SLOT slot, int nCmdShow)
     if (FAILED(hr)) return hr;
 
     return hr;
+}
+
+HRESULT WindowFactory::SetSceneCtrl(CRC_SLOT slot, std::shared_ptr<SceneController> sceneCtrl)
+{
+    if (slot >= windows.size()) return E_FAIL;
+
+    windows[slot]->ctrl->sceneCtrl = sceneCtrl;
+    return S_OK;
 }
 
 LRESULT CALLBACK WindowFactory::WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)

@@ -7,9 +7,9 @@ CuRendCore::CuRendCore()
 {
     // Initialize the factories.
     windowFc = WindowFactory::GetInstance();
-    sceneFc = std::make_shared<SceneFactory>();
-    resourceFc = std::make_shared<ResourceFactory>();
-    binderFc = std::make_shared<BinderFactory>();
+    sceneFc = SceneFactory::GetInstance();
+    // resourceFc = ResourceFactory::GetInstance();
+    // binderFc = BinderFactory::GetInstance();
 
     // Initialize the input.
     input = Input::GetInstance();
@@ -19,9 +19,9 @@ CuRendCore::~CuRendCore()
 {
     // Release the factories.
     if (windowFc != nullptr) windowFc->ReleaseInstance();
-    if (sceneFc != nullptr) sceneFc.reset();
-    if (resourceFc != nullptr) resourceFc.reset();
-    if (binderFc != nullptr) binderFc.reset();
+    if (sceneFc != nullptr) sceneFc->ReleaseInstance();
+    // if (resourceFc != nullptr) resourceFc->ReleaseInstance();
+    // if (binderFc != nullptr) binderFc->ReleaseInstance();
 
     // Release the input.
     if (input != nullptr) input->ReleaseInstance();
