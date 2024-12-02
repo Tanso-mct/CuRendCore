@@ -1,5 +1,8 @@
 #pragma once
 
+// #define DEBUG_OUTPUT
+// #define DEBUG_FRAME_OUTPUT
+
 #include "CuRendCore.h"
 
 class ExampleWndCtrl : public CRC::WindowController
@@ -7,6 +10,12 @@ class ExampleWndCtrl : public CRC::WindowController
 public:
     ExampleWndCtrl();
     ~ExampleWndCtrl() override;
+
+#ifdef DEBUG_OUTPUT
+    void DebugInput();
+    void DebugScene();
+
+#endif // DEBUG_OUTPUT
 
     HRESULT OnCreate(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) override;
     HRESULT OnSetFocus(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) override;

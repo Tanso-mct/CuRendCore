@@ -5,6 +5,7 @@
 #include <vector>
 #include <memory>
 #include <unordered_map>
+#include <string>
 
 namespace CRC 
 {
@@ -22,12 +23,13 @@ class CRC_API Scene
 private:
     Scene(SCENEATTR sattr); 
 
-    SCENEATTR sattr = { 0 };
+    SCENEATTR sattr;
     std::shared_ptr<SceneController> ctrl = nullptr;
 
 public:
     ~Scene();
 
+    friend class SceneController;
     friend class SceneFactory;
 };
 
@@ -39,6 +41,8 @@ private:
 public:
     SceneController() = default;
     virtual ~SceneController() = default;
+
+    HRESULT SetName(std::string name);
 
     friend class SceneFactory;
 };

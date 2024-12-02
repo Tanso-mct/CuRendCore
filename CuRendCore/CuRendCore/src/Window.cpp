@@ -79,7 +79,11 @@ HRESULT WindowFactory::DestroyWindowCRC(CRC_SLOT slot)
     if (slot >= windows.size()) return E_FAIL;
 
     HRESULT hr = !DestroyWindow(windows[slot]->hWnd);
-    if (SUCCEEDED(hr)) windows.erase(windows.begin() + slot);
+    if (SUCCEEDED(hr))
+    {
+        windows[slot].reset();
+        windows.erase(windows.begin() + slot);
+    }
 
     return hr;
 }
@@ -152,8 +156,11 @@ LRESULT CALLBACK WindowFactory::WindowProc(HWND hWnd, UINT msg, WPARAM wParam, L
         case WM_PAINT:
         {
             WindowFactory* wf = WindowFactory::GetInstance();
-            wf->windows[wf->slots[hWnd]]->ctrl->OnPaint(hWnd, msg, wParam, lParam);
-            wf->windows[wf->slots[hWnd]]->ctrl->input->Update();
+            if (wf->windows[wf->slots[hWnd]]->ctrl->sceneCtrl != nullptr)
+            {
+                wf->windows[wf->slots[hWnd]]->ctrl->OnPaint(hWnd, msg, wParam, lParam);
+                wf->windows[wf->slots[hWnd]]->ctrl->input->Update();
+            }
         }
             break;
 

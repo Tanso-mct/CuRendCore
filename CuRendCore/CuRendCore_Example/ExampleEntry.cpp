@@ -1,6 +1,7 @@
 #include "CuRendCore.h"
 
 #include "ExampleWndCtrl.h"
+#include "ExampleSceneCtrl.h"
 
 int WINAPI WinMain
 (
@@ -10,7 +11,7 @@ int WINAPI WinMain
     // Get the instance of the CuRendCore
     CRC::CuRendCore* crc = CRC::CuRendCore::GetInstance();
 
-    // Create Attributes
+    // Create Window Attributes
     CRC::WNDATTR wattr;
     wattr.wcex.cbSize = sizeof(WNDCLASSEX);
     wattr.wcex.style = CS_HREDRAW | CS_VREDRAW;
@@ -27,8 +28,22 @@ int WINAPI WinMain
     wattr.ctrl = std::make_shared<ExampleWndCtrl>();
 
     // Create Window
-    crc->windowFc->CreateWindowCRC(wattr);
+    CRC_SLOT slotExampleWnd = crc->windowFc->CreateWindowCRC(wattr);
     crc->windowFc->ShowWindowCRC(0, nCmdShow);
+
+
+    // Create Scene Attributes
+    CRC::SCENEATTR sattr;
+    sattr.name = "ExampleScene";
+    sattr.ctrl = std::make_shared<ExampleSceneCtrl>();
+
+    // Create Scene
+    crc->sceneFc->CreateScene(sattr);
+
+
+    // Set the Scene controller to the Window
+    crc->windowFc->SetSceneCtrl(slotExampleWnd, sattr.ctrl);
+
 
     // Run the CuRendCore
     return crc->Run(hInstance, nCmdShow);

@@ -49,8 +49,8 @@ public:
 class CRC_API WindowController
 {
 protected:
-    Input* input;
-    std::shared_ptr<SceneController> sceneCtrl;
+    Input* input = nullptr;
+    std::shared_ptr<SceneController> sceneCtrl = nullptr;
 
 public:
     WindowController();
