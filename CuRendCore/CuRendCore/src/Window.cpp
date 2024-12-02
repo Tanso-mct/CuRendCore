@@ -21,7 +21,12 @@ WindowController::WindowController()
 
 WindowFactory::~WindowFactory()
 {
-
+    for (auto& window : windows)
+    {
+        window.reset();
+    }
+    windows.clear();
+    slots.clear();
 }
 
 WindowFactory *WindowFactory::GetInstance()
@@ -82,7 +87,6 @@ HRESULT WindowFactory::DestroyWindowCRC(CRC_SLOT slot)
     if (SUCCEEDED(hr))
     {
         windows[slot].reset();
-        windows.erase(windows.begin() + slot);
     }
 
     return hr;
@@ -106,7 +110,13 @@ HRESULT WindowFactory::SetSceneCtrl(CRC_SLOT slot, std::shared_ptr<SceneControll
 {
     if (slot >= windows.size()) return E_FAIL;
 
-    windows[slot]->ctrl->sceneCtrl = sceneCtrl;
+    if (windows[slot]->ctrl->sceneCtrl == nullptr) windows[slot]->ctrl->sceneCtrl = sceneCtrl;
+    else
+    {
+        // Since the Scene controller is switched, it means that the scene is switched.
+        if (windows[slot]->ctrl->sceneCtrl->Finish()) windows[slot]->ctrl->sceneCtrl.reset();
+        windows[slot]->ctrl->sceneCtrl = sceneCtrl;
+    }
     return S_OK;
 }
 
@@ -145,10 +155,12 @@ LRESULT CALLBACK WindowFactory::WindowProc(HWND hWnd, UINT msg, WPARAM wParam, L
         case WM_CREATE:
         {
             WindowFactory* wf = WindowFactory::GetInstance();
+            wf->creatingWnd->thisSlot = wf->windows.size();
+            wf->slots[wf->creatingWnd->hWnd] = wf->windows.size();
+
             wf->creatingWnd->ctrl->OnCreate(hWnd, msg, wParam, lParam);
             wf->creatingWnd->hWnd = hWnd;
 
-            wf->slots[wf->creatingWnd->hWnd] = wf->windows.size();
             wf->windows.push_back(wf->creatingWnd);
         }
             break;
@@ -159,6 +171,7 @@ LRESULT CALLBACK WindowFactory::WindowProc(HWND hWnd, UINT msg, WPARAM wParam, L
             if (wf->windows[wf->slots[hWnd]]->ctrl->sceneCtrl != nullptr)
             {
                 wf->windows[wf->slots[hWnd]]->ctrl->OnPaint(hWnd, msg, wParam, lParam);
+                wf->windows[wf->slots[hWnd]]->ctrl->sceneCtrl->OnPaint();
                 wf->windows[wf->slots[hWnd]]->ctrl->input->Update();
             }
         }
@@ -175,6 +188,7 @@ LRESULT CALLBACK WindowFactory::WindowProc(HWND hWnd, UINT msg, WPARAM wParam, L
         {
             WindowFactory* wf = WindowFactory::GetInstance();
             wf->windows[wf->slots[hWnd]]->ctrl->OnClose(hWnd, msg, wParam, lParam);
+            if (wf->windows[wf->slots[hWnd]]->ctrl->sceneCtrl->Finish()) wf->windows[wf->slots[hWnd]]->ctrl->sceneCtrl.reset();
         }
             return DefWindowProc(hWnd, msg, wParam, lParam);
 

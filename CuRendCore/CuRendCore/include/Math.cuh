@@ -8,7 +8,7 @@
 namespace CRC
 {
 
-typedef struct _Vec2d
+typedef struct CRC_API _Vec2d
 {
     float x;
     float y;
@@ -84,7 +84,7 @@ typedef struct _Vec2d
     }
 } Vec2d;
 
-typedef struct _Vec3d
+typedef struct CRC_API _Vec3d
 {
     float x;
     float y;
@@ -167,5 +167,82 @@ typedef struct _Vec3d
     }
     
 } Vec3d;
+
+typedef struct CRC_API _BoundingBox
+{
+    bool isEmpty = true;
+    Vec3d origin;
+    Vec3d opposite;
+    Vec3d vertices[8];
+
+    __device__ __host__ _BoundingBox() : isEmpty(true) {}
+
+    __device__ __host__ void StartToCreate()
+    {
+        isEmpty = true;
+    }
+
+    __device__ __host__ void AddPoint(Vec3d point)
+    {
+        CRC_GIF(isEmpty == true, br2)
+        {
+            origin = point;
+            opposite = point;
+        }
+        CRC_GIF(isEmpty == false, br1)
+        {
+            if (point.x < origin.x) origin.x = point.x;
+            if (point.y < origin.y) origin.y = point.y;
+            if (point.z > origin.z) origin.z = point.z;
+
+            if (point.x > opposite.x) opposite.x = point.x;
+            if (point.y > opposite.y) opposite.y = point.y;
+            if (point.z < opposite.z) opposite.z = point.z;
+        }
+
+        isEmpty = false;
+    }
+
+    __device__ __host__ void Update()
+    {
+        vertices[0] = Vec3d(origin.x, opposite.y, origin.z);
+        vertices[1] = Vec3d(opposite.x, opposite.y, origin.z);
+        vertices[2] = Vec3d(opposite.x, origin.y, origin.z);
+        vertices[3] = Vec3d(origin.x, origin.y, origin.z);
+        vertices[4] = Vec3d(origin.x, opposite.y, opposite.z);
+        vertices[5] = Vec3d(opposite.x, opposite.y, opposite.z);
+        vertices[6] = Vec3d(opposite.x, origin.y, opposite.z);
+        vertices[7] = Vec3d(origin.x, origin.y, opposite.z);
+    }
+
+} BoundingBox;
+
+typedef struct CRC_API _Polygon
+{
+    unsigned int size;
+    CRC_INDEX idWv[3];
+    CRC_INDEX idUv[3];
+    Vec3d normal;
+
+    __device__ __host__ _Polygon() : size(0) {}
+
+    __device__ __host__ void StartToCreate()
+    {
+        size = 0;
+    }
+
+    __device__ __host__ void AddIndex(CRC_INDEX argIdWv, CRC_INDEX argIdUv)
+    {
+        idWv[size] = argIdWv;
+        idUv[size] = argIdUv;
+        size++;
+    }
+
+    __device__ __host__ void SetNormal(Vec3d argNormal)
+    {
+        normal = argNormal;
+    }
+
+} Polygon;
 
 }

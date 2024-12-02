@@ -8,7 +8,7 @@ CuRendCore::CuRendCore()
     // Initialize the factories.
     windowFc = WindowFactory::GetInstance();
     sceneFc = SceneFactory::GetInstance();
-    // resourceFc = ResourceFactory::GetInstance();
+    resourceFc = ResourceFactory::GetInstance();
     // binderFc = BinderFactory::GetInstance();
 
     // Initialize the input.
@@ -20,7 +20,7 @@ CuRendCore::~CuRendCore()
     // Release the factories.
     if (windowFc != nullptr) windowFc->ReleaseInstance();
     if (sceneFc != nullptr) sceneFc->ReleaseInstance();
-    // if (resourceFc != nullptr) resourceFc->ReleaseInstance();
+    if (resourceFc != nullptr) resourceFc->ReleaseInstance();
     // if (binderFc != nullptr) binderFc->ReleaseInstance();
 
     // Release the input.

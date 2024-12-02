@@ -15,8 +15,29 @@
 #include <Windows.h>
 
 // Represents the number of elements in an array, etc.
-#define CRC_SLOT UINT
+#define CRC_SLOT unsigned int
 #define CRC_SLOT_INVALID -1
+
+#define CRC_INDEX unsigned int
+#define CRC_INDEX_INVALID -1
+
+// A macro to return the result of a function on the GPU, equivalent to HRESULT on the CPU.
+#define CRC_GRESULT unsigned int
+#define CRC_GSUCCEEDED(hr) (((CRC_GRESULT)(hr)) == 0)
+#define CRC_GFAILED(hr) (((CRC_GRESULT)(hr)) != 0)
+
+#define CRC_GS_OK 0
+#define CRC_GS_FALSE 1
+
+// Macros for branch processing on the GPU.
+#define CRC_GBOOL int
+
+#define CRC_GCO(condition, trueValue, falseValue) \
+    condition ? trueValue : falseValue;
+
+#define CRC_GIF(condition, branch) \
+    for(int branch = 0; branch < (condition) ? TRUE : FALSE; branch++)
+
 
 // Default window attributes.
 #define CRC_WND_DEFAULT_NAME L"CuRendCore Window"
@@ -35,7 +56,7 @@
 
 // Input key codes.
 #define CRC_KEY_NULL -1
-static enum CRC_KEY_MSG
+enum CRC_KEY_MSG
 {
     CRC_KEY_MSG_R_ALT = 0,
     CRC_KEY_MSG_L_ALT,
@@ -137,7 +158,7 @@ static enum CRC_KEY_MSG
 };
 
 #define CRC_MOUSE_NULL -1
-static enum CRC_MOUSE_MSG
+enum CRC_MOUSE_MSG
 {
     CRC_MOUSE_MSG_LBTN = 0,
     CRC_MOUSE_MSG_RBTN,
@@ -147,3 +168,5 @@ static enum CRC_MOUSE_MSG
     CRC_MOUSE_MSG_XBTN2,
     CRC_MOUSE_MSG_SIZE,
 };
+
+// Rendering

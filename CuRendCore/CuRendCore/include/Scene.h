@@ -22,12 +22,17 @@ class CRC_API Scene
 {
 private:
     Scene(SCENEATTR sattr); 
+    CRC_SLOT thisSlot = CRC_SLOT_INVALID;
 
     SCENEATTR sattr;
     std::shared_ptr<SceneController> ctrl = nullptr;
 
+    std::vector<CRC_SLOT> slotRcs;
+
 public:
     ~Scene();
+
+    CRC_SLOT GetSlot() {return thisSlot;}
 
     friend class SceneController;
     friend class SceneFactory;
@@ -36,13 +41,39 @@ public:
 class CRC_API SceneController
 {
 private:
+    bool isWillDestroy = false;
+    bool isInited = false;
+    bool isReStart = false;
     std::shared_ptr<Scene> scene;
+
+    void SetScene(std::shared_ptr<Scene> scene);
+
+protected:
+    void AddResource(CRC_SLOT slotResource);
+    void RemoveResource(CRC_SLOT slotResource);
+    void LoadResources();
+
+    void NeedInit() {isInited = false;}
+    void NeedReStart() {isReStart = true;}
+    void NeedDestroy(bool val) {isWillDestroy = val;}
 
 public:
     SceneController() = default;
     virtual ~SceneController() = default;
 
-    HRESULT SetName(std::string name);
+    bool IsWillDestroy() {return isWillDestroy;}
+    void UnLoadResources();
+
+    void OnPaint();
+
+    CRC_SLOT GetSlot() {return scene->GetSlot();}
+
+    virtual void Init() = 0;
+    virtual void Update() = 0;
+    virtual void ReStart() = 0;
+    virtual void End() = 0;
+
+    bool Finish();
 
     friend class SceneFactory;
 };

@@ -40,7 +40,6 @@ int WINAPI WinMain
     // Create Scene
     crc->sceneFc->CreateScene(sattr);
 
-
     // Set the Scene controller to the Window
     crc->windowFc->SetSceneCtrl(slotExampleWnd, sattr.ctrl);
 

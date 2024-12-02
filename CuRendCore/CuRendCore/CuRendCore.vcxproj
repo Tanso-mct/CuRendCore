@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="src\Binder.cpp" />
     <ClCompile Include="src\CuRendCore.cpp" />
+    <ClCompile Include="src\Files.cpp" />
     <ClCompile Include="src\Input.cpp" />
     <ClCompile Include="src\Resource.cpp" />
     <ClCompile Include="src\Scene.cpp" />
@@ -30,20 +31,17 @@
     <ClInclude Include="include\Binder.h" />
     <ClInclude Include="include\CRCConfig.h" />
     <ClInclude Include="include\CuRendCore.h" />
+    <ClInclude Include="include\Files.h" />
     <ClInclude Include="include\Input.h" />
     <ClInclude Include="include\Resource.h" />
     <ClInclude Include="include\Scene.h" />
+    <ClInclude Include="include\stb_image.h" />
     <ClInclude Include="include\Window.h" />
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="include\Math.cuh">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
-    </CudaCompile>
-    <CudaCompile Include="src\Math.cu">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
-      <FileType>Document</FileType>
     </CudaCompile>
   </ItemGroup>
   <PropertyGroup Label="Globals">

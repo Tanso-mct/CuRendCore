@@ -3,7 +3,12 @@
     "commentTranslate.targetLanguage": "en",
     "cSpell.words": [
         "CUDA",
+        "GBOOL",
+        "GFAILED",
+        "GRESULT",
+        "GSUCCEEDED",
         "HRESULT",
+        "Inited",
         "OVERLAPPEDWINDOW",
         "wcex",
         "WNDATTR"
@@ -75,6 +80,7 @@
         "xlocmes": "cpp",
         "xlocmon": "cpp",
         "xlocnum": "cpp",
-        "xloctime": "cpp"
+        "xloctime": "cpp",
+        "fstream": "cpp"
     }
 }

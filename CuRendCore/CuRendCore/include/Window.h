@@ -35,6 +35,7 @@ class CRC_API Window
 {
 private:
     Window(WNDATTR wattr);
+    CRC_SLOT thisSlot = CRC_SLOT_INVALID;
 
     HWND hWnd = NULL;
     WNDATTR wattr = { 0 };
@@ -42,6 +43,8 @@ private:
 
 public:
     ~Window();
+
+    CRC_SLOT GetSlot() { return thisSlot; }
 
     friend class WindowFactory;
 };
