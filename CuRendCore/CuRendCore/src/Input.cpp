@@ -70,26 +70,6 @@ void Input::SetIsMouseDoubleTap(int currentMouse)
     }
 }
 
-Input *Input::GetInstance()
-{
-    // Implementation of the Singleton pattern.
-    static Input* instance = nullptr;
-
-    if (instance == nullptr) instance = new Input();
-
-    return instance;
-}
-
-void Input::ReleaseInstance()
-{
-    Input* instance = GetInstance();
-    if (instance != nullptr)
-    {
-        delete instance;
-        instance = nullptr;
-    }
-}
-
 void Input::Update()
 {
     keyText = "";

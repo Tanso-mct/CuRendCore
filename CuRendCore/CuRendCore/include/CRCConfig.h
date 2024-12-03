@@ -13,6 +13,7 @@
 #endif
 
 #include <Windows.h>
+#include <string>
 
 // Represents the number of elements in an array, etc.
 #define CRC_SLOT unsigned int
@@ -170,3 +171,11 @@ enum CRC_MOUSE_MSG
 };
 
 // Rendering
+
+// Debug Output
+static void CRCDebugOutput(std::string filePath, std::string func, int line, std::string element)
+{
+    std::string file = filePath.substr(filePath.find_last_of("\\") + 1);
+    std::string output = "[CRC::FILE] " + file + " [LINE]" + std::to_string(line) + " [FUNC]" + func + " : " + element + "\n";
+    OutputDebugStringA(output.c_str());
+}

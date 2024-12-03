@@ -34,12 +34,14 @@ typedef struct CRC_API _WINDOW_ATTRIBUTES
 class CRC_API Window
 {
 private:
+    std::shared_ptr<WindowController> ctrl = nullptr;
+    std::shared_ptr<Input> input = nullptr;
+
     Window(WNDATTR wattr);
     CRC_SLOT thisSlot = CRC_SLOT_INVALID;
 
     HWND hWnd = NULL;
     WNDATTR wattr = { 0 };
-    std::shared_ptr<WindowController> ctrl = nullptr;
 
 public:
     ~Window();
@@ -51,13 +53,17 @@ public:
 
 class CRC_API WindowController
 {
+private:
+    std::weak_ptr<Input> input;
+    std::weak_ptr<SceneController> sceneCtrl;
+
 protected:
-    Input* input = nullptr;
-    std::shared_ptr<SceneController> sceneCtrl = nullptr;
+    std::shared_ptr<SceneController> GetSceneCtrl(){ return sceneCtrl.lock(); }
+    std::shared_ptr<Input> GetInput(){ return input.lock(); }
 
 public:
     WindowController();
-    virtual ~WindowController() = default;
+    virtual ~WindowController();
 
     virtual HRESULT OnCreate(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam){ return S_OK; };
     virtual HRESULT OnSetFocus(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam){ return S_OK; };
@@ -79,7 +85,7 @@ public:
 class CRC_API WindowFactory
 {
 private:
-    WindowFactory() = default;
+    WindowFactory(){CRCDebugOutput(__FILE__, __FUNCTION__, __LINE__, "");};
     std::vector<std::shared_ptr<Window>> windows;
     std::unordered_map<HWND, CRC_SLOT> slots;
 
@@ -88,9 +94,6 @@ private:
 public:
     ~WindowFactory();
 
-    static WindowFactory* GetInstance();
-    static void ReleaseInstance();
-
     CRC_SLOT CreateWindowCRC(WNDATTR wattr);
     HRESULT DestroyWindowCRC(CRC_SLOT slot);
     HRESULT ShowWindowCRC(CRC_SLOT slot, int nCmdShow);
@@ -98,6 +101,8 @@ public:
     HRESULT SetSceneCtrl(CRC_SLOT slot, std::shared_ptr<SceneController> sceneCtrl);
 
     static LRESULT CALLBACK WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
+    friend class CuRendCore;
 };
 
 } // namespace CRC

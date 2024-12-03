@@ -1,20 +1,26 @@
 #include "Scene.h"
 #include "Resource.h"
+#include "CuRendCore.h"
+
 
 namespace CRC 
 {
 
 Scene::Scene(SCENEATTR sattr)
 {
+    CRCDebugOutput(__FILE__, __FUNCTION__, __LINE__, "");
+
     this->sattr = sattr;
     this->ctrl = sattr.ctrl;
 }
 
 Scene::~Scene()
 {
+    CRCDebugOutput(__FILE__, __FUNCTION__, __LINE__, "");
+
     if (ctrl != nullptr) ctrl.reset();
 
-    ResourceFactory* rf = ResourceFactory::GetInstance();
+    ResourceFactory* rf = CuRendCore::GetInstance()->resourceFc;
     for (auto& slot : slotRcs)
     {
         rf->UnloadResource(slot);
@@ -23,31 +29,13 @@ Scene::~Scene()
 
 SceneFactory::~SceneFactory()
 {
+    CRCDebugOutput(__FILE__, __FUNCTION__, __LINE__, "");
+
     for (auto& scene : scenes)
     {
         scene.reset();
     }
     scenes.clear();
-}
-
-SceneFactory *SceneFactory::GetInstance()
-{
-    // Implementation of the Singleton pattern.
-    static SceneFactory* instance = nullptr;
-
-    if (instance == nullptr) instance = new SceneFactory();
-
-    return instance;
-}
-
-void SceneFactory::ReleaseInstance()
-{
-    SceneFactory* instance = GetInstance();
-    if (instance != nullptr)
-    {
-        delete instance;
-        instance = nullptr;
-    }
 }
 
 CRC_SLOT SceneFactory::CreateScene(SCENEATTR sattr)
@@ -63,12 +51,13 @@ CRC_SLOT SceneFactory::CreateScene(SCENEATTR sattr)
 HRESULT SceneFactory::DestroyScene(CRC_SLOT slot)
 {
     if (slot >= scenes.size()) return E_FAIL;
+    if (scenes[slot] == nullptr) return E_FAIL;
 
     scenes[slot].reset();
     return S_OK;
 }
 
-void SceneController::SetScene(std::shared_ptr<Scene> scene)
+void SceneController::SetScene(std::weak_ptr<Scene> scene)
 {
     this->scene = scene;
     isInited = false;
@@ -76,44 +65,44 @@ void SceneController::SetScene(std::shared_ptr<Scene> scene)
 
 void SceneController::AddResource(CRC_SLOT slotResource)
 {
-    for (auto& scene : scene->slotRcs)
+    for (auto& scene : GetScene()->slotRcs)
     {
         if (scene == slotResource) return;
     }
 
-    scene->slotRcs.push_back(slotResource);
+    GetScene()->slotRcs.push_back(slotResource);
 }
 
 void SceneController::RemoveResource(CRC_SLOT slotResource)
 {
     int removeId = -1;
-    for (int i = 0; i < scene->slotRcs.size(); i++)
+    for (int i = 0; i < GetScene()->slotRcs.size(); i++)
     {
-        if (scene->slotRcs[i] == slotResource)
+        if (GetScene()->slotRcs[i] == slotResource)
         {
             removeId = i;
             break;
         }
     }
 
-    if (removeId != -1) scene->slotRcs.erase(scene->slotRcs.begin() + removeId);
+    if (removeId != -1) GetScene()->slotRcs.erase(GetScene()->slotRcs.begin() + removeId);
 }
 
 void SceneController::LoadResources()
 {
-    ResourceFactory* rf = ResourceFactory::GetInstance();
-    for (int i = 0; i < scene->slotRcs.size(); i++)
+    ResourceFactory* rf = CuRendCore::GetInstance()->resourceFc;
+    for (int i = 0; i < GetScene()->slotRcs.size(); i++)
     {
-        rf->LoadResource(scene->slotRcs[i]);
+        rf->LoadResource(GetScene()->slotRcs[i]);
     }
 }
 
 void SceneController::UnLoadResources()
 {
-    ResourceFactory* rf = ResourceFactory::GetInstance();
-    for (int i = 0; i < scene->slotRcs.size(); i++)
+    ResourceFactory* rf = CuRendCore::GetInstance()->resourceFc;
+    for (int i = 0; i < GetScene()->slotRcs.size(); i++)
     {
-        rf->UnloadResource(scene->slotRcs[i]);
+        rf->UnloadResource(GetScene()->slotRcs[i]);
     }
 }
 
@@ -121,19 +110,19 @@ void SceneController::OnPaint()
 {
     if (isReStart)
     {
-        scene->ctrl->ReStart();
+        GetScene()->ctrl->ReStart();
         isReStart = false;
         return;
     }
 
     if (!isInited)
     {
-        scene->ctrl->Init();
+        GetScene()->ctrl->Init();
         isInited = true;
         return;
     }
 
-    scene->ctrl->Update();
+    GetScene()->ctrl->Update();
 }
 
 bool SceneController::Finish()
@@ -142,7 +131,8 @@ bool SceneController::Finish()
     if (IsWillDestroy())
     {
         // The scene will be destroyed.
-        SceneFactory::GetInstance()->DestroyScene(GetSlot());
+        SceneFactory* sf = CuRendCore::GetInstance()->sceneFc;
+        sf->DestroyScene(GetSlot());
         return true;
     }
 

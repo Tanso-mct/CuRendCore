@@ -7,6 +7,8 @@
 #include <unordered_map>
 #include <string>
 
+#include "Input.h"
+
 namespace CRC 
 {
 
@@ -21,12 +23,12 @@ typedef struct CRC_API _SCENE_ATTRIBUTES
 class CRC_API Scene
 {
 private:
-    Scene(SCENEATTR sattr); 
-    CRC_SLOT thisSlot = CRC_SLOT_INVALID;
-
-    SCENEATTR sattr;
     std::shared_ptr<SceneController> ctrl = nullptr;
 
+    Scene(SCENEATTR sattr); 
+
+    CRC_SLOT thisSlot = CRC_SLOT_INVALID;
+    SCENEATTR sattr;
     std::vector<CRC_SLOT> slotRcs;
 
 public:
@@ -41,12 +43,17 @@ public:
 class CRC_API SceneController
 {
 private:
+    std::weak_ptr<Scene> scene;
+    std::weak_ptr<Input> input;
+
     bool isWillDestroy = false;
     bool isInited = false;
     bool isReStart = false;
-    std::shared_ptr<Scene> scene;
 
-    void SetScene(std::shared_ptr<Scene> scene);
+    void SetScene(std::weak_ptr<Scene> scene);
+    void OnPaint();
+
+    std::shared_ptr<Scene> GetScene() {return scene.lock();}
 
 protected:
     void AddResource(CRC_SLOT slotResource);
@@ -57,16 +64,16 @@ protected:
     void NeedReStart() {isReStart = true;}
     void NeedDestroy(bool val) {isWillDestroy = val;}
 
+    std::shared_ptr<Input> GetInput() {return input.lock();}
+
 public:
-    SceneController() = default;
-    virtual ~SceneController() = default;
+    SceneController(){CRCDebugOutput(__FILE__, __FUNCTION__, __LINE__, "");};
+    virtual ~SceneController(){CRCDebugOutput(__FILE__, __FUNCTION__, __LINE__, "");};
 
     bool IsWillDestroy() {return isWillDestroy;}
     void UnLoadResources();
 
-    void OnPaint();
-
-    CRC_SLOT GetSlot() {return scene->GetSlot();}
+    CRC_SLOT GetSlot() {return GetScene()->GetSlot();}
 
     virtual void Init() = 0;
     virtual void Update() = 0;
@@ -76,22 +83,22 @@ public:
     bool Finish();
 
     friend class SceneFactory;
+    friend class WindowFactory;
 };
 
 class CRC_API SceneFactory
 {
 private:
-    SceneFactory() = default;
+    SceneFactory(){CRCDebugOutput(__FILE__, __FUNCTION__, __LINE__, "");};
     std::vector<std::shared_ptr<Scene>> scenes;
     
 public:
     ~SceneFactory();
 
-    static SceneFactory* GetInstance();
-    void ReleaseInstance();
-
     CRC_SLOT CreateScene(SCENEATTR sattr);
     HRESULT DestroyScene(CRC_SLOT slot);
+
+    friend class CuRendCore;
 };
 
 

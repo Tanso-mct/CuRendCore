@@ -5,26 +5,24 @@ namespace CRC
 
 CuRendCore::CuRendCore() 
 {
-    // Initialize the factories.
-    windowFc = WindowFactory::GetInstance();
-    sceneFc = SceneFactory::GetInstance();
-    resourceFc = ResourceFactory::GetInstance();
-    // binderFc = BinderFactory::GetInstance();
+    CRCDebugOutput(__FILE__, __FUNCTION__, __LINE__, "");
 
-    // Initialize the input.
-    input = Input::GetInstance();
+    // Initialize the factories.
+    windowFc = new WindowFactory();
+    sceneFc = new SceneFactory();
+    resourceFc = new ResourceFactory();
+    // binderFc = BinderFactory::GetInstance();
 }
 
 CuRendCore::~CuRendCore()
 {
-    // Release the factories.
-    if (windowFc != nullptr) windowFc->ReleaseInstance();
-    if (sceneFc != nullptr) sceneFc->ReleaseInstance();
-    if (resourceFc != nullptr) resourceFc->ReleaseInstance();
-    // if (binderFc != nullptr) binderFc->ReleaseInstance();
+    CRCDebugOutput(__FILE__, __FUNCTION__, __LINE__, "");
 
-    // Release the input.
-    if (input != nullptr) input->ReleaseInstance();
+    // Release the factories.
+    if (windowFc != nullptr) delete windowFc;
+    if (sceneFc != nullptr) delete sceneFc;
+    if (resourceFc != nullptr) delete resourceFc;
+    // if (binderFc != nullptr) binderFc->ReleaseInstance();
 }
 
 CuRendCore* CuRendCore::GetInstance()
@@ -32,10 +30,7 @@ CuRendCore* CuRendCore::GetInstance()
     // Implementation of the Singleton pattern.
     static CuRendCore* instance = nullptr;
 
-    if (instance == nullptr)
-    {
-        instance = new CuRendCore();
-    }
+    if (instance == nullptr) instance = new CuRendCore();
 
     return instance;
 }

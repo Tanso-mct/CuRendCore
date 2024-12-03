@@ -14,7 +14,7 @@ namespace CRC
 class CRC_API PngFile : public Resource
 {
 private:
-    PngFile(RESOURCEATTR rattr) : Resource(rattr) {};
+    PngFile(RESOURCEATTR rattr) : Resource(rattr) {CRCDebugOutput(__FILE__, __FUNCTION__, __LINE__, "");};
 
     int width = 0;
     int height = 0;
@@ -33,7 +33,7 @@ public:
 class CRC_API ObjFile : public Resource
 {
 private:
-    ObjFile(RESOURCEATTR rattr) : Resource(rattr) {};
+    ObjFile(RESOURCEATTR rattr) : Resource(rattr) {CRCDebugOutput(__FILE__, __FUNCTION__, __LINE__, "");};
 
     std::vector<Vec3d> wv;
     std::vector<Vec2d> uv;

@@ -1,52 +1,46 @@
 #include "Window.h"
+#include "CuRendCore.h"
 
 namespace CRC 
 {
 
 Window::Window(WNDATTR wattr)
 {
+    CRCDebugOutput(__FILE__, __FUNCTION__, __LINE__, "");
+
     this->wattr = wattr;
     this->ctrl = wattr.ctrl;
+    input = std::shared_ptr<Input>(new Input());
 }
 
 Window::~Window()
 {
+    CRCDebugOutput(__FILE__, __FUNCTION__, __LINE__, "");
+
     if (ctrl != nullptr) ctrl.reset();
+    if (input != nullptr) input.reset();
 }
 
 WindowController::WindowController()
 {
-    input = Input::GetInstance();
+    CRCDebugOutput(__FILE__, __FUNCTION__, __LINE__, "");
+}
+
+WindowController::~WindowController()
+{
+    CRCDebugOutput(__FILE__, __FUNCTION__, __LINE__, "");
 }
 
 WindowFactory::~WindowFactory()
 {
+    CRCDebugOutput(__FILE__, __FUNCTION__, __LINE__, "");
+    
     for (auto& window : windows)
     {
         window.reset();
     }
     windows.clear();
     slots.clear();
-}
-
-WindowFactory *WindowFactory::GetInstance()
-{
-    // Implementation of the Singleton pattern.
-    static WindowFactory* instance = nullptr;
-
-    if (instance == nullptr) instance = new WindowFactory();
-
-    return instance;
-}
-
-void WindowFactory::ReleaseInstance()
-{
-    WindowFactory* instance = GetInstance();
-    if (instance != nullptr)
-    {
-        delete instance;
-        instance = nullptr;
-    }
 }
 
 CRC_SLOT WindowFactory::CreateWindowCRC(WNDATTR wattr)
@@ -82,6 +76,7 @@ CRC_SLOT WindowFactory::CreateWindowCRC(WNDATTR wattr)
 HRESULT WindowFactory::DestroyWindowCRC(CRC_SLOT slot)
 {
     if (slot >= windows.size()) return E_FAIL;
+    if (windows[slot] == nullptr) return E_FAIL;
 
     HRESULT hr = !DestroyWindow(windows[slot]->hWnd);
     if (SUCCEEDED(hr))
@@ -109,14 +104,17 @@ HRESULT WindowFactory::ShowWindowCRC(CRC_SLOT slot, int nCmdShow)
 HRESULT WindowFactory::SetSceneCtrl(CRC_SLOT slot, std::shared_ptr<SceneController> sceneCtrl)
 {
     if (slot >= windows.size()) return E_FAIL;
+    if (windows[slot] == nullptr) return E_FAIL;
 
-    if (windows[slot]->ctrl->sceneCtrl == nullptr) windows[slot]->ctrl->sceneCtrl = sceneCtrl;
-    else
+    if (windows[slot]->ctrl->GetSceneCtrl() != nullptr)
     {
         // Since the Scene controller is switched, it means that the scene is switched.
-        if (windows[slot]->ctrl->sceneCtrl->Finish()) windows[slot]->ctrl->sceneCtrl.reset();
-        windows[slot]->ctrl->sceneCtrl = sceneCtrl;
+        windows[slot]->ctrl->GetSceneCtrl()->Finish();
     }
+
+    windows[slot]->ctrl->sceneCtrl = sceneCtrl;
+    windows[slot]->ctrl->GetSceneCtrl()->input = windows[slot]->ctrl->input;
+    
     return S_OK;
 }
 
@@ -124,14 +122,14 @@ LRESULT CALLBACK WindowFactory::WindowProc(HWND hWnd, UINT msg, WPARAM wParam, L
 {
     if (wParam == SC_MINIMIZE)
     {
-        WindowFactory* wf = WindowFactory::GetInstance();
+        WindowFactory* wf = CuRendCore::GetInstance()->windowFc;
         wf->windows[wf->slots[hWnd]]->ctrl->OnMinimize(hWnd, msg, wParam, lParam);
     }
 
     switch (msg){
         case WM_SIZE:
         {
-            WindowFactory* wf = WindowFactory::GetInstance();
+            WindowFactory* wf = CuRendCore::GetInstance()->windowFc;
             if (wParam == SIZE_MINIMIZED) wf->windows[wf->slots[hWnd]]->ctrl->OnMinimize(hWnd, msg, wParam, lParam);
             else if (wParam == SIZE_MAXIMIZED) wf->windows[wf->slots[hWnd]]->ctrl->OnMaximize(hWnd, msg, wParam, lParam);
             else if (wParam == SIZE_RESTORED) wf->windows[wf->slots[hWnd]]->ctrl->OnRestored(hWnd, msg, wParam, lParam);
@@ -140,26 +138,27 @@ LRESULT CALLBACK WindowFactory::WindowProc(HWND hWnd, UINT msg, WPARAM wParam, L
 
         case WM_SETFOCUS:
         {
-            WindowFactory* wf = WindowFactory::GetInstance();
+            WindowFactory* wf = CuRendCore::GetInstance()->windowFc;
             wf->windows[wf->slots[hWnd]]->ctrl->OnSetFocus(hWnd, msg, wParam, lParam);
         }
             break;
 
         case WM_KILLFOCUS:
         {
-            WindowFactory* wf = WindowFactory::GetInstance();
+            WindowFactory* wf = CuRendCore::GetInstance()->windowFc;
             wf->windows[wf->slots[hWnd]]->ctrl->OnKillFocus(hWnd, msg, wParam, lParam);
         }
             break;
 
         case WM_CREATE:
         {
-            WindowFactory* wf = WindowFactory::GetInstance();
+            WindowFactory* wf = CuRendCore::GetInstance()->windowFc;
             wf->creatingWnd->thisSlot = wf->windows.size();
             wf->slots[wf->creatingWnd->hWnd] = wf->windows.size();
 
-            wf->creatingWnd->ctrl->OnCreate(hWnd, msg, wParam, lParam);
+            wf->creatingWnd->ctrl->input = wf->creatingWnd->input;
             wf->creatingWnd->hWnd = hWnd;
+            wf->creatingWnd->ctrl->OnCreate(hWnd, msg, wParam, lParam);
 
             wf->windows.push_back(wf->creatingWnd);
         }
@@ -167,34 +166,34 @@ LRESULT CALLBACK WindowFactory::WindowProc(HWND hWnd, UINT msg, WPARAM wParam, L
 
         case WM_PAINT:
         {
-            WindowFactory* wf = WindowFactory::GetInstance();
-            if (wf->windows[wf->slots[hWnd]]->ctrl->sceneCtrl != nullptr)
+            WindowFactory* wf = CuRendCore::GetInstance()->windowFc;
+            if (wf->windows[wf->slots[hWnd]]->ctrl->GetSceneCtrl() != nullptr)
             {
                 wf->windows[wf->slots[hWnd]]->ctrl->OnPaint(hWnd, msg, wParam, lParam);
-                wf->windows[wf->slots[hWnd]]->ctrl->sceneCtrl->OnPaint();
-                wf->windows[wf->slots[hWnd]]->ctrl->input->Update();
+                wf->windows[wf->slots[hWnd]]->ctrl->GetSceneCtrl()->OnPaint();
+                wf->windows[wf->slots[hWnd]]->ctrl->GetInput()->Update();
             }
         }
             break;
 
         case WM_MOVE:
         {
-            WindowFactory* wf = WindowFactory::GetInstance();
+            WindowFactory* wf = CuRendCore::GetInstance()->windowFc;
             wf->windows[wf->slots[hWnd]]->ctrl->OnMove(hWnd, msg, wParam, lParam);
         }
             break;
 
         case WM_CLOSE:
         {
-            WindowFactory* wf = WindowFactory::GetInstance();
+            WindowFactory* wf = CuRendCore::GetInstance()->windowFc;
             wf->windows[wf->slots[hWnd]]->ctrl->OnClose(hWnd, msg, wParam, lParam);
-            if (wf->windows[wf->slots[hWnd]]->ctrl->sceneCtrl->Finish()) wf->windows[wf->slots[hWnd]]->ctrl->sceneCtrl.reset();
+            wf->windows[wf->slots[hWnd]]->ctrl->GetSceneCtrl()->Finish();
         }
             return DefWindowProc(hWnd, msg, wParam, lParam);
 
         case WM_DESTROY:
         {
-            WindowFactory* wf = WindowFactory::GetInstance();
+            WindowFactory* wf = CuRendCore::GetInstance()->windowFc;
             wf->windows[wf->slots[hWnd]]->ctrl->OnDestroy(hWnd, msg, wParam, lParam);   
         }
             break;
@@ -202,8 +201,8 @@ LRESULT CALLBACK WindowFactory::WindowProc(HWND hWnd, UINT msg, WPARAM wParam, L
         case WM_SYSKEYDOWN:
         case WM_KEYDOWN:
         {
-            WindowFactory* wf = WindowFactory::GetInstance();
-            wf->windows[wf->slots[hWnd]]->ctrl->input->ProcessKeyDown(hWnd, msg, wParam, lParam);
+            WindowFactory* wf = CuRendCore::GetInstance()->windowFc;
+            wf->windows[wf->slots[hWnd]]->ctrl->GetInput()->ProcessKeyDown(hWnd, msg, wParam, lParam);
             wf->windows[wf->slots[hWnd]]->ctrl->OnKeyDown(hWnd, msg, wParam, lParam);
         }
             break;
@@ -211,8 +210,8 @@ LRESULT CALLBACK WindowFactory::WindowProc(HWND hWnd, UINT msg, WPARAM wParam, L
         case WM_SYSKEYUP:
         case WM_KEYUP:
         {
-            WindowFactory* wf = WindowFactory::GetInstance();
-            wf->windows[wf->slots[hWnd]]->ctrl->input->ProcessKeyUp(hWnd, msg, wParam, lParam);
+            WindowFactory* wf = CuRendCore::GetInstance()->windowFc;
+            wf->windows[wf->slots[hWnd]]->ctrl->GetInput()->ProcessKeyUp(hWnd, msg, wParam, lParam);
             wf->windows[wf->slots[hWnd]]->ctrl->OnKeyUp(hWnd, msg, wParam, lParam);
         }
             break;
@@ -228,8 +227,8 @@ LRESULT CALLBACK WindowFactory::WindowProc(HWND hWnd, UINT msg, WPARAM wParam, L
         case WM_MOUSEWHEEL:
         case WM_MOUSEMOVE:
         {
-            WindowFactory* wf = WindowFactory::GetInstance();
-            wf->windows[wf->slots[hWnd]]->ctrl->input->ProcessMouse(hWnd, msg, wParam, lParam);
+            WindowFactory* wf = CuRendCore::GetInstance()->windowFc;
+            wf->windows[wf->slots[hWnd]]->ctrl->GetInput()->ProcessMouse(hWnd, msg, wParam, lParam);
             wf->windows[wf->slots[hWnd]]->ctrl->OnMouse(hWnd, msg, wParam, lParam);
         }
             break;

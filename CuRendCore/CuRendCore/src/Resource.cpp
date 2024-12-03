@@ -6,6 +6,8 @@ namespace CRC
 
 Resource::Resource(RESOURCEATTR rattr)
 {
+    CRCDebugOutput(__FILE__, __FUNCTION__, __LINE__, "");
+
     this->rattr = rattr;
     if (rattr.ctrl != nullptr) ctrl = rattr.ctrl;
     else ctrl = std::shared_ptr<ResourceController>(new ResourceController());
@@ -13,36 +15,20 @@ Resource::Resource(RESOURCEATTR rattr)
 
 Resource::~Resource()
 {
+    CRCDebugOutput(__FILE__, __FUNCTION__, __LINE__, "");
+    
     if (ctrl != nullptr) ctrl.reset();
 }
 
 ResourceFactory::~ResourceFactory()
 {
+    CRCDebugOutput(__FILE__, __FUNCTION__, __LINE__, "");
+    
     for (auto& resource : resources)
     {
         resource.reset();
     }
     resources.clear();
-}
-
-ResourceFactory *ResourceFactory::GetInstance()
-{
-    // Implementation of the Singleton pattern.
-    static ResourceFactory* instance = nullptr;
-
-    if (instance == nullptr) instance = new ResourceFactory();
-
-    return instance;
-}
-
-void ResourceFactory::ReleaseInstance()
-{
-    ResourceFactory* instance = GetInstance();
-    if (instance != nullptr)
-    {
-        delete instance;
-        instance = nullptr;
-    }
 }
 
 CRC_SLOT ResourceFactory::CreateResource(RESOURCEATTR rattr)
@@ -81,7 +67,8 @@ CRC_SLOT ResourceFactory::CreateResource(RESOURCEATTR rattr)
 
 HRESULT ResourceFactory::DestroyResource(CRC_SLOT slot)
 {
-    if (slot == CRC_SLOT_INVALID) return E_FAIL;
+    if (slot >= resources.size()) return E_FAIL;
+    if (resources[slot] == nullptr) return E_FAIL;
 
     resources[slot].reset();
     files[slot] = "";

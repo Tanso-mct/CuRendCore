@@ -42,8 +42,8 @@ protected:
     std::shared_ptr<Resource> resource;
 
 public:
-    ResourceController() = default;
-    virtual ~ResourceController() = default;
+    ResourceController(){CRCDebugOutput(__FILE__, __FUNCTION__, __LINE__, "");};
+    virtual ~ResourceController(){CRCDebugOutput(__FILE__, __FUNCTION__, __LINE__, "");};
 
     virtual HRESULT OnLoad(HRESULT hrLoad);
     virtual HRESULT OnUnload(HRESULT hrLoad);
@@ -55,21 +55,20 @@ public:
 class CRC_API ResourceFactory
 {
 private:
-    ResourceFactory() = default;
+    ResourceFactory(){CRCDebugOutput(__FILE__, __FUNCTION__, __LINE__, "");};
     std::vector<std::shared_ptr<Resource>> resources;
     std::vector<std::string> files;
 
 public:
     ~ResourceFactory();
 
-    static ResourceFactory* GetInstance();
-    void ReleaseInstance();
-
     CRC_SLOT CreateResource(RESOURCEATTR rattr);
     HRESULT DestroyResource(CRC_SLOT slot);
 
     HRESULT LoadResource(CRC_SLOT slot);
     HRESULT UnloadResource(CRC_SLOT slot);
+
+    friend class CuRendCore;
 };
 
 

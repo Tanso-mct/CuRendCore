@@ -29,9 +29,6 @@ public:
     ResourceFactory* resourceFc;
     BinderFactory* binderFc;
 
-    // Input
-    Input* input;
-
     int Run(HINSTANCE hInstance, int nCmdShow);
 };
 

@@ -10,6 +10,8 @@ namespace CRC
 
 PngFile::~PngFile()
 {
+    CRCDebugOutput(__FILE__, __FUNCTION__, __LINE__, "");
+
     Unload();
 }
 
@@ -19,6 +21,8 @@ HRESULT PngFile::Load()
     stbi_uc* pixels = stbi_load(rattr.path.c_str(), &width, &height, &channels, STBI_rgb_alpha);
 
     if (!pixels) return E_FAIL;
+
+    CRCDebugOutput(__FILE__, __FUNCTION__, __LINE__, rattr.path);
 
     data = new DWORD[width * height];
 
@@ -45,12 +49,19 @@ HRESULT PngFile::Load()
 
 HRESULT PngFile::Unload()
 {
-    if (data != nullptr) delete[] data;
+    if (data != nullptr)
+    {
+        CRCDebugOutput(__FILE__, __FUNCTION__, __LINE__, rattr.path);
+        delete[] data;
+        data = nullptr;
+    }
     return S_OK;
 }
 
 ObjFile::~ObjFile()
 {
+    CRCDebugOutput(__FILE__, __FUNCTION__, __LINE__, "");
+    
     Unload();
 }
 
@@ -58,6 +69,8 @@ HRESULT ObjFile::Load()
 {
     std::ifstream file(rattr.path);
     if (file.fail()) return E_FAIL;
+
+    CRCDebugOutput(__FILE__, __FUNCTION__, __LINE__, rattr.path);
 
     Unload();
 
@@ -144,12 +157,18 @@ HRESULT ObjFile::Load()
 }
 
 HRESULT ObjFile::Unload()
-{
+{   
     wv.clear();
     uv.clear();
     normal.clear();
 
-    if (boundingBox != nullptr) delete boundingBox;
+    if (boundingBox != nullptr)
+    {
+        CRCDebugOutput(__FILE__, __FUNCTION__, __LINE__, rattr.path);
+        
+        delete boundingBox;
+        boundingBox = nullptr;
+    }
     polygons.clear();
 
     return S_OK;

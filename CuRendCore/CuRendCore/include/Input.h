@@ -37,9 +37,6 @@ private:
 public:
     ~Input() = default;
 
-    static Input* GetInstance();
-    static void ReleaseInstance();
-
     void Update();
     void SetDoubleTapTime(double time){doubleTapTime = time;};
 
@@ -75,6 +72,8 @@ public:
     void GetMouseDelta(float &x, float &y){x = mousePos.x - recMousePos.x; y = mousePos.y - recMousePos.y;};
     void GetMouseDelta(Vec2d &delta){delta = mousePos - recMousePos;};
     Vec2d GetMouseDelta(){return mousePos - recMousePos;};
+
+    friend class Window;
 };
 
 } // namespace CRC
