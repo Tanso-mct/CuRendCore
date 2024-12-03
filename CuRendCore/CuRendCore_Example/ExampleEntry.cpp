@@ -11,6 +11,8 @@ int WINAPI WinMain
     // Get the instance of the CuRendCore
     CRC::CuRendCore* crc = CRC::CuRendCore::GetInstance();
 
+    // To manage shared_ptr with CuRendCore, use weak_ptr in the main function, other controllers, 
+    // and user functions, so that references are not controlled on the user side.
     {
         // Create Window
         CRC::WNDATTR wattr;
