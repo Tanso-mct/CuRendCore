@@ -1,5 +1,5 @@
 #include "Scene.h"
-#include "Resource.h"
+#include "Resource.cuh"
 #include "CuRendCore.h"
 
 

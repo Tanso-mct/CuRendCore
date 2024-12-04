@@ -1,4 +1,4 @@
-#include "Resource.h"
+#include "Resource.cuh"
 #include "Files.h"
 
 namespace CRC 

@@ -22,9 +22,13 @@
     <ClCompile Include="src\Binder.cpp" />
     <ClCompile Include="src\CuRendCore.cpp" />
     <ClCompile Include="src\Files.cpp" />
+    <ClCompile Include="src\Group.cpp" />
     <ClCompile Include="src\Input.cpp" />
-    <ClCompile Include="src\Resource.cpp" />
+    <ClCompile Include="src\Object.cpp" />
     <ClCompile Include="src\Scene.cpp" />
+    <ClCompile Include="src\Sound.cpp" />
+    <ClCompile Include="src\UI.cpp" />
+    <ClCompile Include="src\Utility.cpp" />
     <ClCompile Include="src\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -32,14 +36,27 @@
     <ClInclude Include="include\CRCConfig.h" />
     <ClInclude Include="include\CuRendCore.h" />
     <ClInclude Include="include\Files.h" />
+    <ClInclude Include="include\Group.h" />
     <ClInclude Include="include\Input.h" />
+    <ClInclude Include="include\Object.h" />
+    <CudaCompile Include="include\Resource.cuh">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </CudaCompile>
     <ClInclude Include="include\Resource.h" />
     <ClInclude Include="include\Scene.h" />
+    <ClInclude Include="include\Sound.h" />
     <ClInclude Include="include\stb_image.h" />
+    <ClInclude Include="include\UI.h" />
+    <ClInclude Include="include\Utility.h" />
     <ClInclude Include="include\Window.h" />
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="include\Math.cuh">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </CudaCompile>
+    <CudaCompile Include="src\Resource.cu">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </CudaCompile>

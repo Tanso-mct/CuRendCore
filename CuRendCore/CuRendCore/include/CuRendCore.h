@@ -6,7 +6,7 @@
 
 #include "Window.h"
 #include "Scene.h"
-#include "Resource.h"
+#include "Resource.cuh"
 #include "Binder.h"
 
 namespace CRC 

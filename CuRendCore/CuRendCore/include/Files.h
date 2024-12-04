@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-#include "Resource.h"
+#include "Resource.cuh"
 #include "Math.cuh"
 
 namespace CRC
