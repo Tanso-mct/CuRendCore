@@ -60,6 +60,8 @@ public:
 
     CRC_SLOT CreateUI(UIATTR uiattr);
     HRESULT DestroyUI(CRC_SLOT slotUI);
+
+    friend class Group;
 };
 
 

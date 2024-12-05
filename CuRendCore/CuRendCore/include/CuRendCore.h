@@ -27,7 +27,6 @@ public:
     WindowFactory* windowFc;
     SceneFactory* sceneFc;
     ResourceFactory* resourceFc;
-    BinderFactory* binderFc;
 
     int Run(HINSTANCE hInstance, int nCmdShow);
 };

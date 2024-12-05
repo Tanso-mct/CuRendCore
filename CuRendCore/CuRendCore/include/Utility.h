@@ -60,6 +60,8 @@ public:
 
     CRC_SLOT CreateUtility(UTILITYATTR utattr);
     HRESULT DestroyUtility(CRC_SLOT slotUtility);
+
+    friend class Group;
 };
 
 

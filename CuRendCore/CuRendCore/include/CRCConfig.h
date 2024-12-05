@@ -172,6 +172,16 @@ enum CRC_MOUSE_MSG
 
 // Rendering
 
+
+// Component types.
+enum CRC_COMPONENT_TYPE
+{
+    CRC_COMPONENT_TYPE_OBJECT = 0,
+    CRC_COMPONENT_TYPE_UTILITY,
+    CRC_COMPONENT_TYPE_UI,
+    CRC_COMPONENT_TYPE_SIZE,
+};
+
 // Debug Output
 static void CRCDebugOutput(std::string filePath, std::string func, int line, std::string element)
 {

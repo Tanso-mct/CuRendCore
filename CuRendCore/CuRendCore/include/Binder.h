@@ -14,21 +14,14 @@
 namespace CRC 
 {
 
-class BinderController;
-
 typedef struct CRC_API _BINDER_ATTRIBUTES
 {
     std::string name = "";
-    std::shared_ptr<BinderController> ctrl = nullptr;
 } BINDERATTR;
 
 class CRC_API Binder
 {
 private:
-    std::shared_ptr<BinderController> ctrl = nullptr;
-
-    Binder(BINDERATTR battr); 
-
     CRC_SLOT thisSlot = CRC_SLOT_INVALID;
     BINDERATTR battr;
 
@@ -38,11 +31,12 @@ private:
     std::vector<std::weak_ptr<UI>> uis;
 
 public:
+    Binder(BINDERATTR battr);
     virtual ~Binder();
 
     CRC_SLOT GetSlot() {return thisSlot;}
 
-    friend class GroupFactory;
+    friend class SceneController;
 };
 
 } // namespace CRC

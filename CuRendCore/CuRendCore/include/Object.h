@@ -60,6 +60,8 @@ public:
 
     CRC_SLOT CreateObject(OBJECTATTR oattr);
     HRESULT DestroyObject(CRC_SLOT slotObject);
+
+    friend class Group;
 };
 
 

@@ -31,7 +31,8 @@ private:
     SCENEATTR sattr;
     std::vector<CRC_SLOT> slotRcs;
 
-    std::shared_ptr<GroupFactory> groupFc = nullptr;
+    std::vector<std::shared_ptr<Group>> groups;
+    std::vector<std::unique_ptr<Binder>> binders;
 
 public:
     ~Scene();
@@ -68,8 +69,17 @@ protected:
 
     std::shared_ptr<Input> GetInput() {return input.lock();}
 
+    CRC_SLOT AddBinder(std::unique_ptr<Binder> binder);
+    HRESULT DestroyBinder(CRC_SLOT slotBinder);
+
     CRC_SLOT CreateGroup(GROUPATTR gattr);
     HRESULT DestroyGroup(CRC_SLOT slotGroup);
+
+    CRC_SLOT CreateComponent(CRC_SLOT slotGroup, OBJECTATTR oattr);
+    CRC_SLOT CreateComponent(CRC_SLOT slotGroup, UTILITYATTR utattr);
+    CRC_SLOT CreateComponent(CRC_SLOT slotGroup, UIATTR uiattr);
+
+    HRESULT DestroyComponent(CRC_COMPONENT_TYPE type, CRC_SLOT slotGroup, CRC_SLOT slotComponent);
 
 public:
     SceneController(){CRCDebugOutput(__FILE__, __FUNCTION__, __LINE__, "");};
