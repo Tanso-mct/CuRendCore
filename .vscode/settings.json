@@ -3,7 +3,9 @@
     "commentTranslate.targetLanguage": "en",
     "cSpell.words": [
         "Backgroud",
+        "BINDERATTR",
         "CUDA",
+        "gattr",
         "GBOOL",
         "GFAILED",
         "GRESULT",
@@ -11,6 +13,9 @@
         "HRESULT",
         "Inited",
         "OVERLAPPEDWINDOW",
+        "UIATTR",
+        "utattr",
+        "UTILITYATTR",
         "wcex",
         "WNDATTR"
     ],

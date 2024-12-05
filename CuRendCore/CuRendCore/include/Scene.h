@@ -4,10 +4,10 @@
 
 #include <vector>
 #include <memory>
-#include <unordered_map>
 #include <string>
 
 #include "Input.h"
+#include "Group.h"
 
 namespace CRC 
 {
@@ -31,6 +31,8 @@ private:
     SCENEATTR sattr;
     std::vector<CRC_SLOT> slotRcs;
 
+    std::shared_ptr<GroupFactory> groupFc = nullptr;
+
 public:
     ~Scene();
 
@@ -51,9 +53,9 @@ private:
     bool isReStart = false;
 
     void SetScene(std::weak_ptr<Scene> scene);
-    void OnPaint();
-
     std::shared_ptr<Scene> GetScene() {return scene.lock();}
+
+    void OnPaint();
 
 protected:
     void AddResource(CRC_SLOT slotResource);
@@ -65,6 +67,9 @@ protected:
     void NeedDestroy(bool val) {isWillDestroy = val;}
 
     std::shared_ptr<Input> GetInput() {return input.lock();}
+
+    CRC_SLOT CreateGroup(GROUPATTR gattr);
+    HRESULT DestroyGroup(CRC_SLOT slotGroup);
 
 public:
     SceneController(){CRCDebugOutput(__FILE__, __FUNCTION__, __LINE__, "");};

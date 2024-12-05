@@ -12,6 +12,8 @@ Scene::Scene(SCENEATTR sattr)
 
     this->sattr = sattr;
     this->ctrl = sattr.ctrl;
+
+    groupFc = std::shared_ptr<GroupFactory>(new GroupFactory());
 }
 
 Scene::~Scene()
@@ -19,6 +21,8 @@ Scene::~Scene()
     CRCDebugOutput(__FILE__, __FUNCTION__, __LINE__, "");
 
     if (ctrl != nullptr) ctrl.reset();
+
+    groupFc.reset();
 
     ResourceFactory* rf = CuRendCore::GetInstance()->resourceFc;
     for (auto& slot : slotRcs)
@@ -95,6 +99,16 @@ void SceneController::LoadResources()
     {
         rf->LoadResource(GetScene()->slotRcs[i]);
     }
+}
+
+CRC_SLOT SceneController::CreateGroup(GROUPATTR gattr)
+{
+    return GetScene()->groupFc->CreateGroup(gattr);
+}
+
+HRESULT SceneController::DestroyGroup(CRC_SLOT slotGroup)
+{
+    return GetScene()->groupFc->DestroyGroup(slotGroup);
 }
 
 void SceneController::UnLoadResources()
