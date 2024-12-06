@@ -18,10 +18,10 @@ Scene::~Scene()
 {
     CRCDebugOutput(__FILE__, __FUNCTION__, __LINE__, "");
 
-    for (auto& binder : binders)
-    {
-        binder.reset();
-    }
+    // for (auto& binder : binders)
+    // {
+    //     binder.reset();
+    // }
 
     for (auto& group : groups)
     {
@@ -55,7 +55,7 @@ CRC_SLOT SceneFactory::CreateScene(SCENEATTR sattr)
     scenes.push_back(newScene);
 
     newScene->thisSlot = (CRC_SLOT)(scenes.size() - 1);
-    return (CRC_SLOT)(scenes.size() - 1);
+    return newScene->thisSlot;
 }
 
 HRESULT SceneFactory::DestroyScene(CRC_SLOT slot)
@@ -113,7 +113,7 @@ CRC_SLOT SceneController::CreateGroup(GROUPATTR gattr)
     GetScene()->groups.push_back(newGroup);
 
     newGroup->thisSlot = (CRC_SLOT)(GetScene()->groups.size() - 1);
-    return (CRC_SLOT)(GetScene()->groups.size() - 1);
+    return newGroup->thisSlot;
 }
 
 HRESULT SceneController::DestroyGroup(CRC_SLOT slotGroup)
@@ -167,22 +167,22 @@ HRESULT SceneController::DestroyComponent(CRC_COMPONENT_TYPE type, CRC_SLOT slot
     }
 }
 
-CRC_SLOT SceneController::AddBinder(std::unique_ptr<Binder> binder)
-{
-    binder->thisSlot = (CRC_SLOT)(GetScene()->binders.size());
-    GetScene()->binders.push_back(std::move(binder));
+// CRC_SLOT SceneController::AddBinder(std::unique_ptr<Binder> binder)
+// {
+//     binder->thisSlot = (CRC_SLOT)(GetScene()->binders.size());
+//     GetScene()->binders.push_back(std::move(binder));
     
-    return (CRC_SLOT)(GetScene()->binders.size() - 1);
-}
+//     return (CRC_SLOT)(GetScene()->binders.size() - 1);
+// }
 
-HRESULT SceneController::DestroyBinder(CRC_SLOT slotBinder)
-{
-    if (slotBinder >= GetScene()->binders.size()) return E_FAIL;
-    if (GetScene()->binders[slotBinder] == nullptr) return E_FAIL;
+// HRESULT SceneController::DestroyBinder(CRC_SLOT slotBinder)
+// {
+//     if (slotBinder >= GetScene()->binders.size()) return E_FAIL;
+//     if (GetScene()->binders[slotBinder] == nullptr) return E_FAIL;
 
-    GetScene()->binders[slotBinder].reset();
-    return S_OK;
-}
+//     GetScene()->binders[slotBinder].reset();
+//     return S_OK;
+// }
 
 void SceneController::UnLoadResources()
 {

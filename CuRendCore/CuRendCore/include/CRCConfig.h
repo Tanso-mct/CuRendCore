@@ -172,11 +172,23 @@ enum CRC_MOUSE_MSG
 
 // Rendering
 
+// Pair hash
+// std::pair用のハッシュ関数を定義
+struct CRC_PAIR_HASH {
+    template <class T1, class T2>
+    std::size_t operator() (const std::pair<T1, T2>& p) const {
+        auto hash1 = std::hash<T1>{}(p.first);
+        auto hash2 = std::hash<T2>{}(p.second);
+        return hash1 ^ hash2; // Combine hash values
+    }
+};
+
 
 // Component types.
 enum CRC_COMPONENT_TYPE
 {
-    CRC_COMPONENT_TYPE_OBJECT = 0,
+    CRC_COMPONENT_TYPE_NULL = 0,
+    CRC_COMPONENT_TYPE_OBJECT,
     CRC_COMPONENT_TYPE_UTILITY,
     CRC_COMPONENT_TYPE_UI,
     CRC_COMPONENT_TYPE_SIZE,
@@ -188,4 +200,18 @@ static void CRCDebugOutput(std::string filePath, std::string func, int line, std
     std::string file = filePath.substr(filePath.find_last_of("\\") + 1);
     std::string output = "[CRC::FILE] " + file + " [LINE]" + std::to_string(line) + " [FUNC]" + func + " : " + element + "\n";
     OutputDebugStringA(output.c_str());
+}
+
+static void CRCErrorOutput(std::string filePath, std::string func, int line, std::string element)
+{
+    std::string file = filePath.substr(filePath.find_last_of("\\") + 1);
+    std::string output = "ERROR [CRC::FILE] " + file + " [LINE]" + std::to_string(line) + " [FUNC]" + func + " : " + element + "\n";
+    OutputDebugStringA(output.c_str());
+}
+
+static void CRCErrorMsgBox(std::string filePath, std::string func, int line, std::string element)
+{
+    std::string file = filePath.substr(filePath.find_last_of("\\") + 1);
+    std::string output = "[CRC::FILE] " + file + " [LINE]" + std::to_string(line) + "\n[FUNC]" + func + " : " + element + "\n";
+    MessageBoxA(NULL, output.c_str(), "Error", MB_OK);
 }

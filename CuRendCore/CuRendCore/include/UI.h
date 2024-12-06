@@ -6,6 +6,8 @@
 #include <memory>
 #include <string>
 
+#include "Component.h" 
+
 namespace CRC
 {
 
@@ -17,20 +19,16 @@ typedef struct CRC_API _UI_ATTRIBUTES
     std::shared_ptr<UIController> ctrl = nullptr;
 } UIATTR;
 
-class UI
+class UI : public Component
 {
 private:
-    std::shared_ptr<UIController> ctrl = nullptr;
-
     UI(UIATTR uiattr);
 
-    CRC_SLOT thisSlot = CRC_SLOT_INVALID;
+    std::shared_ptr<UIController> ctrl = nullptr;
     UIATTR uiattr;
 
 public:
     ~UI();
-
-    CRC_SLOT GetSlot() { return thisSlot; }
 
     friend class UIController;
     friend class UIFactory;
@@ -47,6 +45,8 @@ private:
 public:
     UIController() { CRCDebugOutput(__FILE__, __FUNCTION__, __LINE__, ""); };
     virtual ~UIController() { CRCDebugOutput(__FILE__, __FUNCTION__, __LINE__, ""); };
+
+    friend class UIFactory;
 };
 
 class CRC_API UIFactory

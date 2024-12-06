@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Binder.cpp" />
+    <ClCompile Include="src\Component.cpp" />
     <ClCompile Include="src\CuRendCore.cpp" />
     <ClCompile Include="src\Files.cpp" />
     <ClCompile Include="src\Group.cpp" />
@@ -33,6 +34,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Binder.h" />
+    <ClInclude Include="include\Component.h" />
     <ClInclude Include="include\CRCConfig.h" />
     <ClInclude Include="include\CuRendCore.h" />
     <ClInclude Include="include\Files.h" />

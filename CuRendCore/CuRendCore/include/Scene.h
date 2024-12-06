@@ -37,6 +37,12 @@ private:
 public:
     ~Scene();
 
+    Scene(const Scene&) = delete; // Delete copy constructor
+    Scene& operator=(const Scene&) = delete; // Remove copy assignment operator
+
+    Scene(Scene&&) = delete; // Delete move constructor
+    Scene& operator=(Scene&&) = delete; // Delete move assignment operator
+
     CRC_SLOT GetSlot() {return thisSlot;}
 
     friend class SceneController;
@@ -69,8 +75,8 @@ protected:
 
     std::shared_ptr<Input> GetInput() {return input.lock();}
 
-    CRC_SLOT AddBinder(std::unique_ptr<Binder> binder);
-    HRESULT DestroyBinder(CRC_SLOT slotBinder);
+    // CRC_SLOT AddBinder(std::unique_ptr<Binder> binder);
+    // HRESULT DestroyBinder(CRC_SLOT slotBinder);
 
     CRC_SLOT CreateGroup(GROUPATTR gattr);
     HRESULT DestroyGroup(CRC_SLOT slotGroup);

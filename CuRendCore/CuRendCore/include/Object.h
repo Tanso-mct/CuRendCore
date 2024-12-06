@@ -6,6 +6,8 @@
 #include <memory>
 #include <string>
 
+#include "Component.h" 
+
 namespace CRC
 {
 
@@ -17,20 +19,16 @@ typedef struct CRC_API _OBJECT_ATTRIBUTES
     std::shared_ptr<ObjectController> ctrl = nullptr;
 } OBJECTATTR;
 
-class Object
+class Object : public Component
 {
 private:
-    std::shared_ptr<ObjectController> ctrl = nullptr;
-
     Object(OBJECTATTR oattr);
 
-    CRC_SLOT thisSlot = CRC_SLOT_INVALID;
+    std::shared_ptr<ObjectController> ctrl = nullptr;
     OBJECTATTR oattr;
 
 public:
     ~Object();
-
-    CRC_SLOT GetSlot() { return thisSlot; }
 
     friend class ObjectController;
     friend class ObjectFactory;
@@ -47,6 +45,8 @@ private:
 public:
     ObjectController() { CRCDebugOutput(__FILE__, __FUNCTION__, __LINE__, ""); };
     virtual ~ObjectController() { CRCDebugOutput(__FILE__, __FUNCTION__, __LINE__, ""); };
+
+    friend class ObjectFactory;
 };
 
 class CRC_API ObjectFactory

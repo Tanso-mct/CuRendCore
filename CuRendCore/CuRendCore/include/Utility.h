@@ -6,6 +6,8 @@
 #include <memory>
 #include <string>
 
+#include "Component.h" 
+
 namespace CRC
 {
 
@@ -17,20 +19,16 @@ typedef struct CRC_API _UTILITY_ATTRIBUTES
     std::shared_ptr<UtilityController> ctrl = nullptr;
 } UTILITYATTR;
 
-class Utility
+class Utility : public Component
 {
 private:
-    std::shared_ptr<UtilityController> ctrl = nullptr;
-
     Utility(UTILITYATTR utattr);
 
-    CRC_SLOT thisSlot = CRC_SLOT_INVALID;
+    std::shared_ptr<UtilityController> ctrl = nullptr;
     UTILITYATTR utattr;
 
 public:
     ~Utility();
-
-    CRC_SLOT GetSlot() { return thisSlot; }
 
     friend class UtilityController;
     friend class UtilityFactory;
@@ -47,6 +45,8 @@ private:
 public:
     UtilityController() { CRCDebugOutput(__FILE__, __FUNCTION__, __LINE__, ""); };
     virtual ~UtilityController() { CRCDebugOutput(__FILE__, __FUNCTION__, __LINE__, ""); };
+
+    friend class UtilityFactory;
 };
 
 class CRC_API UtilityFactory
