@@ -87,6 +87,7 @@
         "xlocmon": "cpp",
         "xlocnum": "cpp",
         "xloctime": "cpp",
-        "fstream": "cpp"
+        "fstream": "cpp",
+        "__config": "cpp"
     }
 }

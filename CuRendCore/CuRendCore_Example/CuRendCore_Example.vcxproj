@@ -133,11 +133,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ExampleEntry.cpp" />
-    <ClCompile Include="ExampleSceneCtrl.cpp" />
     <ClCompile Include="ExampleWndCtrl.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ExampleSceneCtrl.h" />
     <ClInclude Include="ExampleWndCtrl.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

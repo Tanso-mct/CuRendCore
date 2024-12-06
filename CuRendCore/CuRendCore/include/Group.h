@@ -35,9 +35,15 @@ private:
 public:
     ~Group();
 
+    Group(const Group&) = delete; // Delete copy constructor
+    Group& operator=(const Group&) = delete; // Remove copy assignment operator
+
+    Group(Group&&) = delete; // Delete move constructor
+    Group& operator=(Group&&) = delete; // Delete move assignment operator
+
     CRC_SLOT GetSlot() {return thisSlot;}
 
-    friend class SceneController;
+    friend class Scene;
 };
 
 } // namespace CRC

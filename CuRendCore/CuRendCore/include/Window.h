@@ -27,24 +27,38 @@ typedef struct CRC_API _WINDOW_ATTRIBUTES
     DWORD style = WS_OVERLAPPEDWINDOW;
     HWND hWndParent = NULL;
     HINSTANCE hInstance = nullptr;
-    std::shared_ptr<WindowController> ctrl = nullptr;
+    std::unique_ptr<WindowController> ctrl = nullptr;
 } WNDATTR;
 
 
 class CRC_API Window
 {
 private:
-    std::shared_ptr<WindowController> ctrl = nullptr;
-    std::shared_ptr<Input> input = nullptr;
-
-    Window(WNDATTR wattr);
-    CRC_SLOT thisSlot = CRC_SLOT_INVALID;
+    Window(WNDATTR& wattr);
 
     HWND hWnd = NULL;
-    WNDATTR wattr = { 0 };
+    
+    CRC_SLOT thisSlot = CRC_SLOT_INVALID;
+    WNDCLASSEX wcex = { 0 };
+    LPCWSTR name = CRC_WND_DEFAULT_NAME;
+    int initialPosX = CRC_WND_DEFAULT_POS_X;
+    int initialPosY = CRC_WND_DEFAULT_POS_Y;
+    unsigned int width = CRC_WND_DEFAULT_WIDTH;
+    unsigned int height = CRC_WND_DEFAULT_HEIGHT;
+    DWORD style = WS_OVERLAPPEDWINDOW;
+    HWND hWndParent = NULL;
+    HINSTANCE hInstance = nullptr;
+
+    std::unique_ptr<WindowController> ctrl = nullptr;
 
 public:
     ~Window();
+
+    Window(const Window&) = delete; // Delete copy constructor
+    Window& operator=(const Window&) = delete; // Remove copy assignment operator
+
+    Window(Window&&) = delete; // Delete move constructor
+    Window& operator=(Window&&) = delete; // Delete move assignment operator
 
     CRC_SLOT GetSlot() { return thisSlot; }
 
@@ -54,12 +68,16 @@ public:
 class CRC_API WindowController
 {
 private:
-    std::weak_ptr<Input> input;
-    std::weak_ptr<SceneController> sceneCtrl;
+    std::weak_ptr<Scene> scene;
 
 protected:
-    std::shared_ptr<SceneController> GetSceneCtrl(){ return sceneCtrl.lock(); }
-    std::shared_ptr<Input> GetInput(){ return input.lock(); }
+    // Obtain a scene.It is not recommended to use this by storing it in a non-temporary variable.
+    std::shared_ptr<Scene> GetScene(){return scene.lock();};
+
+    // Get the scene's weak_ptr unlike GetScene, there is no problem storing it in a non-temporary variable for use.
+    std::weak_ptr<Scene> GetSceneWeak(){return scene;};
+
+    std::unique_ptr<Input> input;
 
 public:
     WindowController();
@@ -89,16 +107,16 @@ private:
     std::vector<std::shared_ptr<Window>> windows;
     std::unordered_map<HWND, CRC_SLOT> slots;
 
-    std::shared_ptr<Window> creatingWnd;
+    Window* creatingWnd;
 
 public:
     ~WindowFactory();
 
-    CRC_SLOT CreateWindowCRC(WNDATTR wattr);
+    CRC_SLOT CreateWindowCRC(WNDATTR& wattr);
     HRESULT DestroyWindowCRC(CRC_SLOT slot);
     HRESULT ShowWindowCRC(CRC_SLOT slot, int nCmdShow);
 
-    HRESULT SetSceneCtrl(CRC_SLOT slot, std::shared_ptr<SceneController> sceneCtrl);
+    HRESULT SetScene(CRC_SLOT slotWnd, CRC_SLOT slotScene);
 
     static LRESULT CALLBACK WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 

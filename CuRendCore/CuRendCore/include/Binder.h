@@ -14,16 +14,10 @@
 namespace CRC 
 {
 
-typedef struct CRC_API _BINDER_ATTRIBUTES
-{
-    std::string name = "";
-} BINDERATTR;
-
 class CRC_API Binder
 {
 private:
     CRC_SLOT thisSlot = CRC_SLOT_INVALID;
-    BINDERATTR battr;
 
     std::vector<std::weak_ptr<Group>> groups;
     std::vector<std::weak_ptr<Object>> objects;
@@ -31,12 +25,15 @@ private:
     std::vector<std::weak_ptr<UI>> uis;
 
 public:
-    Binder(BINDERATTR battr);
-    virtual ~Binder();
+    Binder(){CRCDebugOutput(__FILE__, __FUNCTION__, __LINE__, "");};
+    virtual ~Binder(){CRCDebugOutput(__FILE__, __FUNCTION__, __LINE__, "");};
+
+    Binder(Binder&&) = delete; // Delete move constructor
+    Binder& operator=(Binder&&) = delete; // Delete move assignment operator
 
     CRC_SLOT GetSlot() {return thisSlot;}
 
-    friend class SceneController;
+    friend class Scene;
 };
 
 } // namespace CRC

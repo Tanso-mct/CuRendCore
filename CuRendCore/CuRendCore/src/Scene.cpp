@@ -10,31 +10,31 @@ Scene::Scene(SCENEATTR sattr)
 {
     CRCDebugOutput(__FILE__, __FUNCTION__, __LINE__, "");
 
-    this->sattr = sattr;
-    this->ctrl = sattr.ctrl;
+    name = sattr.name;
 }
 
 Scene::~Scene()
 {
     CRCDebugOutput(__FILE__, __FUNCTION__, __LINE__, "");
 
-    // for (auto& binder : binders)
-    // {
-    //     binder.reset();
-    // }
+    for (auto& binder : binders)
+    {
+        binder.reset();
+    }
+    binders.clear();
 
     for (auto& group : groups)
     {
         group.reset();
     }
-
-    if (ctrl != nullptr) ctrl.reset();
+    groups.clear();
 
     ResourceFactory* rf = CuRendCore::GetInstance()->resourceFc;
-    for (auto& slot : slotRcs)
+    for (auto& slot : slotResources)
     {
         rf->UnloadResource(slot);
     }
+    slotResources.clear();
 }
 
 SceneFactory::~SceneFactory()
@@ -51,11 +51,10 @@ SceneFactory::~SceneFactory()
 CRC_SLOT SceneFactory::CreateScene(SCENEATTR sattr)
 {
     std::shared_ptr<Scene> newScene = std::shared_ptr<Scene>(new Scene(sattr));
-    newScene->ctrl->SetScene(newScene);
+    newScene->thisSlot = (CRC_SLOT)(scenes.size());
     scenes.push_back(newScene);
 
-    newScene->thisSlot = (CRC_SLOT)(scenes.size() - 1);
-    return newScene->thisSlot;
+    return scenes.size() - 1;
 }
 
 HRESULT SceneFactory::DestroyScene(CRC_SLOT slot)
@@ -67,163 +66,139 @@ HRESULT SceneFactory::DestroyScene(CRC_SLOT slot)
     return S_OK;
 }
 
-void SceneController::SetScene(std::weak_ptr<Scene> scene)
+std::weak_ptr<Scene> SceneFactory::GetSceneWeak(CRC_SLOT slot)
 {
-    this->scene = scene;
-    isInited = false;
+    if (slot >= scenes.size()) return std::weak_ptr<Scene>();
+    if (scenes[slot] == nullptr) return std::weak_ptr<Scene>();
+
+    return scenes[slot];
 }
 
-void SceneController::AddResource(CRC_SLOT slotResource)
+HRESULT Scene::AddResource(CRC_SLOT slotResource)
 {
-    for (auto& scene : GetScene()->slotRcs)
+    for (auto& slot : slotResources)
     {
-        if (scene == slotResource) return;
+        if (slot == slotResource) return E_FAIL;
     }
 
-    GetScene()->slotRcs.push_back(slotResource);
+    slotResources.push_back(slotResource);
+    return S_OK;
 }
 
-void SceneController::RemoveResource(CRC_SLOT slotResource)
+HRESULT Scene::RemoveResource(CRC_SLOT slotResource)
 {
     int removeId = -1;
-    for (int i = 0; i < GetScene()->slotRcs.size(); i++)
+    for (int i = 0; i < slotResources.size(); i++)
     {
-        if (GetScene()->slotRcs[i] == slotResource)
+        if (slotResources[i] == slotResource)
         {
             removeId = i;
             break;
         }
     }
 
-    if (removeId != -1) GetScene()->slotRcs.erase(GetScene()->slotRcs.begin() + removeId);
-}
+    if (removeId != -1) slotResources.erase(slotResources.begin() + removeId);
 
-void SceneController::LoadResources()
-{
-    ResourceFactory* rf = CuRendCore::GetInstance()->resourceFc;
-    for (int i = 0; i < GetScene()->slotRcs.size(); i++)
-    {
-        rf->LoadResource(GetScene()->slotRcs[i]);
-    }
-}
-
-CRC_SLOT SceneController::CreateGroup(GROUPATTR gattr)
-{
-    std::shared_ptr<Group> newGroup = std::shared_ptr<Group>(new Group(gattr));
-    GetScene()->groups.push_back(newGroup);
-
-    newGroup->thisSlot = (CRC_SLOT)(GetScene()->groups.size() - 1);
-    return newGroup->thisSlot;
-}
-
-HRESULT SceneController::DestroyGroup(CRC_SLOT slotGroup)
-{
-    if (slotGroup >= GetScene()->groups.size()) return E_FAIL;
-    if (GetScene()->groups[slotGroup] == nullptr) return E_FAIL;
-
-    GetScene()->groups[slotGroup].reset();
     return S_OK;
 }
 
-CRC_SLOT SceneController::CreateComponent(CRC_SLOT slotGroup, OBJECTATTR oattr)
+HRESULT Scene::LoadResources()
 {
-    if (slotGroup >= GetScene()->groups.size()) return CRC_SLOT_INVALID;
-    if (GetScene()->groups[slotGroup] == nullptr) return CRC_SLOT_INVALID;
+    ResourceFactory* rf = CuRendCore::GetInstance()->resourceFc;
+    for (int i = 0; i < slotResources.size(); i++)
+    {
+        if (!SUCCEEDED(rf->LoadResource(slotResources[i]))) return E_FAIL;
+    }
 
-    return GetScene()->groups[slotGroup]->objectFc->CreateObject(oattr);
+    return S_OK;
 }
 
-CRC_SLOT SceneController::CreateComponent(CRC_SLOT slotGroup, UTILITYATTR utattr)
+HRESULT Scene::UnLoadResources()
 {
-    if (slotGroup >= GetScene()->groups.size()) return CRC_SLOT_INVALID;
-    if (GetScene()->groups[slotGroup] == nullptr) return CRC_SLOT_INVALID;
+    ResourceFactory* rf = CuRendCore::GetInstance()->resourceFc;
+    for (int i = 0; i < slotResources.size(); i++)
+    {
+        if (!SUCCEEDED(rf->UnloadResource(slotResources[i]))) return E_FAIL;
+    }
 
-    return GetScene()->groups[slotGroup]->utilityFc->CreateUtility(utattr);
+    return S_OK;
 }
 
-CRC_SLOT SceneController::CreateComponent(CRC_SLOT slotGroup, UIATTR uiattr)
+CRC_SLOT Scene::CreateGroup(GROUPATTR gattr)
 {
-    if (slotGroup >= GetScene()->groups.size()) return CRC_SLOT_INVALID;
-    if (GetScene()->groups[slotGroup] == nullptr) return CRC_SLOT_INVALID;
+    Group* newGroup = new Group(gattr);
+    newGroup->thisSlot = (CRC_SLOT)(groups.size());
+    groups.push_back(std::unique_ptr<Group>(new Group(gattr)));
 
-    return GetScene()->groups[slotGroup]->uiFc->CreateUI(uiattr);
+    return groups.size() - 1;
 }
 
-HRESULT SceneController::DestroyComponent(CRC_COMPONENT_TYPE type, CRC_SLOT slotGroup, CRC_SLOT slotComponent)
+HRESULT Scene::DestroyGroup(CRC_SLOT slotGroup)
 {
-    if (slotGroup >= GetScene()->groups.size()) return E_FAIL;
-    if (GetScene()->groups[slotGroup] == nullptr) return E_FAIL;
+    if (slotGroup >= groups.size()) return E_FAIL;
+    if (groups[slotGroup] == nullptr) return E_FAIL;
+
+    groups[slotGroup].reset();
+    return S_OK;
+}
+
+CRC_SLOT Scene::AddBinder(Binder*& binder)
+{
+    binder->thisSlot = (CRC_SLOT)(binders.size());
+    binders.push_back(std::unique_ptr<Binder>(binder));
+
+    return binders.size() - 1;
+}
+
+HRESULT Scene::DestroyBinder(CRC_SLOT slotBinder)
+{
+    if (slotBinder >= binders.size()) return E_FAIL;
+    if (binders[slotBinder] == nullptr) return E_FAIL;
+
+    binders[slotBinder].reset();
+    return S_OK;
+}
+
+CRC_SLOT Scene::CreateComponent(CRC_SLOT slotGroup, OBJECTATTR oattr)
+{
+    if (slotGroup >= groups.size()) return CRC_SLOT_INVALID;
+    if (groups[slotGroup] == nullptr) return CRC_SLOT_INVALID;
+
+    return groups[slotGroup]->objectFc->CreateObject(oattr);
+}
+
+CRC_SLOT Scene::CreateComponent(CRC_SLOT slotGroup, UTILITYATTR utattr)
+{
+    if (slotGroup >= groups.size()) return CRC_SLOT_INVALID;
+    if (groups[slotGroup] == nullptr) return CRC_SLOT_INVALID;
+
+    return groups[slotGroup]->utilityFc->CreateUtility(utattr);
+}
+
+CRC_SLOT Scene::CreateComponent(CRC_SLOT slotGroup, UIATTR uiattr)
+{
+    if (slotGroup >= groups.size()) return CRC_SLOT_INVALID;
+    if (groups[slotGroup] == nullptr) return CRC_SLOT_INVALID;
+
+    return groups[slotGroup]->uiFc->CreateUI(uiattr);
+}
+
+HRESULT Scene::DestroyComponent(CRC_COMPONENT_TYPE type, CRC_SLOT slotGroup, CRC_SLOT slotComponent)
+{
+    if (slotGroup >= groups.size()) return E_FAIL;
+    if (groups[slotGroup] == nullptr) return E_FAIL;
 
     switch (type)
     {
     case CRC_COMPONENT_TYPE_OBJECT:
-        return GetScene()->groups[slotGroup]->objectFc->DestroyObject(slotComponent);
+        return groups[slotGroup]->objectFc->DestroyObject(slotComponent);
     case CRC_COMPONENT_TYPE_UTILITY:
-        return GetScene()->groups[slotGroup]->utilityFc->DestroyUtility(slotComponent);
+        return groups[slotGroup]->utilityFc->DestroyUtility(slotComponent);
     case CRC_COMPONENT_TYPE_UI:
-        return GetScene()->groups[slotGroup]->uiFc->DestroyUI(slotComponent);
+        return groups[slotGroup]->uiFc->DestroyUI(slotComponent);
     default:
         return E_FAIL;
     }
 }
 
-// CRC_SLOT SceneController::AddBinder(std::unique_ptr<Binder> binder)
-// {
-//     binder->thisSlot = (CRC_SLOT)(GetScene()->binders.size());
-//     GetScene()->binders.push_back(std::move(binder));
-    
-//     return (CRC_SLOT)(GetScene()->binders.size() - 1);
-// }
-
-// HRESULT SceneController::DestroyBinder(CRC_SLOT slotBinder)
-// {
-//     if (slotBinder >= GetScene()->binders.size()) return E_FAIL;
-//     if (GetScene()->binders[slotBinder] == nullptr) return E_FAIL;
-
-//     GetScene()->binders[slotBinder].reset();
-//     return S_OK;
-// }
-
-void SceneController::UnLoadResources()
-{
-    ResourceFactory* rf = CuRendCore::GetInstance()->resourceFc;
-    for (int i = 0; i < GetScene()->slotRcs.size(); i++)
-    {
-        rf->UnloadResource(GetScene()->slotRcs[i]);
-    }
-}
-
-void SceneController::OnPaint()
-{
-    if (isReStart)
-    {
-        GetScene()->ctrl->ReStart();
-        isReStart = false;
-        return;
-    }
-
-    if (!isInited)
-    {
-        GetScene()->ctrl->Init();
-        isInited = true;
-        return;
-    }
-
-    GetScene()->ctrl->Update();
-}
-
-bool SceneController::Finish()
-{
-    End();
-    if (IsWillDestroy())
-    {
-        // The scene will be destroyed.
-        SceneFactory* sf = CuRendCore::GetInstance()->sceneFc;
-        sf->DestroyScene(GetSlot());
-        return true;
-    }
-
-    return false;
-}
-
- } // namespace CRC
+} // namespace CRC

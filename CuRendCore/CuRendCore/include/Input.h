@@ -73,7 +73,7 @@ public:
     void GetMouseDelta(Vec2d &delta){delta = mousePos - recMousePos;};
     Vec2d GetMouseDelta(){return mousePos - recMousePos;};
 
-    friend class Window;
+    friend class WindowFactory;
 };
 
 } // namespace CRC
