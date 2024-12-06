@@ -158,7 +158,8 @@ LRESULT CALLBACK WindowFactory::WindowProc(HWND hWnd, UINT msg, WPARAM wParam, L
             wf->creatingWnd->thisSlot = wf->windows.size();
             wf->slots[wf->creatingWnd->hWnd] = wf->windows.size();
 
-            wf->creatingWnd->ctrl->input = std::make_unique<Input>(new Input());
+            Input* input = new Input();
+            wf->creatingWnd->ctrl->input = std::unique_ptr<Input>(input);
             wf->creatingWnd->hWnd = hWnd;
             wf->creatingWnd->ctrl->OnCreate(hWnd, msg, wParam, lParam);
 

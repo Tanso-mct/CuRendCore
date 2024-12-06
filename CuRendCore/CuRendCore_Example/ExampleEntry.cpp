@@ -24,7 +24,9 @@ int WINAPI WinMain
     wattr.wcex.lpszClassName = L"WindowClass";
     wattr.wcex.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
     wattr.hInstance = hInstance;
-    wattr.ctrl = std::make_unique<ExampleWndCtrl>(new ExampleWndCtrl());
+
+    ExampleWndCtrl* ewc = new ExampleWndCtrl();
+    wattr.ctrl = std::unique_ptr<ExampleWndCtrl>(ewc);
 
     CRC_SLOT slotExampleWnd = crc->windowFc->CreateWindowCRC(wattr);
     crc->windowFc->ShowWindowCRC(0, nCmdShow);

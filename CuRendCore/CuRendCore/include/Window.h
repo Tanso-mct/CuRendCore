@@ -83,6 +83,9 @@ public:
     WindowController();
     virtual ~WindowController();
 
+    WindowController(const WindowController&) = delete; // Delete copy constructor
+    WindowController& operator=(const WindowController&) = delete; // Remove copy assignment operator
+
     virtual HRESULT OnCreate(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam){ return S_OK; };
     virtual HRESULT OnSetFocus(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam){ return S_OK; };
     virtual HRESULT OnKillFocus(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam){ return S_OK; };

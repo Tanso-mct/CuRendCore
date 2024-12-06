@@ -37,6 +37,12 @@ private:
 public:
     ~Input() = default;
 
+    Input(const Input&) = delete; // Delete copy constructor
+    Input& operator=(const Input&) = delete; // Remove copy assignment operator
+
+    Input(Input&&) = delete; // Delete move constructor
+    Input& operator=(Input&&) = delete; // Delete move assignment operator
+
     void Update();
     void SetDoubleTapTime(double time){doubleTapTime = time;};
 
