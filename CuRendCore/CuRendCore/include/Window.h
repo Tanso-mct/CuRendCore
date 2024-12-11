@@ -86,8 +86,8 @@ protected:
     std::weak_ptr<Input> GetInputWeak(){return input;};
 
 public:
-    WindowController();
-    virtual ~WindowController();
+    WindowController() {CRCDebugOutput(__FILE__, __FUNCTION__, __LINE__, "");};
+    virtual ~WindowController() {CRCDebugOutput(__FILE__, __FUNCTION__, __LINE__, "");};
 
     WindowController(const WindowController&) = delete; // Delete copy constructor
     WindowController& operator=(const WindowController&) = delete; // Remove copy assignment operator

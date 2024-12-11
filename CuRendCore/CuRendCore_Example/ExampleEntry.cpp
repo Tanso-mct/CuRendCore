@@ -1,6 +1,7 @@
 #include "CuRendCore.h"
 
-#include "ExampleWndCtrl.h"
+#include "ExampleWindow.h"
+#include "ExampleScene.h"
 
 int WINAPI WinMain
 (
@@ -35,10 +36,8 @@ int WINAPI WinMain
     CRC::SCENEATTR sattr;
 
     sattr.name = "ExampleScene";
+    sattr.sceneMani = new ExampleSceneMani();
     CRC_SLOT slotExampleScene1 = crc->sceneFc->CreateScene(sattr);
-
-    sattr.name = "ExampleScene2";
-    CRC_SLOT slotExampleScene2 = crc->sceneFc->CreateScene(sattr);
 
     // Set the scene
     crc->windowFc->SetScene(slotExampleWnd, slotExampleScene1);

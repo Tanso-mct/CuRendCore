@@ -173,7 +173,7 @@ enum CRC_MOUSE_MSG
 // Rendering
 
 // Pair hash
-// std::pair用のハッシュ関数を定義
+// std::pair用のハッシュ関摧を定義
 struct CRC_PAIR_HASH {
     template <class T1, class T2>
     std::size_t operator() (const std::pair<T1, T2>& p) const {
@@ -215,3 +215,16 @@ static void CRCErrorMsgBox(std::string filePath, std::string func, int line, std
     std::string output = "[CRC::FILE] " + file + " [LINE]" + std::to_string(line) + "\n[FUNC]" + func + " : " + element + "\n";
     MessageBoxA(NULL, output.c_str(), "Error", MB_OK);
 }
+
+// Scene state
+enum CRC_SCENE_STATE
+{
+    CRC_SCENE_STATE_EXECUTING = 0,
+    CRC_SCENE_STATE_CLOSE,
+    CRC_SCENE_STATE_START,
+    CRC_SCENE_STATE_UPDATE,
+    CRC_SCENE_STATE_DESTROY,
+    CRC_SCENE_STATE_RESTART,
+    CRC_SCENE_STATE_ERROR,
+    CRC_SCENE_STATE_SIZE,
+};

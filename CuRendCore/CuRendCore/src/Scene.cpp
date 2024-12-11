@@ -11,6 +11,7 @@ Scene::Scene(SCENEATTR sattr)
     CRCDebugOutput(__FILE__, __FUNCTION__, __LINE__, "");
 
     name = sattr.name;
+    sceneMani = sattr.sceneMani;
 }
 
 Scene::~Scene()
@@ -35,6 +36,12 @@ Scene::~Scene()
         rf->UnloadResource(slot);
     }
     slotResources.clear();
+
+    if (sceneMani != nullptr)
+    {
+        delete sceneMani;
+        sceneMani = nullptr;
+    }
 }
 
 SceneFactory::~SceneFactory()
@@ -72,6 +79,47 @@ std::weak_ptr<Scene> SceneFactory::GetSceneWeak(CRC_SLOT slot)
     if (scenes[slot] == nullptr) return std::weak_ptr<Scene>();
 
     return scenes[slot];
+}
+
+void Scene::ManiSetUp(std::weak_ptr<Scene> scene, std::weak_ptr<Input> input)
+{
+    sceneMani->scene = scene;
+    sceneMani->input = input;
+}
+
+CRC_SCENE_STATE Scene::Execute()
+{
+    if (!isStarted && !isReStarting && !isDestroying)
+    {
+        CRC_SCENE_STATE state = sceneMani->Start();
+        isStarted = true;
+        return state;
+    }
+    else if (isStarted && !isReStarting && !isDestroying)
+    {
+        CRC_SCENE_STATE state = sceneMani->Update();
+        return state;
+    }
+
+    if (isReStarting && !isDestroying)
+    {
+        CRC_SCENE_STATE state = sceneMani->ReStart();
+        isReStarting = false;
+        return state;
+    }
+
+    if (isDestroying)
+    {
+        CRC_SCENE_STATE state = sceneMani->Destroy();
+        return state;
+    }
+
+    return CRC_SCENE_STATE_ERROR;
+}
+
+void Scene::Close()
+{
+    isDestroying = true;
 }
 
 HRESULT Scene::AddResource(CRC_SLOT slotResource)

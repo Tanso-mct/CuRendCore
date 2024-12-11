@@ -29,16 +29,6 @@ Window::~Window()
     if (input != nullptr) input.reset();
 }
 
-WindowController::WindowController()
-{
-    CRCDebugOutput(__FILE__, __FUNCTION__, __LINE__, "");
-}
-
-WindowController::~WindowController()
-{
-    CRCDebugOutput(__FILE__, __FUNCTION__, __LINE__, "");
-}
-
 WindowFactory::~WindowFactory()
 {
     CRCDebugOutput(__FILE__, __FUNCTION__, __LINE__, "");
@@ -116,6 +106,7 @@ HRESULT WindowFactory::SetScene(CRC_SLOT slotWnd, CRC_SLOT slotScene)
     std::weak_ptr<Scene> scene = crc->sceneFc->GetSceneWeak(slotScene);
     if (scene.expired()) return E_FAIL;
 
+    scene.lock()->ManiSetUp(scene, windows[slotWnd]->input);
     windows[slotWnd]->ctrl->scene = scene;
 
     return S_OK;
