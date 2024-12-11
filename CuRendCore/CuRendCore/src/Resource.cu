@@ -78,24 +78,26 @@ HRESULT ResourceFactory::DestroyResource(CRC_SLOT slot)
 
 HRESULT ResourceFactory::LoadResource(CRC_SLOT slot)
 {
-    if (slot == CRC_SLOT_INVALID) return E_FAIL;
+    if (slot >= resources.size()) return E_FAIL;
+    if (resources[slot] == nullptr) return E_FAIL;
 
-    CRC_GRESULT hr = resources[slot]->Load();
+    HRESULT hr = resources[slot]->Load();
     resources[slot]->ctrl->OnLoad(hr);
 
-    if (CRC_GFAILED(hr)) return E_FAIL;
+    if (FAILED(hr)) return E_FAIL;
     return S_OK;
 
 }
 
 HRESULT ResourceFactory::UnloadResource(CRC_SLOT slot)
 {
-    if (slot == CRC_SLOT_INVALID) return E_FAIL;
+    if (slot >= resources.size()) return E_FAIL;
+    if (resources[slot] == nullptr) return E_FAIL;
 
-    CRC_GRESULT hr = resources[slot]->Unload();
+    HRESULT hr = resources[slot]->Unload();
     resources[slot]->ctrl->OnUnload(hr);
 
-    if (CRC_GFAILED(hr)) return E_FAIL;
+    if (FAILED(hr)) return E_FAIL;
     return S_OK;
 }
 

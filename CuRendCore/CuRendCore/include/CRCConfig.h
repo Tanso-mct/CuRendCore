@@ -173,7 +173,6 @@ enum CRC_MOUSE_MSG
 // Rendering
 
 // Pair hash
-// std::pair用のハッシュ関摧を定義
 struct CRC_PAIR_HASH {
     template <class T1, class T2>
     std::size_t operator() (const std::pair<T1, T2>& p) const {
@@ -209,11 +208,16 @@ static void CRCErrorOutput(std::string filePath, std::string func, int line, std
     OutputDebugStringA(output.c_str());
 }
 
-static void CRCErrorMsgBox(std::string filePath, std::string func, int line, std::string element)
+static void CRCErrorMsgBox(std::string filePath, std::string func, int line, std::string msg)
 {
-    std::string file = filePath.substr(filePath.find_last_of("\\") + 1);
-    std::string output = "[CRC::FILE] " + file + " [LINE]" + std::to_string(line) + "\n[FUNC]" + func + " : " + element + "\n";
-    MessageBoxA(NULL, output.c_str(), "Error", MB_OK);
+    std::string errorMsg = 
+    "File: " + std::string(filePath) + "\n" +
+    "Function: " + std::string(func) + "\n" +
+    "Line: " + std::to_string(line) + "\n" +
+    "Error : " + std::string(msg);
+    MessageBoxA(NULL, errorMsg.c_str(), "Error", MB_OK | MB_ICONERROR);
+
+    PostQuitMessage(0);
 }
 
 // Scene state
@@ -223,6 +227,7 @@ enum CRC_SCENE_STATE
     CRC_SCENE_STATE_CLOSE,
     CRC_SCENE_STATE_START,
     CRC_SCENE_STATE_UPDATE,
+    CRC_SCENE_STATE_END,
     CRC_SCENE_STATE_DESTROY,
     CRC_SCENE_STATE_RESTART,
     CRC_SCENE_STATE_ERROR,

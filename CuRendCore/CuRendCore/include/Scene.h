@@ -48,11 +48,13 @@ public:
     Scene(Scene&&) = delete; // Delete move constructor
     Scene& operator=(Scene&&) = delete; // Delete move assignment operator
 
+    CRC_SLOT GetSlot() {return thisSlot;}
+
     SceneMani* GetSceneMani(){return sceneMani;};
     void ManiSetUp(std::weak_ptr<Scene> scene, std::weak_ptr<Input> input);
 
     CRC_SCENE_STATE Execute();
-    void Close();
+    CRC_SCENE_STATE Close();
 
     // Add and remove resources.
     HRESULT AddResource(CRC_SLOT slotResource);
@@ -88,7 +90,7 @@ private:
 protected:
     virtual CRC_SCENE_STATE Start() = 0;
     virtual CRC_SCENE_STATE Update() = 0;
-    virtual CRC_SCENE_STATE Destroy() = 0;
+    virtual CRC_SCENE_STATE End() = 0;
 
     virtual CRC_SCENE_STATE ReStart() = 0;
 

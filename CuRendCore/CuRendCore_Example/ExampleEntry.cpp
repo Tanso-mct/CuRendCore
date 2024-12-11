@@ -1,5 +1,6 @@
 #include "CuRendCore.h"
 
+#include "Slots.h"
 #include "ExampleWindow.h"
 #include "ExampleScene.h"
 
@@ -29,7 +30,7 @@ int WINAPI WinMain
     ExampleWndCtrl* ewc = new ExampleWndCtrl();
     wattr.ctrl = std::unique_ptr<ExampleWndCtrl>(ewc);
 
-    CRC_SLOT slotExampleWnd = crc->windowFc->CreateWindowCRC(wattr);
+    Slots::EXAMPLE_WINDOW = crc->windowFc->CreateWindowCRC(wattr);
     crc->windowFc->ShowWindowCRC(0, nCmdShow);
 
     // Create Scene
@@ -37,10 +38,10 @@ int WINAPI WinMain
 
     sattr.name = "ExampleScene";
     sattr.sceneMani = new ExampleSceneMani();
-    CRC_SLOT slotExampleScene1 = crc->sceneFc->CreateScene(sattr);
+    Slots::EXAMPLE_SCENE = crc->sceneFc->CreateScene(sattr);
 
     // Set the scene
-    crc->windowFc->SetScene(slotExampleWnd, slotExampleScene1);
+    crc->windowFc->SetScene(Slots::EXAMPLE_WINDOW, Slots::EXAMPLE_SCENE);
 
     // Run the CuRendCore
     return crc->Run(hInstance, nCmdShow);

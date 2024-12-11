@@ -61,8 +61,16 @@ HRESULT ExampleWndCtrl::OnPaint(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPara
     // Execute the scene
     if (GetScene() != nullptr)
     {
-        CRC_SCENE_STATE state = GetScene()->Execute();
-        if (state == CRC_SCENE_STATE_CLOSE) GetScene()->Close();
+        CRC_SCENE_STATE state;
+        state = GetScene()->Execute();
+        if (state == CRC_SCENE_STATE_CLOSE)
+        {
+            state = GetScene()->Close();
+            if (state == CRC_SCENE_STATE_DESTROY)
+            {
+                CRC::CuRendCore::GetInstance()->sceneFc->DestroyScene(GetScene()->GetSlot());
+            }
+        }
     }
 
     return S_OK;

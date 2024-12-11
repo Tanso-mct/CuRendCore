@@ -12,6 +12,7 @@
         "GSUCCEEDED",
         "HRESULT",
         "Inited",
+        "nullptr",
         "OVERLAPPEDWINDOW",
         "UIATTR",
         "utattr",

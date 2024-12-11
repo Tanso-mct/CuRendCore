@@ -154,6 +154,8 @@ HRESULT ObjFile::Load()
     }
 
     boundingBox->Update();
+
+    return S_OK;
 }
 
 HRESULT ObjFile::Unload()

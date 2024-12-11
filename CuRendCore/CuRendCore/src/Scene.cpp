@@ -12,6 +12,15 @@ Scene::Scene(SCENEATTR sattr)
 
     name = sattr.name;
     sceneMani = sattr.sceneMani;
+
+    if (sceneMani == nullptr)
+    {
+        CRCErrorMsgBox
+        (
+            __FILE__, __FUNCTION__, __LINE__, 
+            "SATTR's SceneMani is nullptr.\nWhen creating a scene, set SceneMani to the SCENEATTR structure."
+        );
+    }
 }
 
 Scene::~Scene()
@@ -108,18 +117,13 @@ CRC_SCENE_STATE Scene::Execute()
         return state;
     }
 
-    if (isDestroying)
-    {
-        CRC_SCENE_STATE state = sceneMani->Destroy();
-        return state;
-    }
-
     return CRC_SCENE_STATE_ERROR;
 }
 
-void Scene::Close()
+CRC_SCENE_STATE Scene::Close()
 {
-    isDestroying = true;
+    CRC_SCENE_STATE state = sceneMani->End();
+    return state;
 }
 
 HRESULT Scene::AddResource(CRC_SLOT slotResource)
