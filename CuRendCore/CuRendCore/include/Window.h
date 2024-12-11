@@ -50,6 +50,7 @@ private:
     HINSTANCE hInstance = nullptr;
 
     std::unique_ptr<WindowController> ctrl = nullptr;
+    std::shared_ptr<Input> input;
 
 public:
     ~Window();
@@ -69,6 +70,7 @@ class CRC_API WindowController
 {
 private:
     std::weak_ptr<Scene> scene;
+    std::weak_ptr<Input> input;
 
 protected:
     // Obtain a scene.It is not recommended to use this by storing it in a non-temporary variable.
@@ -77,7 +79,11 @@ protected:
     // Get the scene's weak_ptr unlike GetScene, there is no problem storing it in a non-temporary variable for use.
     std::weak_ptr<Scene> GetSceneWeak(){return scene;};
 
-    std::unique_ptr<Input> input;
+    // Obtain an input.It is not recommended to use this by storing it in a non-temporary variable.
+    std::shared_ptr<Input> GetInput(){return input.lock();};
+
+    // Get the input's weak_ptr unlike GetInput, there is no problem storing it in a non-temporary variable for use.
+    std::weak_ptr<Input> GetInputWeak(){return input;};
 
 public:
     WindowController();

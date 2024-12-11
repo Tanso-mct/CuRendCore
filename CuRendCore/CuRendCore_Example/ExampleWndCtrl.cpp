@@ -58,33 +58,33 @@ HRESULT ExampleWndCtrl::OnPaint(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPara
 {
     // OutputDebugStringA("ExampleWndCtrl::OnPaint()\n");
 
-    if (input->IsKeyDown(CRC_KEY_MSG_ESCAPE))
+    if (GetInput()->IsKeyDown(CRC_KEY_MSG_ESCAPE))
     {
         OutputDebugStringA("Example Scene Escape\n");
     }
 
-    if (input->GetKeyText() != "")
+    if (GetInput()->GetKeyText() != "")
     {
-        OutputDebugStringA(input->GetKeyText().c_str());
+        OutputDebugStringA(GetInput()->GetKeyText().c_str());
         OutputDebugStringA("\n");
     }
 
-    if (input->IsKeyDouble(CRC_KEY_MSG_A))
+    if (GetInput()->IsKeyDouble(CRC_KEY_MSG_A))
     {
         OutputDebugStringA("Double A\n");
     }
 
-    if (input->IsMouse(CRC_MOUSE_MSG_LBTN))
+    if (GetInput()->IsMouse(CRC_MOUSE_MSG_LBTN))
     {
         OutputDebugStringA("LBTN\n");
     }
 
-    if (input->IsMouseDouble(CRC_MOUSE_MSG_LBTN))
+    if (GetInput()->IsMouseDouble(CRC_MOUSE_MSG_LBTN))
     {
         OutputDebugStringA("Double LBTN\n");
     }
 
-    int mouseWheel = input->GetMouseWheelDelta();
+    int mouseWheel = GetInput()->GetMouseWheelDelta();
     if (mouseWheel != 0)
     {
         OutputDebugStringA("Mouse Wheel: ");

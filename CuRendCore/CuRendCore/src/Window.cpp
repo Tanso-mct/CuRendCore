@@ -26,6 +26,7 @@ Window::~Window()
     CRCDebugOutput(__FILE__, __FUNCTION__, __LINE__, "");
 
     if (ctrl != nullptr) ctrl.reset();
+    if (input != nullptr) input.reset();
 }
 
 WindowController::WindowController()
@@ -158,8 +159,9 @@ LRESULT CALLBACK WindowFactory::WindowProc(HWND hWnd, UINT msg, WPARAM wParam, L
             wf->creatingWnd->thisSlot = wf->windows.size();
             wf->slots[wf->creatingWnd->hWnd] = wf->windows.size();
 
-            Input* input = new Input();
-            wf->creatingWnd->ctrl->input = std::unique_ptr<Input>(input);
+            wf->creatingWnd->input = std::shared_ptr<Input>(new Input());
+            wf->creatingWnd->ctrl->input = wf->creatingWnd->input;
+
             wf->creatingWnd->hWnd = hWnd;
             wf->creatingWnd->ctrl->OnCreate(hWnd, msg, wParam, lParam);
 
@@ -171,7 +173,7 @@ LRESULT CALLBACK WindowFactory::WindowProc(HWND hWnd, UINT msg, WPARAM wParam, L
         {
             WindowFactory* wf = CuRendCore::GetInstance()->windowFc;
             wf->windows[wf->slots[hWnd]]->ctrl->OnPaint(hWnd, msg, wParam, lParam);
-            wf->windows[wf->slots[hWnd]]->ctrl->input->Update();
+            wf->windows[wf->slots[hWnd]]->input->Update();
         }
             break;
 
@@ -200,7 +202,7 @@ LRESULT CALLBACK WindowFactory::WindowProc(HWND hWnd, UINT msg, WPARAM wParam, L
         case WM_KEYDOWN:
         {
             WindowFactory* wf = CuRendCore::GetInstance()->windowFc;
-            wf->windows[wf->slots[hWnd]]->ctrl->input->ProcessKeyDown(hWnd, msg, wParam, lParam);
+            wf->windows[wf->slots[hWnd]]->input->ProcessKeyDown(hWnd, msg, wParam, lParam);
             wf->windows[wf->slots[hWnd]]->ctrl->OnKeyDown(hWnd, msg, wParam, lParam);
         }
             break;
@@ -209,7 +211,7 @@ LRESULT CALLBACK WindowFactory::WindowProc(HWND hWnd, UINT msg, WPARAM wParam, L
         case WM_KEYUP:
         {
             WindowFactory* wf = CuRendCore::GetInstance()->windowFc;
-            wf->windows[wf->slots[hWnd]]->ctrl->input->ProcessKeyUp(hWnd, msg, wParam, lParam);
+            wf->windows[wf->slots[hWnd]]->input->ProcessKeyUp(hWnd, msg, wParam, lParam);
             wf->windows[wf->slots[hWnd]]->ctrl->OnKeyUp(hWnd, msg, wParam, lParam);
         }
             break;
@@ -226,7 +228,7 @@ LRESULT CALLBACK WindowFactory::WindowProc(HWND hWnd, UINT msg, WPARAM wParam, L
         case WM_MOUSEMOVE:
         {
             WindowFactory* wf = CuRendCore::GetInstance()->windowFc;
-            wf->windows[wf->slots[hWnd]]->ctrl->input->ProcessMouse(hWnd, msg, wParam, lParam);
+            wf->windows[wf->slots[hWnd]]->input->ProcessMouse(hWnd, msg, wParam, lParam);
             wf->windows[wf->slots[hWnd]]->ctrl->OnMouse(hWnd, msg, wParam, lParam);
         }
             break;
