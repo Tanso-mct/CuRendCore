@@ -106,6 +106,8 @@ HRESULT WindowFactory::SetScene(CRC_SLOT slotWnd, CRC_SLOT slotScene)
     std::weak_ptr<Scene> scene = crc->sceneFc->GetSceneWeak(slotScene);
     if (scene.expired()) return E_FAIL;
 
+    if (!windows[slotWnd]->ctrl->scene.expired()) windows[slotWnd]->ctrl->GetScene()->Close();
+
     scene.lock()->ManiSetUp(scene, windows[slotWnd]->input);
     windows[slotWnd]->ctrl->scene = scene;
 

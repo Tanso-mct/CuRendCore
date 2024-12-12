@@ -180,7 +180,7 @@ CRC_SLOT Scene::CreateGroup(GROUPATTR gattr)
 {
     Group* newGroup = new Group(gattr);
     newGroup->thisSlot = (CRC_SLOT)(groups.size());
-    groups.push_back(std::unique_ptr<Group>(new Group(gattr)));
+    groups.push_back(std::unique_ptr<Group>(newGroup));
 
     return groups.size() - 1;
 }
@@ -211,7 +211,7 @@ HRESULT Scene::DestroyBinder(CRC_SLOT slotBinder)
     return S_OK;
 }
 
-CRC_SLOT Scene::CreateComponent(CRC_SLOT slotGroup, OBJECTATTR oattr)
+CRC_SLOT Scene::CreateComponent(CRC_SLOT slotGroup, OBJECTATTR& oattr)
 {
     if (slotGroup >= groups.size()) return CRC_SLOT_INVALID;
     if (groups[slotGroup] == nullptr) return CRC_SLOT_INVALID;
@@ -219,7 +219,7 @@ CRC_SLOT Scene::CreateComponent(CRC_SLOT slotGroup, OBJECTATTR oattr)
     return groups[slotGroup]->objectFc->CreateObject(oattr);
 }
 
-CRC_SLOT Scene::CreateComponent(CRC_SLOT slotGroup, UTILITYATTR utattr)
+CRC_SLOT Scene::CreateComponent(CRC_SLOT slotGroup, UTILITYATTR& utattr)
 {
     if (slotGroup >= groups.size()) return CRC_SLOT_INVALID;
     if (groups[slotGroup] == nullptr) return CRC_SLOT_INVALID;
@@ -227,7 +227,7 @@ CRC_SLOT Scene::CreateComponent(CRC_SLOT slotGroup, UTILITYATTR utattr)
     return groups[slotGroup]->utilityFc->CreateUtility(utattr);
 }
 
-CRC_SLOT Scene::CreateComponent(CRC_SLOT slotGroup, UIATTR uiattr)
+CRC_SLOT Scene::CreateComponent(CRC_SLOT slotGroup, UIATTR& uiattr)
 {
     if (slotGroup >= groups.size()) return CRC_SLOT_INVALID;
     if (groups[slotGroup] == nullptr) return CRC_SLOT_INVALID;

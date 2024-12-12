@@ -16,16 +16,23 @@ class ObjectController;
 typedef struct CRC_API _OBJECT_ATTRIBUTES
 {
     std::string name = "";
-    std::shared_ptr<ObjectController> ctrl = nullptr;
+    std::unique_ptr<ObjectController> ctrl = nullptr;
+    CRC_SLOT slotRc = CRC_SLOT_INVALID;
+    CRC_SLOT slotBaseTex = CRC_SLOT_INVALID;
+    CRC_SLOT slotNormalTex = CRC_SLOT_INVALID;
 } OBJECTATTR;
 
 class Object : public Component
 {
 private:
-    Object(OBJECTATTR oattr);
+    Object(OBJECTATTR& oattr);
 
-    std::shared_ptr<ObjectController> ctrl = nullptr;
-    OBJECTATTR oattr;
+    // Object attributes.
+    std::string name = "";
+    std::unique_ptr<ObjectController> ctrl = nullptr;
+    CRC_SLOT slotRc = CRC_SLOT_INVALID;
+    CRC_SLOT slotBaseTex = CRC_SLOT_INVALID;
+    CRC_SLOT slotNormalTex = CRC_SLOT_INVALID;
 
 public:
     ~Object();
@@ -58,7 +65,7 @@ private:
 public:
     ~ObjectFactory();
 
-    CRC_SLOT CreateObject(OBJECTATTR oattr);
+    CRC_SLOT CreateObject(OBJECTATTR& oattr);
     HRESULT DestroyObject(CRC_SLOT slotObject);
 
     friend class Group;

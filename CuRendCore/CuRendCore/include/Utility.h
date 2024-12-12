@@ -16,16 +16,19 @@ class UtilityController;
 typedef struct CRC_API _UTILITY_ATTRIBUTES
 {
     std::string name = "";
-    std::shared_ptr<UtilityController> ctrl = nullptr;
+    std::unique_ptr<UtilityController> ctrl = nullptr;
+    CRC_SLOT slotRc = CRC_SLOT_INVALID;
 } UTILITYATTR;
 
 class Utility : public Component
 {
 private:
-    Utility(UTILITYATTR utattr);
+    Utility(UTILITYATTR& utattr);
 
-    std::shared_ptr<UtilityController> ctrl = nullptr;
-    UTILITYATTR utattr;
+    // Utility attributes.
+    std::string name = "";
+    std::unique_ptr<UtilityController> ctrl = nullptr;
+    CRC_SLOT slotRc = CRC_SLOT_INVALID;
 
 public:
     ~Utility();
@@ -58,7 +61,7 @@ private:
 public:
     ~UtilityFactory();
 
-    CRC_SLOT CreateUtility(UTILITYATTR utattr);
+    CRC_SLOT CreateUtility(UTILITYATTR& utattr);
     HRESULT DestroyUtility(CRC_SLOT slotUtility);
 
     friend class Group;

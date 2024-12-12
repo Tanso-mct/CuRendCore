@@ -72,9 +72,9 @@ public:
     CRC_SLOT AddBinder(Binder*& binder);
     HRESULT DestroyBinder(CRC_SLOT slotBinder);
 
-    CRC_SLOT CreateComponent(CRC_SLOT slotGroup, OBJECTATTR oattr);
-    CRC_SLOT CreateComponent(CRC_SLOT slotGroup, UTILITYATTR utattr);
-    CRC_SLOT CreateComponent(CRC_SLOT slotGroup, UIATTR uiattr);
+    CRC_SLOT CreateComponent(CRC_SLOT slotGroup, OBJECTATTR& oattr);
+    CRC_SLOT CreateComponent(CRC_SLOT slotGroup, UTILITYATTR& utattr);
+    CRC_SLOT CreateComponent(CRC_SLOT slotGroup, UIATTR& uiattr);
 
     HRESULT DestroyComponent(CRC_COMPONENT_TYPE type, CRC_SLOT slotGroup, CRC_SLOT slotComponent);
 

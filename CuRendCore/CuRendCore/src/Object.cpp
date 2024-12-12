@@ -3,14 +3,22 @@
 namespace CRC
 {
 
-Object::Object(OBJECTATTR oattr)
+Object::Object(OBJECTATTR& oattr)
 {
     CRCDebugOutput(__FILE__, __FUNCTION__, __LINE__, "");
 
-    this->oattr = oattr;
+    name = oattr.name;
 
-    if (oattr.ctrl != nullptr) ctrl = oattr.ctrl;
-    else ctrl = std::make_shared<ObjectController>();
+    if (oattr.ctrl != nullptr) ctrl = std::move(oattr.ctrl);
+    else
+    {
+        ObjectController* newCtrl = new ObjectController();
+        ctrl = std::unique_ptr<ObjectController>(newCtrl);
+    }
+
+    slotRc = oattr.slotRc;
+    slotBaseTex = oattr.slotBaseTex;
+    slotNormalTex = oattr.slotNormalTex;
 }
 
 Object::~Object()
@@ -31,7 +39,7 @@ ObjectFactory::~ObjectFactory()
     objects.clear();
 }
 
-CRC_SLOT ObjectFactory::CreateObject(OBJECTATTR oattr)
+CRC_SLOT ObjectFactory::CreateObject(OBJECTATTR& oattr)
 {
     std::shared_ptr<Object> newObject = std::shared_ptr<Object>(new Object(oattr));
     newObject->ctrl->SetObject(newObject);

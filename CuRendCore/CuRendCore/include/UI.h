@@ -7,6 +7,7 @@
 #include <string>
 
 #include "Component.h" 
+#include "Math.cuh"
 
 namespace CRC
 {
@@ -16,16 +17,19 @@ class UIController;
 typedef struct CRC_API _UI_ATTRIBUTES
 {
     std::string name = "";
-    std::shared_ptr<UIController> ctrl = nullptr;
+    std::unique_ptr<UIController> ctrl = nullptr;
+    CRC_SLOT slotResource = CRC_SLOT_INVALID;
 } UIATTR;
 
 class UI : public Component
 {
 private:
-    UI(UIATTR uiattr);
+    UI(UIATTR& uiattr);
 
-    std::shared_ptr<UIController> ctrl = nullptr;
-    UIATTR uiattr;
+    // UI attributes.
+    std::string name = "";
+    std::unique_ptr<UIController> ctrl = nullptr;
+    CRC_SLOT slotResource = CRC_SLOT_INVALID;
 
 public:
     ~UI();
@@ -58,7 +62,7 @@ private:
 public:
     ~UIFactory();
 
-    CRC_SLOT CreateUI(UIATTR uiattr);
+    CRC_SLOT CreateUI(UIATTR& uiattr);
     HRESULT DestroyUI(CRC_SLOT slotUI);
 
     friend class Group;

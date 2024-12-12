@@ -15,6 +15,16 @@ private:
     CRC_SLOT slotRectBackgroud;
     CRC_SLOT slotRectRed;
     CRC_SLOT slotRectBlue;
+
+    CRC_SLOT slotMainGroup;
+    CRC_SLOT slotCubeComp;
+    CRC_SLOT slotFloorComp;
+
+    CRC_SLOT slotUIGroup;
+    CRC_SLOT slotRectBackgroudComp;
+    CRC_SLOT slotRectRedComp;
+    CRC_SLOT slotRectBlueComp;
+
 protected:
     CRC_SCENE_STATE Start() override;
     CRC_SCENE_STATE Update() override;

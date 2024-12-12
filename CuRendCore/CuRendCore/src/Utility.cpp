@@ -3,14 +3,20 @@
 namespace CRC
 {
 
-Utility::Utility(UTILITYATTR utattr)
+Utility::Utility(UTILITYATTR& utattr)
 {
     CRCDebugOutput(__FILE__, __FUNCTION__, __LINE__, "");
 
-    this->utattr = utattr;
+    name = utattr.name;
 
-    if (utattr.ctrl != nullptr) ctrl = utattr.ctrl;
-    else ctrl = std::make_shared<UtilityController>();
+    if (utattr.ctrl != nullptr) ctrl = std::move(utattr.ctrl);
+    else
+    {
+        UtilityController* newCtrl = new UtilityController();
+        ctrl = std::unique_ptr<UtilityController>(newCtrl);
+    }
+
+    slotRc = utattr.slotRc;
 }
 
 Utility::~Utility()
@@ -31,7 +37,7 @@ UtilityFactory::~UtilityFactory()
     utilities.clear();
 }
 
-CRC_SLOT UtilityFactory::CreateUtility(UTILITYATTR utattr)
+CRC_SLOT UtilityFactory::CreateUtility(UTILITYATTR& utattr)
 {
     std::shared_ptr<Utility> newUtility = std::shared_ptr<Utility>(new Utility(utattr));
     newUtility->ctrl->SetUtility(newUtility);

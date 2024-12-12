@@ -3,14 +3,20 @@
 namespace CRC
 {
 
-UI::UI(UIATTR uiattr)
+UI::UI(UIATTR& uiattr)
 {
     CRCDebugOutput(__FILE__, __FUNCTION__, __LINE__, "");
 
-    this->uiattr = uiattr;
+    name = uiattr.name;
 
-    if (uiattr.ctrl != nullptr) ctrl = uiattr.ctrl;
-    else ctrl = std::make_shared<UIController>();
+    if (uiattr.ctrl != nullptr) ctrl = std::move(uiattr.ctrl);
+    else
+    {
+        UIController* newCtrl = new UIController();
+        ctrl = std::unique_ptr<UIController>(newCtrl);
+    }
+
+    slotResource = uiattr.slotResource;
 }
 
 UI::~UI()
@@ -31,7 +37,7 @@ UIFactory::~UIFactory()
     uis.clear();
 }
 
-CRC_SLOT UIFactory::CreateUI(UIATTR uiattr)
+CRC_SLOT UIFactory::CreateUI(UIATTR& uiattr)
 {
     std::shared_ptr<UI> newUI = std::shared_ptr<UI>(new UI(uiattr));
     newUI->ctrl->SetUI(newUI);

@@ -49,6 +49,50 @@ CRC_SCENE_STATE ExampleSceneMani::Start()
     // Load resources
     GetScene()->LoadResources();
 
+    // Create main group
+    CRC::GROUPATTR gattr;
+    gattr.name = "Main";
+    gattr.active = FALSE;
+    slotMainGroup = GetScene()->CreateGroup(gattr);
+
+    // Create components
+    CRC::OBJECTATTR oattr;
+    oattr.name = "Cube";
+    oattr.ctrl = nullptr; // Set the default controller
+    oattr.slotRc = slotCubeObj;
+    oattr.slotBaseTex = slotCubeBasePng;
+    oattr.slotNormalTex = slotCubeNormalPng;
+    slotCubeComp = GetScene()->CreateComponent(slotMainGroup, oattr);
+
+    oattr.name = "Floor";
+    oattr.ctrl = nullptr; // Set the default controller
+    oattr.slotRc = slotFloorObj;
+    oattr.slotBaseTex = slotFloorBasePng;
+    oattr.slotNormalTex = slotFloorNormalPng;
+    slotFloorComp = GetScene()->CreateComponent(slotMainGroup, oattr);
+
+    // Create UI group
+    gattr.name = "UI";
+    gattr.active = TRUE;
+    slotUIGroup = GetScene()->CreateGroup(gattr);
+
+    // Create UI components
+    CRC::UIATTR uattr;
+    uattr.name = "RectBackground";
+    uattr.ctrl = nullptr; // Set the default controller
+    uattr.slotResource = slotRectBackgroud;
+    slotRectBackgroudComp = GetScene()->CreateComponent(slotUIGroup, uattr);
+
+    uattr.name = "RectRed";
+    uattr.ctrl = nullptr; // Set the default controller
+    uattr.slotResource = slotRectRed;
+    slotRectRedComp = GetScene()->CreateComponent(slotUIGroup, uattr);
+
+    uattr.name = "RectBlue";
+    uattr.ctrl = nullptr; // Set the default controller
+    uattr.slotResource = slotRectBlue;
+    slotRectBlueComp = GetScene()->CreateComponent(slotUIGroup, uattr);
+
     return CRC_SCENE_STATE_EXECUTING;
 }
 
@@ -98,11 +142,10 @@ CRC_SCENE_STATE ExampleSceneMani::End()
     // Unload resources
     GetScene()->UnLoadResources();
 
-    // Destroy resources
-
     // Get the resource factory instance
     CRC::ResourceFactory* rf = CRC::CuRendCore::GetInstance()->resourceFc;
 
+    // Destroy resources
     rf->DestroyResource(slotCubeObj);
     rf->DestroyResource(slotFloorObj);
     rf->DestroyResource(slotCubeBasePng);

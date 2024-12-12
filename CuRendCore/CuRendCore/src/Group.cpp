@@ -7,7 +7,7 @@ Group::Group(GROUPATTR gattr)
 {
     CRCDebugOutput(__FILE__, __FUNCTION__, __LINE__, "");
 
-    this->gattr = gattr;
+    name = gattr.name;
 
     objectFc = std::shared_ptr<ObjectFactory>(new ObjectFactory());
     utilityFc = std::shared_ptr<UtilityFactory>(new UtilityFactory());
