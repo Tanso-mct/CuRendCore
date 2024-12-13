@@ -25,42 +25,65 @@
     <ClCompile Include="src\Files.cpp" />
     <ClCompile Include="src\Group.cpp" />
     <ClCompile Include="src\Input.cpp" />
-    <ClCompile Include="src\Object.cpp" />
+    <CudaCompile Include="src\Object.cu">
+      <FileType>Document</FileType>
+    </CudaCompile>
     <ClCompile Include="src\Scene.cpp" />
     <ClCompile Include="src\Sound.cpp" />
-    <ClCompile Include="src\UI.cpp" />
-    <ClCompile Include="src\Utility.cpp" />
+    <CudaCompile Include="src\UI.cu">
+      <FileType>Document</FileType>
+    </CudaCompile>
+    <CudaCompile Include="src\Utility.cu">
+      <FileType>Document</FileType>
+    </CudaCompile>
     <ClCompile Include="src\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Binder.h" />
+    <CudaCompile Include="include\Camera.cuh" />
+    <CudaCompile Include="include\Canvas.cuh" />
     <ClInclude Include="include\Component.h" />
     <ClInclude Include="include\CRCConfig.h" />
     <ClInclude Include="include\CuRendCore.h" />
     <ClInclude Include="include\Files.h" />
+    <CudaCompile Include="include\FromObj.cuh" />
     <ClInclude Include="include\Group.h" />
+    <CudaCompile Include="include\Image.cuh" />
     <ClInclude Include="include\Input.h" />
-    <ClInclude Include="include\Object.h" />
+    <CudaCompile Include="include\Light.cuh" />
+    <CudaCompile Include="include\Object.cuh" />
     <CudaCompile Include="include\Resource.cuh">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </ExcludedFromBuild>
     </CudaCompile>
-    <ClInclude Include="include\Resource.h" />
     <ClInclude Include="include\Scene.h" />
     <ClInclude Include="include\Sound.h" />
     <ClInclude Include="include\stb_image.h" />
-    <ClInclude Include="include\UI.h" />
-    <ClInclude Include="include\Utility.h" />
+    <CudaCompile Include="include\Text.cuh" />
+    <CudaCompile Include="include\UI.cuh" />
+    <CudaCompile Include="include\Utility.cuh" />
     <ClInclude Include="include\Window.h" />
+    <CudaCompile Include="src\Text.cu" />
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="include\Math.cuh">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </ExcludedFromBuild>
     </CudaCompile>
+    <CudaCompile Include="src\Camera.cu" />
+    <CudaCompile Include="src\Canvas.cu" />
+    <CudaCompile Include="src\FromObj.cu" />
+    <CudaCompile Include="src\Image.cu" />
+    <CudaCompile Include="src\Light.cu" />
     <CudaCompile Include="src\Resource.cu">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </ExcludedFromBuild>
     </CudaCompile>
   </ItemGroup>
   <PropertyGroup Label="Globals">

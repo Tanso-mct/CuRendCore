@@ -6,7 +6,7 @@
 namespace CRC 
 {
 
-Scene::Scene(SCENEATTR sattr)
+Scene::Scene(SCENE_ATTR sattr)
 {
     CRCDebugOutput(__FILE__, __FUNCTION__, __LINE__, "");
 
@@ -18,7 +18,7 @@ Scene::Scene(SCENEATTR sattr)
         CRCErrorMsgBox
         (
             __FILE__, __FUNCTION__, __LINE__, 
-            "SATTR's SceneMani is nullptr.\nWhen creating a scene, set SceneMani to the SCENEATTR structure."
+            "SATTR's SceneMani is nullptr.\nWhen creating a scene, set SceneMani to the SCENE_ATTR structure."
         );
     }
 }
@@ -64,7 +64,7 @@ SceneFactory::~SceneFactory()
     scenes.clear();
 }
 
-CRC_SLOT SceneFactory::CreateScene(SCENEATTR sattr)
+CRC_SLOT SceneFactory::CreateScene(SCENE_ATTR sattr)
 {
     std::shared_ptr<Scene> newScene = std::shared_ptr<Scene>(new Scene(sattr));
     newScene->thisSlot = (CRC_SLOT)(scenes.size());
@@ -211,7 +211,7 @@ HRESULT Scene::DestroyBinder(CRC_SLOT slotBinder)
     return S_OK;
 }
 
-CRC_SLOT Scene::CreateComponent(CRC_SLOT slotGroup, OBJECTATTR& oattr)
+CRC_SLOT Scene::CreateComponent(CRC_SLOT slotGroup, OBJECT_ATTR& oattr)
 {
     if (slotGroup >= groups.size()) return CRC_SLOT_INVALID;
     if (groups[slotGroup] == nullptr) return CRC_SLOT_INVALID;

@@ -1,7 +1,7 @@
 #pragma once
 
+// DLL export and import settings.
 #define BUILDING_CRC_DLL
-
 #ifdef BUILDING_CRC_DLL
 #define CRC_API __declspec(dllexport)
 #else
@@ -31,8 +31,6 @@
 #define CRC_GS_FALSE 1
 
 // Macros for branch processing on the GPU.
-#define CRC_GBOOL int
-
 #define CRC_GCO(condition, trueValue, falseValue) \
     condition ? trueValue : falseValue;
 
@@ -191,6 +189,26 @@ enum CRC_COMPONENT_TYPE
     CRC_COMPONENT_TYPE_UTILITY,
     CRC_COMPONENT_TYPE_UI,
     CRC_COMPONENT_TYPE_SIZE,
+};
+
+enum CRC_OBJECT_FROM
+{
+    CRC_OBJECT_FROM_NULL = -1,
+    CRC_OBJECT_FROM_OBJ = 0,
+    CRC_OBJECT_FROM_FBX,
+    CRC_OBJECT_FROM_VERTEX,
+    CRC_OBJECT_FROM_TERRAIN,
+    CRC_OBJECT_FROM_ARRAY,
+    CRC_OBJECT_FROM_SIZE,
+};
+
+enum CRC_UTILITY_TYPE
+{
+    CRC_UTILITY_TYPE_NULL = 0,
+    CRC_UTILITY_TYPE_CAMERA,
+    CRC_UTILITY_TYPE_LIGHT,
+    CRC_UTILITY_TYPE_ENVIRONMENT,
+    CRC_UTILITY_TYPE_SIZE,
 };
 
 // Debug Output

@@ -28,13 +28,13 @@ typedef struct CRC_API _WINDOW_ATTRIBUTES
     HWND hWndParent = NULL;
     HINSTANCE hInstance = nullptr;
     std::unique_ptr<WindowController> ctrl = nullptr;
-} WNDATTR;
+} WND_ATTR;
 
 
 class CRC_API Window
 {
 private:
-    Window(WNDATTR& wattr);
+    Window(WND_ATTR& wattr);
 
     HWND hWnd = NULL;
     
@@ -121,7 +121,7 @@ private:
 public:
     ~WindowFactory();
 
-    CRC_SLOT CreateWindowCRC(WNDATTR& wattr);
+    CRC_SLOT CreateWindowCRC(WND_ATTR& wattr);
     HRESULT DestroyWindowCRC(CRC_SLOT slot);
     HRESULT ShowWindowCRC(CRC_SLOT slot, int nCmdShow);
 

@@ -18,12 +18,12 @@ typedef struct CRC_API _SCENE_ATTRIBUTES
 {
     std::string name = "";
     SceneMani* sceneMani = nullptr;
-} SCENEATTR;
+} SCENE_ATTR;
 
 class CRC_API Scene
 {
 private:
-    Scene(SCENEATTR sattr); 
+    Scene(SCENE_ATTR sattr); 
 
     CRC_SLOT thisSlot = CRC_SLOT_INVALID;
     std::string name = "";
@@ -72,7 +72,7 @@ public:
     CRC_SLOT AddBinder(Binder*& binder);
     HRESULT DestroyBinder(CRC_SLOT slotBinder);
 
-    CRC_SLOT CreateComponent(CRC_SLOT slotGroup, OBJECTATTR& oattr);
+    CRC_SLOT CreateComponent(CRC_SLOT slotGroup, OBJECT_ATTR& oattr);
     CRC_SLOT CreateComponent(CRC_SLOT slotGroup, UTILITYATTR& utattr);
     CRC_SLOT CreateComponent(CRC_SLOT slotGroup, UIATTR& uiattr);
 
@@ -122,7 +122,7 @@ private:
 public:
     ~SceneFactory();
 
-    CRC_SLOT CreateScene(SCENEATTR sattr);
+    CRC_SLOT CreateScene(SCENE_ATTR sattr);
     HRESULT DestroyScene(CRC_SLOT slot);
 
     std::weak_ptr<Scene> GetSceneWeak(CRC_SLOT slot);

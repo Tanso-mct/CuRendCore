@@ -7,9 +7,9 @@
 #include <string>
 
 #include "Binder.h"
-#include "Object.h"
-#include "Utility.h"
-#include "UI.h"
+#include "Object.cuh"
+#include "Utility.cuh"
+#include "UI.cuh"
 
 namespace CRC 
 {

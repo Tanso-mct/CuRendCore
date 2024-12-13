@@ -13,7 +13,7 @@ int WINAPI WinMain
     CRC::CuRendCore* crc = CRC::CuRendCore::GetInstance();
 
     // Create Window
-    CRC::WNDATTR wattr;
+    CRC::WND_ATTR wattr;
     wattr.wcex.cbSize = sizeof(WNDCLASSEX);
     wattr.wcex.style = CS_HREDRAW | CS_VREDRAW;
     wattr.wcex.cbClsExtra = NULL;
@@ -34,7 +34,7 @@ int WINAPI WinMain
     crc->windowFc->ShowWindowCRC(0, nCmdShow);
 
     // Create Scene
-    CRC::SCENEATTR sattr;
+    CRC::SCENE_ATTR sattr;
 
     sattr.name = "ExampleScene";
     sattr.sceneMani = new ExampleSceneMani();

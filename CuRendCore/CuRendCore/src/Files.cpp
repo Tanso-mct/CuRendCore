@@ -55,6 +55,7 @@ HRESULT PngFile::Unload()
         delete[] data;
         data = nullptr;
     }
+
     return S_OK;
 }
 
@@ -154,7 +155,7 @@ HRESULT ObjFile::Load()
     }
 
     boundingBox->Update();
-
+    
     return S_OK;
 }
 

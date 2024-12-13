@@ -4,7 +4,7 @@
 namespace CRC 
 {
 
-Window::Window(WNDATTR& wattr)
+Window::Window(WND_ATTR& wattr)
 {
     CRCDebugOutput(__FILE__, __FUNCTION__, __LINE__, "");
 
@@ -41,7 +41,7 @@ WindowFactory::~WindowFactory()
     slots.clear();
 }
 
-CRC_SLOT WindowFactory::CreateWindowCRC(WNDATTR& wattr)
+CRC_SLOT WindowFactory::CreateWindowCRC(WND_ATTR& wattr)
 {
     if (wattr.wcex.cbSize == 0) return CRC_SLOT_INVALID; // The window class is not initialized.
     wattr.wcex.lpfnWndProc = WindowProc;

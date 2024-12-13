@@ -15,19 +15,13 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Component.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
     <ClCompile Include="src\Binder.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="src\CuRendCore.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Scene.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Window.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Input.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="src\Files.cpp">
@@ -36,19 +30,16 @@
     <ClCompile Include="src\Group.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="src\Object.cpp">
+    <ClCompile Include="src\Input.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scene.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="src\Sound.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="src\UI.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Utility.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Component.cpp">
+    <ClCompile Include="src\Window.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
@@ -60,9 +51,6 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="include\CuRendCore.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Resource.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="include\Scene.h">
@@ -83,16 +71,7 @@
     <ClInclude Include="include\Group.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="include\Object.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="include\Sound.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="include\UI.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Utility.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="include\Component.h">
@@ -107,6 +86,60 @@
       <Filter>ソース ファイル</Filter>
     </CudaCompile>
     <CudaCompile Include="include\Resource.cuh">
+      <Filter>ヘッダー ファイル</Filter>
+    </CudaCompile>
+    <CudaCompile Include="src\Camera.cu">
+      <Filter>ソース ファイル</Filter>
+    </CudaCompile>
+    <CudaCompile Include="src\Canvas.cu">
+      <Filter>ソース ファイル</Filter>
+    </CudaCompile>
+    <CudaCompile Include="src\FromObj.cu">
+      <Filter>ソース ファイル</Filter>
+    </CudaCompile>
+    <CudaCompile Include="src\Image.cu">
+      <Filter>ソース ファイル</Filter>
+    </CudaCompile>
+    <CudaCompile Include="src\Light.cu">
+      <Filter>ソース ファイル</Filter>
+    </CudaCompile>
+    <CudaCompile Include="src\Text.cu">
+      <Filter>ソース ファイル</Filter>
+    </CudaCompile>
+    <CudaCompile Include="src\Object.cu">
+      <Filter>ソース ファイル</Filter>
+    </CudaCompile>
+    <CudaCompile Include="src\UI.cu">
+      <Filter>ソース ファイル</Filter>
+    </CudaCompile>
+    <CudaCompile Include="src\Utility.cu">
+      <Filter>ソース ファイル</Filter>
+    </CudaCompile>
+    <CudaCompile Include="include\Camera.cuh">
+      <Filter>ヘッダー ファイル</Filter>
+    </CudaCompile>
+    <CudaCompile Include="include\Canvas.cuh">
+      <Filter>ヘッダー ファイル</Filter>
+    </CudaCompile>
+    <CudaCompile Include="include\Image.cuh">
+      <Filter>ヘッダー ファイル</Filter>
+    </CudaCompile>
+    <CudaCompile Include="include\FromObj.cuh">
+      <Filter>ヘッダー ファイル</Filter>
+    </CudaCompile>
+    <CudaCompile Include="include\Light.cuh">
+      <Filter>ヘッダー ファイル</Filter>
+    </CudaCompile>
+    <CudaCompile Include="include\Object.cuh">
+      <Filter>ヘッダー ファイル</Filter>
+    </CudaCompile>
+    <CudaCompile Include="include\Utility.cuh">
+      <Filter>ヘッダー ファイル</Filter>
+    </CudaCompile>
+    <CudaCompile Include="include\UI.cuh">
+      <Filter>ヘッダー ファイル</Filter>
+    </CudaCompile>
+    <CudaCompile Include="include\Text.cuh">
       <Filter>ヘッダー ファイル</Filter>
     </CudaCompile>
   </ItemGroup>

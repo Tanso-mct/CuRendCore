@@ -56,9 +56,10 @@ CRC_SCENE_STATE ExampleSceneMani::Start()
     slotMainGroup = GetScene()->CreateGroup(gattr);
 
     // Create components
-    CRC::OBJECTATTR oattr;
+    CRC::OBJECT_ATTR oattr;
     oattr.name = "Cube";
     oattr.ctrl = nullptr; // Set the default controller
+    oattr.from = CRC_OBJECT_FROM_OBJ;
     oattr.slotRc = slotCubeObj;
     oattr.slotBaseTex = slotCubeBasePng;
     oattr.slotNormalTex = slotCubeNormalPng;
@@ -66,6 +67,7 @@ CRC_SCENE_STATE ExampleSceneMani::Start()
 
     oattr.name = "Floor";
     oattr.ctrl = nullptr; // Set the default controller
+    oattr.from = CRC_OBJECT_FROM_OBJ;
     oattr.slotRc = slotFloorObj;
     oattr.slotBaseTex = slotFloorBasePng;
     oattr.slotNormalTex = slotFloorNormalPng;

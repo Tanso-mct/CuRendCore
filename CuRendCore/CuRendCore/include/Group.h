@@ -6,9 +6,9 @@
 #include <memory>
 #include <string>
 
-#include "Object.h"
-#include "Utility.h"
-#include "UI.h"
+#include "Object.cuh"
+#include "Utility.cuh"
+#include "UI.cuh"
 
 #include "Binder.h"
 
@@ -18,7 +18,7 @@ namespace CRC
 typedef struct CRC_API _GROUP_ATTRIBUTES
 {
     std::string name = "";
-    CRC_GBOOL active = TRUE;
+    BOOL active = TRUE;
 } GROUPATTR;
 
 class CRC_API Group
@@ -30,7 +30,7 @@ private:
     
     // Group attributes.
     std::string name = "";
-    CRC_GBOOL active = TRUE;
+    BOOL active = TRUE;
 
     std::shared_ptr<ObjectFactory> objectFc = nullptr;
     std::shared_ptr<UtilityFactory> utilityFc = nullptr;
