@@ -2,6 +2,17 @@
 
 namespace CRC
 {
+
+void Component::SetWorldMatrix()
+{
+    // ddata->mtWorld.Identity();
+    // ddata->mtWorld *= MatrixScaling(scl);
+    // ddata->mtWorld *= MatrixRotationX(rot.x);
+    // ddata->mtWorld *= MatrixRotationY(rot.y);
+    // ddata->mtWorld *= MatrixRotationZ(rot.z);
+    // ddata->mtWorld *= MatrixTranslation(pos);
+}
+
 Component::~Component()
 {
     if (!parent.expired())
@@ -82,6 +93,42 @@ std::weak_ptr<Component> Component::GetChild(std::pair<CRC_COMPONENT_TYPE, CRC_S
 
     CRCErrorOutput(__FILE__, __FUNCTION__, __LINE__, "This argument slot is not found.");
     return std::weak_ptr<Component>();
+}
+
+void Component::Transfer(Vec3d pos, Vec3d &val)
+{
+    this->pos = pos;
+    val = this->pos;
+}
+
+void Component::AddTransfer(Vec3d pos, Vec3d &val)
+{
+    this->pos += pos;
+    val = this->pos;
+}
+
+void Component::Rotate(Vec3d rot, Vec3d &val)
+{
+    this->rot = rot;
+    val = this->rot;
+}
+
+void Component::AddRotate(Vec3d rot, Vec3d &val)
+{
+    this->rot += rot;
+    val = this->rot;
+}
+
+void Component::Scale(Vec3d scl, Vec3d &val)
+{
+    this->scl = scl;
+    val = this->scl;
+}
+
+void Component::AddScale(Vec3d scl, Vec3d &val)
+{
+    this->scl += scl;
+    val = this->scl;
 }
 
 } // namespace CRC

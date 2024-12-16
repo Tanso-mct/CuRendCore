@@ -3,7 +3,7 @@
 namespace CRC
 {
 
-Utility::Utility(UTILITYATTR& utattr)
+Utility::Utility(UTILITY_ATTR& utattr)
 {
     CRCDebugOutput(__FILE__, __FUNCTION__, __LINE__, "");
 
@@ -37,7 +37,7 @@ UtilityFactory::~UtilityFactory()
     utilities.clear();
 }
 
-CRC_SLOT UtilityFactory::CreateUtility(UTILITYATTR& utattr)
+CRC_SLOT UtilityFactory::CreateUtility(UTILITY_ATTR& utattr)
 {
     std::shared_ptr<Utility> newUtility = std::shared_ptr<Utility>(new Utility(utattr));
     newUtility->ctrl->SetUtility(newUtility);
@@ -45,6 +45,14 @@ CRC_SLOT UtilityFactory::CreateUtility(UTILITYATTR& utattr)
 
     newUtility->thisSlot = ((CRC_SLOT)(utilities.size() - 1));
     return newUtility->thisSlot;
+}
+
+std::shared_ptr<Utility> UtilityFactory::GetUtility(CRC_SLOT slotUtility)
+{
+    if (slotUtility >= utilities.size()) return nullptr;
+    if (utilities[slotUtility] == nullptr) return nullptr;
+
+    return utilities[slotUtility];
 }
 
 HRESULT UtilityFactory::DestroyUtility(CRC_SLOT slotUtility)

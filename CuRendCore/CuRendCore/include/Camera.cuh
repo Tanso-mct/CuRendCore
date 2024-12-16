@@ -11,29 +11,16 @@
 namespace CRC
 {
 
-typedef struct CRC_API _CAMERA_DEVICE_DATA
-{
-    Matrix mtView;
-    Vec3d viewVolumeVs[8];
-    float nearZ;
-    float farZ;
-    float fovXzCos = 0;
-    float fovYzCos = 0;
-} CAMERA_DDATA;
-
 class Camera : public Utility
 {
 private:
-    Camera(UTILITYATTR& utattr);;
+    Camera(UTILITY_ATTR& utattr);;
 
-    Vec3d eye;
-    Vec3d at;
-
+    Vec3d lookAt;
+    float nearZ = 0;
+    float farZ = 0;
     float fov = 0;
     Vec2d aspectRatio;
-
-    // Device data.
-    CAMERA_DDATA* ddata = nullptr;
 
     void SetViewMatrix();
     void SetViewVolume();

@@ -26,21 +26,7 @@ Object::Object(OBJECT_ATTR& oattr)
     rot = oattr.rot;
     scl = oattr.scl;
 
-    // Device attributes.
-    cudaHostAlloc((void**)&dattr, sizeof(OBJECT_DATTR), cudaHostAllocMapped);
-
-    // Initialize the device attributes.
     SetWorldMatrix();
-}
-
-void Object::SetWorldMatrix()
-{
-    dattr->mtWorld.Identity();
-    dattr->mtWorld *= MatrixScaling(scl);
-    dattr->mtWorld *= MatrixRotationX(rot.x);
-    dattr->mtWorld *= MatrixRotationY(rot.y);
-    dattr->mtWorld *= MatrixRotationZ(rot.z);
-    dattr->mtWorld *= MatrixTranslation(pos);
 }
 
 Object::~Object()
@@ -79,6 +65,14 @@ CRC_SLOT ObjectFactory::CreateObject(OBJECT_ATTR& oattr)
     return newObject->thisSlot;
 }
 
+std::shared_ptr<Object> ObjectFactory::GetObject(CRC_SLOT slotObject)
+{
+    if (slotObject >= objects.size()) return nullptr;
+    if (objects[slotObject] == nullptr) return nullptr;
+
+    return objects[slotObject];
+}
+
 HRESULT ObjectFactory::DestroyObject(CRC_SLOT slotObject)
 {
     if (slotObject >= objects.size()) return E_FAIL;
@@ -86,42 +80,6 @@ HRESULT ObjectFactory::DestroyObject(CRC_SLOT slotObject)
 
     objects[slotObject].reset();
     return S_OK;
-}
-
-void ObjectController::Transfer(Vec3d pos, Vec3d &val)
-{
-    GetObject()->pos = pos;
-    val = GetObject()->pos;
-}
-
-void ObjectController::AddTransfer(Vec3d pos, Vec3d &val)
-{
-    GetObject()->pos += pos;
-    val = GetObject()->pos;
-}
-
-void ObjectController::Rotate(Vec3d rot, Vec3d &val)
-{
-    GetObject()->rot = rot;
-    val = GetObject()->rot;
-}
-
-void ObjectController::AddRotate(Vec3d rot, Vec3d &val)
-{
-    GetObject()->rot += rot;
-    val = GetObject()->rot;
-}
-
-void ObjectController::Scale(Vec3d scl, Vec3d &val)
-{
-    GetObject()->scl = scl;
-    val = GetObject()->scl;
-}
-
-void ObjectController::AddScale(Vec3d scl, Vec3d &val)
-{
-    GetObject()->scl += scl;
-    val = GetObject()->scl;
 }
 
 } // namespace CRC

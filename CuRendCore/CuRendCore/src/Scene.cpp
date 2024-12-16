@@ -219,7 +219,7 @@ CRC_SLOT Scene::CreateComponent(CRC_SLOT slotGroup, OBJECT_ATTR& oattr)
     return groups[slotGroup]->objectFc->CreateObject(oattr);
 }
 
-CRC_SLOT Scene::CreateComponent(CRC_SLOT slotGroup, UTILITYATTR& utattr)
+CRC_SLOT Scene::CreateComponent(CRC_SLOT slotGroup, UTILITY_ATTR& utattr)
 {
     if (slotGroup >= groups.size()) return CRC_SLOT_INVALID;
     if (groups[slotGroup] == nullptr) return CRC_SLOT_INVALID;
@@ -227,12 +227,96 @@ CRC_SLOT Scene::CreateComponent(CRC_SLOT slotGroup, UTILITYATTR& utattr)
     return groups[slotGroup]->utilityFc->CreateUtility(utattr);
 }
 
-CRC_SLOT Scene::CreateComponent(CRC_SLOT slotGroup, UIATTR& uiattr)
+CRC_SLOT Scene::CreateComponent(CRC_SLOT slotGroup, UI_ATTR& uiattr)
 {
     if (slotGroup >= groups.size()) return CRC_SLOT_INVALID;
     if (groups[slotGroup] == nullptr) return CRC_SLOT_INVALID;
 
     return groups[slotGroup]->uiFc->CreateUI(uiattr);
+}
+
+std::shared_ptr<Object> Scene::GetObject(CRC_SLOT slotGroup, CRC_SLOT slotObj)
+{
+    if (slotGroup >= groups.size()) return std::shared_ptr<Object>();
+    if (groups[slotGroup] == nullptr) return std::shared_ptr<Object>();
+
+    return groups[slotGroup]->objectFc->GetObject(slotObj);
+}
+
+std::shared_ptr<Utility> Scene::GetUtility(CRC_SLOT slotGroup, CRC_SLOT slotUtility)
+{
+    if (slotGroup >= groups.size()) return std::shared_ptr<Utility>();
+    if (groups[slotGroup] == nullptr) return std::shared_ptr<Utility>();
+
+    return groups[slotGroup]->utilityFc->GetUtility(slotUtility);
+}
+
+std::shared_ptr<UI> Scene::GetUI(CRC_SLOT slotGroup, CRC_SLOT slotUI)
+{
+    if (slotGroup >= groups.size()) return std::shared_ptr<UI>();
+    if (groups[slotGroup] == nullptr) return std::shared_ptr<UI>();
+
+    return groups[slotGroup]->uiFc->GetUI(slotUI);
+}
+
+std::shared_ptr<Component> Scene::GetComponent(CRC_COMPONENT_TYPE type, CRC_SLOT slotGroup, CRC_SLOT slotComponent)
+{
+    if (slotGroup >= groups.size()) return std::shared_ptr<Component>();
+    if (groups[slotGroup] == nullptr) return std::shared_ptr<Component>();
+
+    switch (type)
+    {
+    case CRC_COMPONENT_TYPE_OBJECT:
+        return groups[slotGroup]->objectFc->GetObject(slotComponent);
+    case CRC_COMPONENT_TYPE_UTILITY:
+        return groups[slotGroup]->utilityFc->GetUtility(slotComponent);
+    case CRC_COMPONENT_TYPE_UI:
+        return groups[slotGroup]->uiFc->GetUI(slotComponent);
+    default:
+        return std::shared_ptr<Component>();
+    }
+}
+
+std::weak_ptr<Object> Scene::GetObjectWeak(CRC_SLOT slotGroup, CRC_SLOT slotObj)
+{
+    if (slotGroup >= groups.size()) return std::shared_ptr<Object>();
+    if (groups[slotGroup] == nullptr) return std::shared_ptr<Object>();
+
+    return groups[slotGroup]->objectFc->GetObject(slotObj);
+}
+
+std::weak_ptr<Utility> Scene::GetUtilityWeak(CRC_SLOT slotGroup, CRC_SLOT slotUtility)
+{
+    if (slotGroup >= groups.size()) return std::shared_ptr<Utility>();
+    if (groups[slotGroup] == nullptr) return std::shared_ptr<Utility>();
+
+    return groups[slotGroup]->utilityFc->GetUtility(slotUtility);
+}
+
+std::weak_ptr<UI> Scene::GetUIWeak(CRC_SLOT slotGroup, CRC_SLOT slotUI)
+{
+    if (slotGroup >= groups.size()) return std::shared_ptr<UI>();
+    if (groups[slotGroup] == nullptr) return std::shared_ptr<UI>();
+
+    return groups[slotGroup]->uiFc->GetUI(slotUI);
+}
+
+std::weak_ptr<Component> Scene::GetComponentWeak(CRC_COMPONENT_TYPE type, CRC_SLOT slotGroup, CRC_SLOT slotComponent)
+{
+    if (slotGroup >= groups.size()) return std::weak_ptr<Component>();
+    if (groups[slotGroup] == nullptr) return std::weak_ptr<Component>();
+
+    switch (type)
+    {
+    case CRC_COMPONENT_TYPE_OBJECT:
+        return groups[slotGroup]->objectFc->GetObject(slotComponent);
+    case CRC_COMPONENT_TYPE_UTILITY:
+        return groups[slotGroup]->utilityFc->GetUtility(slotComponent);
+    case CRC_COMPONENT_TYPE_UI:
+        return groups[slotGroup]->uiFc->GetUI(slotComponent);
+    default:
+        return std::weak_ptr<Component>();
+    }
 }
 
 HRESULT Scene::DestroyComponent(CRC_COMPONENT_TYPE type, CRC_SLOT slotGroup, CRC_SLOT slotComponent)

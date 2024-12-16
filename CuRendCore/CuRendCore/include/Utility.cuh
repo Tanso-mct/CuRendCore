@@ -24,19 +24,22 @@ typedef struct CRC_API _UTILITY_ATTRIBUTES
     std::unique_ptr<UtilityController> ctrl = nullptr;
     CRC_SLOT slotRc = CRC_SLOT_INVALID;
 
+    Vec3d pos = Vec3d(0.0, 0.0, 0.0);
+    Vec3d rot = Vec3d(0.0, 0.0, 0.0);
+    Vec3d scl = Vec3d(1.0, 1.0, 1.0);
+
     // Camera attributes.
-    Vec3d eye = Vec3d(0.0, 0.0, 0.0);
-    Vec3d at = Vec3d(0.0, 0.0, 1.0);
+    Vec3d lookAt = Vec3d(0.0, 0.0, 1.0);
     float fov = 80;
     Vec2d aspectRatio = Vec2d(16, 9);
     float nearZ = 0.1;
     float farZ = 1000;
-} UTILITYATTR;
+} UTILITY_ATTR;
 
 class Utility : public Component
 {
 private:
-    Utility(UTILITYATTR& utattr);
+    Utility(UTILITY_ATTR& utattr);
 
     // Utility attributes.
     std::string name = "";
@@ -50,6 +53,7 @@ public:
     friend class UtilityFactory;
 
     friend class Camera;
+    friend class Light;
 };
 
 class CRC_API UtilityController
@@ -76,7 +80,8 @@ private:
 public:
     ~UtilityFactory();
 
-    CRC_SLOT CreateUtility(UTILITYATTR& utattr);
+    CRC_SLOT CreateUtility(UTILITY_ATTR& utattr);
+    std::shared_ptr<Utility> GetUtility(CRC_SLOT slotUtility);
     HRESULT DestroyUtility(CRC_SLOT slotUtility);
 
     friend class Group;

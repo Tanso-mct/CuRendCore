@@ -63,7 +63,12 @@ CRC_SCENE_STATE ExampleSceneMani::Start()
     oattr.slotRc = slotCubeObj;
     oattr.slotBaseTex = slotCubeBasePng;
     oattr.slotNormalTex = slotCubeNormalPng;
+    oattr.pos = CRC::Vec3d(0.0f, 0.0f, 0.0f);
+    oattr.rot = CRC::Vec3d(0.0f, 0.0f, 0.0f);
+    oattr.scl = CRC::Vec3d(1.0f, 1.0f, 1.0f);
     slotCubeComp = GetScene()->CreateComponent(slotMainGroup, oattr);
+
+    cubeObj = GetScene()->GetObjectWeak(slotMainGroup, slotCubeComp);
 
     oattr.name = "Floor";
     oattr.ctrl = nullptr; // Set the default controller
@@ -71,6 +76,9 @@ CRC_SCENE_STATE ExampleSceneMani::Start()
     oattr.slotRc = slotFloorObj;
     oattr.slotBaseTex = slotFloorBasePng;
     oattr.slotNormalTex = slotFloorNormalPng;
+    oattr.pos = CRC::Vec3d(0.0f, 0.0f, 0.0f);
+    oattr.rot = CRC::Vec3d(0.0f, 0.0f, 0.0f);
+    oattr.scl = CRC::Vec3d(1.0f, 1.0f, 1.0f);
     slotFloorComp = GetScene()->CreateComponent(slotMainGroup, oattr);
 
     // Create UI group
@@ -79,20 +87,32 @@ CRC_SCENE_STATE ExampleSceneMani::Start()
     slotUIGroup = GetScene()->CreateGroup(gattr);
 
     // Create UI components
-    CRC::UIATTR uattr;
+    CRC::UI_ATTR uattr;
     uattr.name = "RectBackground";
     uattr.ctrl = nullptr; // Set the default controller
+    uattr.type = CRC_UI_TYPE::CRC_UI_TYPE_IMAGE;
     uattr.slotResource = slotRectBackgroud;
+    uattr.pos = CRC::Vec3d(0.0f, 0.0f, 0.0f);
+    uattr.rot = CRC::Vec3d(0.0f, 0.0f, 0.0f);
+    uattr.scl = CRC::Vec3d(1.0f, 1.0f, 1.0f);
     slotRectBackgroudComp = GetScene()->CreateComponent(slotUIGroup, uattr);
 
     uattr.name = "RectRed";
     uattr.ctrl = nullptr; // Set the default controller
+    uattr.type = CRC_UI_TYPE::CRC_UI_TYPE_IMAGE;
     uattr.slotResource = slotRectRed;
+    uattr.pos = CRC::Vec3d(0.0f, 0.0f, 0.0f);
+    uattr.rot = CRC::Vec3d(0.0f, 0.0f, 0.0f);
+    uattr.scl = CRC::Vec3d(1.0f, 1.0f, 1.0f);
     slotRectRedComp = GetScene()->CreateComponent(slotUIGroup, uattr);
 
     uattr.name = "RectBlue";
     uattr.ctrl = nullptr; // Set the default controller
     uattr.slotResource = slotRectBlue;
+    uattr.type = CRC_UI_TYPE::CRC_UI_TYPE_IMAGE;
+    uattr.pos = CRC::Vec3d(0.0f, 0.0f, 0.0f);
+    uattr.rot = CRC::Vec3d(0.0f, 0.0f, 0.0f);
+    uattr.scl = CRC::Vec3d(1.0f, 1.0f, 1.0f);
     slotRectBlueComp = GetScene()->CreateComponent(slotUIGroup, uattr);
 
     return CRC_SCENE_STATE_EXECUTING;
@@ -105,6 +125,20 @@ CRC_SCENE_STATE ExampleSceneMani::Update()
         OutputDebugStringA("Example Scene Escape\n");
 
         return CRC_SCENE_STATE_CLOSE;
+    }
+
+    if (GetInput()->IsKeyDown(CRC_KEY_MSG_W))
+    {
+        cubeObj.lock()->AddTransfer(CRC::Vec3d(0, 0, -1));
+        CRC::Vec3d pos = cubeObj.lock()->GetPos();
+
+        OutputDebugStringA("Cube Pos: ");
+        OutputDebugStringA(std::to_string(pos.x).c_str());
+        OutputDebugStringA(", ");
+        OutputDebugStringA(std::to_string(pos.y).c_str());
+        OutputDebugStringA(", ");
+        OutputDebugStringA(std::to_string(pos.z).c_str());
+        OutputDebugStringA("\n");
     }
 
     if (GetInput()->GetKeyText() != "")

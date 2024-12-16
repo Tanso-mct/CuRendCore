@@ -18,13 +18,18 @@ typedef struct CRC_API _UI_ATTRIBUTES
 {
     std::string name = "";
     std::unique_ptr<UIController> ctrl = nullptr;
+    CRC_UI_TYPE type = CRC_UI_TYPE_NULL;
     CRC_SLOT slotResource = CRC_SLOT_INVALID;
-} UIATTR;
+
+    Vec3d pos = Vec3d(0.0, 0.0, 0.0);
+    Vec3d rot = Vec3d(0.0, 0.0, 0.0);
+    Vec3d scl = Vec3d(1.0, 1.0, 1.0);
+} UI_ATTR;
 
 class UI : public Component
 {
 private:
-    UI(UIATTR& uiattr);
+    UI(UI_ATTR& uiattr);
 
     // UI attributes.
     std::string name = "";
@@ -32,10 +37,13 @@ private:
     CRC_SLOT slotResource = CRC_SLOT_INVALID;
 
 public:
-    ~UI();
+    virtual ~UI();
 
     friend class UIController;
     friend class UIFactory;
+
+    friend class Image;
+    friend class Text;
 };
 
 class CRC_API UIController
@@ -62,7 +70,8 @@ private:
 public:
     ~UIFactory();
 
-    CRC_SLOT CreateUI(UIATTR& uiattr);
+    CRC_SLOT CreateUI(UI_ATTR& uiattr);
+    std::shared_ptr<UI> GetUI(CRC_SLOT slotUI);
     HRESULT DestroyUI(CRC_SLOT slotUI);
 
     friend class Group;

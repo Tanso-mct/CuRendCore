@@ -67,14 +67,25 @@ public:
     HRESULT UnLoadResources();
 
     CRC_SLOT CreateGroup(GROUPATTR gattr);
+
     HRESULT DestroyGroup(CRC_SLOT slotGroup);
 
     CRC_SLOT AddBinder(Binder*& binder);
     HRESULT DestroyBinder(CRC_SLOT slotBinder);
 
     CRC_SLOT CreateComponent(CRC_SLOT slotGroup, OBJECT_ATTR& oattr);
-    CRC_SLOT CreateComponent(CRC_SLOT slotGroup, UTILITYATTR& utattr);
-    CRC_SLOT CreateComponent(CRC_SLOT slotGroup, UIATTR& uiattr);
+    CRC_SLOT CreateComponent(CRC_SLOT slotGroup, UTILITY_ATTR& utattr);
+    CRC_SLOT CreateComponent(CRC_SLOT slotGroup, UI_ATTR& uiattr);
+
+    std::shared_ptr<Object> GetObject(CRC_SLOT slotGroup, CRC_SLOT slotObj);
+    std::shared_ptr<Utility> GetUtility(CRC_SLOT slotGroup, CRC_SLOT slotUtility);
+    std::shared_ptr<UI> GetUI(CRC_SLOT slotGroup, CRC_SLOT slotUI);
+    std::shared_ptr<Component> GetComponent(CRC_COMPONENT_TYPE type, CRC_SLOT slotGroup, CRC_SLOT slotComponent);
+
+    std::weak_ptr<Object> GetObjectWeak(CRC_SLOT slotGroup, CRC_SLOT slotObj);
+    std::weak_ptr<Utility> GetUtilityWeak(CRC_SLOT slotGroup, CRC_SLOT slotUtility);
+    std::weak_ptr<UI> GetUIWeak(CRC_SLOT slotGroup, CRC_SLOT slotUI);
+    std::weak_ptr<Component> GetComponentWeak(CRC_COMPONENT_TYPE type, CRC_SLOT slotGroup, CRC_SLOT slotComponent);
 
     HRESULT DestroyComponent(CRC_COMPONENT_TYPE type, CRC_SLOT slotGroup, CRC_SLOT slotComponent);
 

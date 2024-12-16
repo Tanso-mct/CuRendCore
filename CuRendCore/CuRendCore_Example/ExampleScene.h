@@ -6,9 +6,12 @@ class ExampleSceneMani : public CRC::SceneMani
 {
 private:
     CRC_SLOT slotCubeObj;
-    CRC_SLOT slotFloorObj;
     CRC_SLOT slotCubeBasePng;
     CRC_SLOT slotCubeNormalPng;
+
+    std::weak_ptr<CRC::Object> cubeObj;
+
+    CRC_SLOT slotFloorObj;
     CRC_SLOT slotFloorBasePng;
     CRC_SLOT slotFloorNormalPng;
 

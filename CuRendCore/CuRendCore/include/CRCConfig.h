@@ -211,6 +211,15 @@ enum CRC_UTILITY_TYPE
     CRC_UTILITY_TYPE_SIZE,
 };
 
+
+enum CRC_UI_TYPE
+{
+    CRC_UI_TYPE_NULL = 0,
+    CRC_UI_TYPE_IMAGE,
+    CRC_UI_TYPE_TEXT,
+    CRC_UI_TYPE_SIZE,
+};
+
 // Debug Output
 static void CRCDebugOutput(std::string filePath, std::string func, int line, std::string element)
 {
