@@ -20,3 +20,33 @@ To create a Windows app need Windows API. CuRendCore uses it too.
 ## Data flow
 I want to edit the GPU's buffer data in CUDA and use Direct2D to draw it on the screen without sending it to the CPU, so I create a Direct3D texture, map it to CUDA, process it, and then transfer that texture data to Direct2D. It used to draw on the screen. The buffer shared between Direct2D and CUDA is only the screen drawing buffer, so other vertex buffers etc are created and used on the CUDA side.
 
+## System flow
+CuRendCore uses a Scene for application state management, and draws this Scene on the screen by registering it in a Window. After creation, WindowController is used to control Window, and SceneMani is used to manipulate Scene. The processing of WindowController and SceneMani is described by inheriting these classes from user-created classes and overriding their member functions. [System flowchart](../design/diagrams/system_flowchart/system_flowchart.drawio) shows about these flow.
+
+## Window Controller
+WindowController has a function that is called in each WindowMessage process. By overriding the following functions in a class inherited from the user side, you can create your own processing to be performed when a WindowMessage of a Window procedure is received.
+```C++
+virtual HRESULT OnCreate(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam){ return S_OK; };
+virtual HRESULT OnSetFocus(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam){ return S_OK; };
+virtual HRESULT OnKillFocus(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam){ return S_OK; };
+virtual HRESULT OnMinimize(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam){ return S_OK; };
+virtual HRESULT OnMaximize(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam){ return S_OK; };
+virtual HRESULT OnRestored(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam){ return S_OK; };
+virtual HRESULT OnPaint(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam){ return S_OK; };
+virtual HRESULT OnMove(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam){ return S_OK; };
+virtual HRESULT OnClose(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam){ return S_OK; };
+virtual HRESULT OnDestroy(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam){PostQuitMessage(0); return S_OK; };
+virtual HRESULT OnKeyDown(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam){ return S_OK; };
+virtual HRESULT OnKeyUp(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam){ return S_OK; };
+virtual HRESULT OnMouse(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam){ return S_OK; };
+```
+
+また、WindowControllerは以下のメンバ関数を持ち、現在指定されているSceneのshared_ptrやweak_ptrを取得しSceneに対する処理を記述したり、マウス、キーボードなどの入力機器の状態を取得することができる。
+```C++
+std::shared_ptr<Scene> GetScene(){return scene.lock();};
+std::weak_ptr<Scene> GetSceneWeak(){return scene;};
+
+std::shared_ptr<Input> GetInput(){return input.lock();};
+std::weak_ptr<Input> GetInputWeak(){return input;};
+```
+
