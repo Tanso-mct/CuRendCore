@@ -6,7 +6,7 @@ CRC_SCENE_STATE ExampleSceneMani::Start()
     CRC::ResourceFactory* rf = CRC::CuRendCore::GetInstance()->resourceFc;
 
     // Create resources
-    CRC::RESOURCEATTR rattr;
+    CRC::RESOURCE_ATTR rattr;
     rattr.path = "Resource/Object/Cube.obj";
     slotCubeObj = rf->CreateResource(rattr);
 
@@ -34,7 +34,7 @@ CRC_SCENE_STATE ExampleSceneMani::Start()
     rattr.path = "Resource/Image/rect_blue.png";
     slotRectBlue = rf->CreateResource(rattr);
 
-    // Add resources to the scene controller
+    // Add resources to the scene
     GetScene()->AddResource(slotCubeObj);
     GetScene()->AddResource(slotFloorObj);
     GetScene()->AddResource(slotCubeBasePng);

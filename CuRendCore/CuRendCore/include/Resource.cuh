@@ -18,16 +18,16 @@ class ResourceController;
 typedef struct CRC_API _RESOURCE_ATTRIBUTES
 {
     std::string path = "";
-    std::shared_ptr<ResourceController> ctrl = nullptr;
-} RESOURCEATTR;
+    std::unique_ptr<ResourceController> ctrl = nullptr;
+} RESOURCE_ATTR;
 
 class CRC_API Resource
 {
 protected:
-    Resource(RESOURCEATTR rattr);
+    Resource(RESOURCE_ATTR& rattr);
 
-    RESOURCEATTR rattr;
-    std::shared_ptr<ResourceController> ctrl = nullptr;
+    std::string path = "";
+    std::unique_ptr<ResourceController> ctrl = nullptr;
 
 public:
     virtual ~Resource();
@@ -65,7 +65,7 @@ private:
 public:
     ~ResourceFactory();
 
-    CRC_SLOT CreateResource(RESOURCEATTR rattr);
+    CRC_SLOT CreateResource(RESOURCE_ATTR& rattr);
     HRESULT DestroyResource(CRC_SLOT slot);
 
     HRESULT LoadResource(CRC_SLOT slot);

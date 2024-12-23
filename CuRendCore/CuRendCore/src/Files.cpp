@@ -17,12 +17,12 @@ PngFile::~PngFile()
 
 HRESULT PngFile::Load()
 {
-    stbi_info(rattr.path.c_str(), &width, &height, &channels);
-    stbi_uc* pixels = stbi_load(rattr.path.c_str(), &width, &height, &channels, STBI_rgb_alpha);
+    stbi_info(path.c_str(), &width, &height, &channels);
+    stbi_uc* pixels = stbi_load(path.c_str(), &width, &height, &channels, STBI_rgb_alpha);
 
     if (!pixels) return E_FAIL;
 
-    CRCDebugOutput(__FILE__, __FUNCTION__, __LINE__, rattr.path);
+    CRCDebugOutput(__FILE__, __FUNCTION__, __LINE__, path);
 
     data = new DWORD[width * height];
 
@@ -51,7 +51,7 @@ HRESULT PngFile::Unload()
 {
     if (data != nullptr)
     {
-        CRCDebugOutput(__FILE__, __FUNCTION__, __LINE__, rattr.path);
+        CRCDebugOutput(__FILE__, __FUNCTION__, __LINE__, path);
         delete[] data;
         data = nullptr;
     }
@@ -68,10 +68,10 @@ ObjFile::~ObjFile()
 
 HRESULT ObjFile::Load()
 {
-    std::ifstream file(rattr.path);
+    std::ifstream file(path);
     if (file.fail()) return E_FAIL;
 
-    CRCDebugOutput(__FILE__, __FUNCTION__, __LINE__, rattr.path);
+    CRCDebugOutput(__FILE__, __FUNCTION__, __LINE__, path);
 
     Unload();
 
@@ -167,7 +167,7 @@ HRESULT ObjFile::Unload()
 
     if (boundingBox != nullptr)
     {
-        CRCDebugOutput(__FILE__, __FUNCTION__, __LINE__, rattr.path);
+        CRCDebugOutput(__FILE__, __FUNCTION__, __LINE__, path);
         
         delete boundingBox;
         boundingBox = nullptr;

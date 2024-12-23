@@ -4,13 +4,14 @@
 namespace CRC 
 {
 
-Resource::Resource(RESOURCEATTR rattr)
+Resource::Resource(RESOURCE_ATTR& rattr)
 {
     CRCDebugOutput(__FILE__, __FUNCTION__, __LINE__, "");
 
-    this->rattr = rattr;
-    if (rattr.ctrl != nullptr) ctrl = rattr.ctrl;
-    else ctrl = std::shared_ptr<ResourceController>(new ResourceController());
+    this->path = rattr.path;
+
+    if (rattr.ctrl != nullptr) ctrl = std::move(rattr.ctrl);
+    else ctrl = std::unique_ptr<ResourceController>(new ResourceController());
 }
 
 Resource::~Resource()
@@ -31,7 +32,7 @@ ResourceFactory::~ResourceFactory()
     resources.clear();
 }
 
-CRC_SLOT ResourceFactory::CreateResource(RESOURCEATTR rattr)
+CRC_SLOT ResourceFactory::CreateResource(RESOURCE_ATTR& rattr)
 {
     for (int i = 0; i < files.size(); i++)
     {
