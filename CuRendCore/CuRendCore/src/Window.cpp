@@ -116,12 +116,6 @@ HRESULT WindowFactory::SetScene(CRC_SLOT slotWnd, CRC_SLOT slotScene)
 
 LRESULT CALLBACK WindowFactory::WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-    if (wParam == SC_MINIMIZE)
-    {
-        WindowFactory* wf = CuRendCore::GetInstance()->windowFc;
-        wf->windows[wf->slots[hWnd]]->ctrl->OnMinimize(hWnd, msg, wParam, lParam);
-    }
-
     switch (msg){
         case WM_SIZE:
         {

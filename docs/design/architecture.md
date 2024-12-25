@@ -104,7 +104,7 @@ std::shared_ptr<Input> GetInput(){return input.lock();};
 std::weak_ptr<Input> GetInputWeak(){return input;};
 ```
 
-## Data flow
+## Data manage
 The Window and Scene created using each attribute are managed by their respective Factory classes, and a value of unsigned int type can be obtained in the return value of the creation function at the time of creation.WindowController and SceneMani are passed to each attribute by unique_ptr, so users do not need to manage them.
 ```C++
 // windowFc = Window Factory class instance
@@ -121,7 +121,7 @@ It is also recommended that resources be created using the WindowController or S
 CRC::ResourceFactory* rf = CRC::CuRendCore::GetInstance()->resourceFc;
 
 // Create resources
-CRC::RESOURCEATTR rattr; // Resource attributes
+CRC::RESOURCE_ATTR rattr; // Resource attributes
 rattr.path = "Resource/sample.obj";
 rattr.ctrl = std::unique_ptr<ResourceController>(new UserResourceController()); // Class inheriting from ResourceController
 unsigned int sampleObjectSlot = rf->CreateResource(rattr);
@@ -147,6 +147,3 @@ CRC::OBJECT_ATTR oattr;
 // Create component using group slot id.
 unsigned int sampleObject = GetScene()->CreateComponent(sampleGroupSlot, oattr);
 ```
-
-The above is how each piece of data is created and how CuRendCore manages this data is showed by [Data_Sequence](../design/diagrams/data_sequence/data_sequence.drawio).
-
