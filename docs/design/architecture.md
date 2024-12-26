@@ -17,6 +17,133 @@ Direct2D is used to draw on the screen by using a buffer from CUDA and Direct3D.
 ### Windows API
 To create a Windows app need Windows API. CuRendCore uses it too.
 
-## Data flow
-I want to edit the GPU's buffer data in CUDA and use Direct2D to draw it on the screen without sending it to the CPU, so I create a Direct3D texture, map it to CUDA, process it, and then transfer that texture data to Direct2D. It used to draw on the screen. The buffer shared between Direct2D and CUDA is only the screen drawing buffer, so other vertex buffers etc are created and used on the CUDA side.
+## System flow
+CuRendCore uses a Scene for application state management, and draws this Scene on the screen by registering it in a Window. After creation, WindowController is used to control Window, and SceneMani is used to manipulate Scene. The processing of WindowController and SceneMani is described by inheriting these classes from user-created classes and overriding their member functions. [System flowchart](../design/diagrams/system_flowchart/system_flowchart.drawio) shows about these flow.
 
+### Window Controller
+WindowController has a function that is called in each WindowMessage process. By overriding the following functions in a class inherited from the user side, you can create your own processing to be performed when a WindowMessage of a Window procedure is received.
+```C++
+virtual HRESULT OnCreate(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam){ return S_OK; };
+virtual HRESULT OnSetFocus(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam){ return S_OK; };
+virtual HRESULT OnKillFocus(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam){ return S_OK; };
+virtual HRESULT OnMinimize(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam){ return S_OK; };
+virtual HRESULT OnMaximize(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam){ return S_OK; };
+virtual HRESULT OnRestored(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam){ return S_OK; };
+virtual HRESULT OnPaint(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam){ return S_OK; };
+virtual HRESULT OnMove(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam){ return S_OK; };
+virtual HRESULT OnClose(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam){ return S_OK; };
+virtual HRESULT OnDestroy(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam){PostQuitMessage(0); return S_OK; };
+virtual HRESULT OnKeyDown(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam){ return S_OK; };
+virtual HRESULT OnKeyUp(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam){ return S_OK; };
+virtual HRESULT OnMouse(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam){ return S_OK; };
+```
+
+In addition, WindowController has the following member functions, which can acquire the shared_ptr and weak_ptr of the currently specified Scene, describe processing for the Scene, and acquire the status of input devices such as mouse and keyboard.
+```C++
+std::shared_ptr<Scene> GetScene(){return scene.lock();};
+std::weak_ptr<Scene> GetSceneWeak(){return scene;};
+
+std::shared_ptr<Input> GetInput(){return input.lock();};
+std::weak_ptr<Input> GetInputWeak(){return input;};
+```
+
+### SceneMani
+The SceneMani class has functions that are called in the following Scenes.These functions can be overridden by the user-created SceneMani class using inherited classes to describe processing in the functions executed by the Scene.
+```C++
+virtual CRC_SCENE_STATE Start() = 0;
+virtual CRC_SCENE_STATE Update() = 0;
+virtual CRC_SCENE_STATE End() = 0;
+
+virtual CRC_SCENE_STATE ReStart() = 0;
+```
+These functions are called within Scene's Execute function, and the Execute function is called in WindowController's OnPaint(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) function as follows. Since the Execute function does not manage the Scene state, the Scene state must also be managed here from the return value of the Execute function.
+```C++
+#define CRC_SLOT unsigned int
+
+enum CRC_SCENE_STATE
+{
+    CRC_SCENE_STATE_EXECUTING = 0,
+    CRC_SCENE_STATE_CLOSE,
+    CRC_SCENE_STATE_START,
+    CRC_SCENE_STATE_UPDATE,
+    CRC_SCENE_STATE_END,
+    CRC_SCENE_STATE_DESTROY,
+    CRC_SCENE_STATE_RESTART,
+    CRC_SCENE_STATE_ERROR,
+    CRC_SCENE_STATE_SIZE,
+};
+
+// Scene class member functions
+CRC_SCENE_STATE Execute();
+CRC_SCENE_STATE Close();
+
+// Scene factory member function
+HRESULT DestroyScene(CRC_SLOT slot);
+
+if (GetScene() != nullptr)
+{
+    CRC_SCENE_STATE state;
+    state = GetScene()->Execute();
+    if (state == CRC_SCENE_STATE_CLOSE)
+    {
+        state = GetScene()->Close();
+        if (state == CRC_SCENE_STATE_DESTROY)
+        {
+            CRC::CuRendCore::GetInstance()->sceneFc->DestroyScene(GetScene()->GetSlot());
+        }
+    }
+}
+```
+
+In addition, SceneMani, like WindowController, has the following member functions to acquire the shared_ptr and weak_ptr of the currently specified Scene, to write processing for the Scene, and the state of input devices such as mouse and keyboard can be acquired from Input class instances.
+```C++
+std::shared_ptr<Scene> GetScene(){return scene.lock();};
+std::weak_ptr<Scene> GetSceneWeak(){return scene;};
+
+std::shared_ptr<Input> GetInput(){return input.lock();};
+std::weak_ptr<Input> GetInputWeak(){return input;};
+```
+
+## Data manage
+The Window and Scene created using each attribute are managed by their respective Factory classes, and a value of unsigned int type can be obtained in the return value of the creation function at the time of creation.WindowController and SceneMani are passed to each attribute by unique_ptr, so users do not need to manage them.
+```C++
+// windowFc = Window Factory class instance
+unsigned int windowSlot  = crc->windowFc->CreateWindowCRC(wattr);
+
+// sceneFc = Scene Factory class instance
+unsigned int sceneSlot = crc->sceneFc->CreateScene(sattr);
+```
+
+It is also recommended that resources be created using the WindowController or SceneMani methods, which can also obtain a SLOT_ID at the time of creation.To use a resource created on Scene, it is necessary to use this SLOT_ID, add it as a target resource in Scene, and then load the resource. It is recommended to add and load resources within the Start method of SceneMani.
+```C++
+// Get the resource factory instance
+// resourceFc = Resource Factory class instance
+CRC::ResourceFactory* rf = CRC::CuRendCore::GetInstance()->resourceFc;
+
+// Create resources
+CRC::RESOURCE_ATTR rattr; // Resource attributes
+rattr.path = "Resource/sample.obj";
+rattr.ctrl = std::unique_ptr<ResourceController>(new UserResourceController()); // Class inheriting from ResourceController
+unsigned int sampleObjectSlot = rf->CreateResource(rattr);
+
+// Add resources to the scene
+GetScene()->AddResource(sampleObjectSlot);
+
+// Load resources
+GetScene()->LoadResources();
+```
+
+Although resources can be manipulated using the Controller class, it is recommended to create a Component and set resources in it.Each Component can be manipulated by a class inheriting from the SceneMani class using its own member functions. Component must also belong to a group, so a group must be created.
+```C++
+// Create group
+CRC::GROUPATTR gattr;
+gattr.name = "sample_group";
+gattr.active = TRUE;
+unsigned int sampleGroupSlot = GetScene()->CreateGroup(gattr);
+
+// Set component attribute
+CRC::OBJECT_ATTR oattr;
+
+// Create component using group slot id.
+unsigned int sampleObject = GetScene()->CreateComponent(sampleGroupSlot, oattr);
+```
