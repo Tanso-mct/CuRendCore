@@ -22,9 +22,9 @@
     <ClCompile Include="src\Binder.cpp" />
     <ClCompile Include="src\Component.cpp" />
     <ClCompile Include="src\CuRendCore.cpp" />
-    <ClCompile Include="src\Files.cpp" />
     <ClCompile Include="src\Group.cpp" />
     <ClCompile Include="src\Input.cpp" />
+    <CudaCompile Include="src\Files.cu" />
     <CudaCompile Include="src\Object.cu">
       <FileType>Document</FileType>
     </CudaCompile>
@@ -45,8 +45,8 @@
     <ClInclude Include="include\Component.h" />
     <ClInclude Include="include\CRCConfig.h" />
     <ClInclude Include="include\CuRendCore.h" />
-    <ClInclude Include="include\Files.h" />
     <CudaCompile Include="include\FromObj.cuh" />
+    <CudaCompile Include="include\Files.cuh" />
     <ClInclude Include="include\Group.h" />
     <CudaCompile Include="include\Image.cuh" />
     <ClInclude Include="include\Input.h" />
