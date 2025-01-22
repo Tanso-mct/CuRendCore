@@ -24,9 +24,6 @@
     <ClCompile Include="src\CuRendCore.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="src\Files.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="src\Group.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
@@ -63,9 +60,6 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="include\stb_image.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Files.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="include\Group.h">
@@ -140,6 +134,12 @@
       <Filter>ヘッダー ファイル</Filter>
     </CudaCompile>
     <CudaCompile Include="include\Text.cuh">
+      <Filter>ヘッダー ファイル</Filter>
+    </CudaCompile>
+    <CudaCompile Include="src\Files.cu">
+      <Filter>ソース ファイル</Filter>
+    </CudaCompile>
+    <CudaCompile Include="include\Files.cuh">
       <Filter>ヘッダー ファイル</Filter>
     </CudaCompile>
   </ItemGroup>

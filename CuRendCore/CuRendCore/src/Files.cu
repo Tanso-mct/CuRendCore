@@ -1,4 +1,4 @@
-#include "Files.h"
+#include "Files.cuh"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"

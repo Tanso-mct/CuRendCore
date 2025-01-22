@@ -1,5 +1,5 @@
 #include "Resource.cuh"
-#include "Files.h"
+#include "Files.cuh"
 
 namespace CRC 
 {
