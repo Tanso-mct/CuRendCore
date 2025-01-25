@@ -1,10 +1,8 @@
 #include "CRC_pch.h"
 
+#include "CRC_funcs.h"
 #include "CRC_core.h"
-
-void CRCCore::Shutdown()
-{
-}
+#include "CRC_window.h"
 
 CRCCore::CRCCore()
 {
@@ -20,4 +18,21 @@ void CRCCore::Initialize()
 
 void CRCCore::Run()
 {
+}
+
+int CRCCore::Shutdown()
+{
+    return 0;
+}
+
+HRESULT CRCCore::SetWindowContainer(std::unique_ptr<CRCContainer>& container)
+{
+    std::unique_ptr<CRCWindowContainer> windowContainer = CRC::CastMove<CRCWindowContainer>(container);
+
+    if (windowContainer)
+    {
+        windowContainer_ = std::move(windowContainer);
+        return S_OK;
+    }
+    else return E_FAIL;
 }

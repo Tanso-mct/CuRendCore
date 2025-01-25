@@ -18,6 +18,22 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\CRC_core.cpp" />
+    <ClCompile Include="src\CRC_funcs.cpp" />
+    <ClCompile Include="src\CRC_pch.cpp" />
+    <ClCompile Include="src\CRC_window.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\CRC_config.h" />
+    <ClInclude Include="include\CRC_core.h" />
+    <ClInclude Include="include\CRC_funcs.h" />
+    <ClInclude Include="include\CRC_interface.h" />
+    <ClInclude Include="include\CRC_pch.h" />
+    <ClInclude Include="include\CRC_window.h" />
+    <ClInclude Include="include\CuRendCore.h" />
+    <ClInclude Include="include\stb_image.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>

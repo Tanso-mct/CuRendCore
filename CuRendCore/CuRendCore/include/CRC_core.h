@@ -1,12 +1,17 @@
 #pragma once
 
+#include <memory>
+#include <Windows.h>
+
 #include "CRC_config.h"
 #include "CRC_interface.h"
+
+class CRCWindowContainer;
 
 class CRCCore
 {
 private:
-    virtual void Shutdown();
+    std::unique_ptr<CRCWindowContainer> windowContainer_ = nullptr;
 
 public:
     CRCCore();
@@ -14,4 +19,7 @@ public:
 
     virtual void Initialize();
     virtual void Run();
+    virtual int Shutdown();
+
+    virtual HRESULT SetWindowContainer(std::unique_ptr<CRCContainer>& container);
 };
