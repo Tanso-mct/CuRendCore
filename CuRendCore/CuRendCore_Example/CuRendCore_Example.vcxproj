@@ -133,14 +133,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ExampleEntry.cpp" />
-    <ClCompile Include="ExampleScene.cpp" />
-    <ClCompile Include="ExampleWindow.cpp" />
-    <ClCompile Include="Slots.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="ExampleScene.h" />
-    <ClInclude Include="ExampleWindow.h" />
-    <ClInclude Include="Slots.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
