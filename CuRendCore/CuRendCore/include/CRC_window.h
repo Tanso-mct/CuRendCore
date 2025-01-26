@@ -9,8 +9,15 @@
 class CRCWindowAttr
 {
 public:
-    int width;
-    int height;
+    WNDCLASSEX wcex_ = { 0 };
+    LPCWSTR name_ = L"CuRendCore Window";
+    int initialPosX_ = CW_USEDEFAULT;
+    int initialPosY_ = CW_USEDEFAULT;
+    unsigned int width_ = 800;
+    unsigned int height_ = 600;
+    DWORD style_ = WS_OVERLAPPEDWINDOW;
+    HWND hWndParent_ = NULL;
+    HINSTANCE hInstance = nullptr;
 };
 
 class CRCWindowData : public CRCData
