@@ -7,3 +7,11 @@
 #include <Windows.h>
 #include <string>
 #include <memory>
+
+namespace CRC
+{
+
+constexpr UINT ERROR_CREATE_WINDOW = 0x0001;
+constexpr UINT ERROR_SHOW_WINDOW = 0x0002;
+
+}

@@ -3,8 +3,10 @@
 #include "CRC_config.h"
 #include "CRC_interface.h"
 
+#include <memory>
+
 class CRCCore;
-class CRCWindowAttr;
+struct CRCWindowAttr; 
 
 namespace CRC
 {
@@ -49,9 +51,11 @@ std::unique_ptr<T>& CastRef(std::unique_ptr<S>& source)
     }
 }
 
-std::unique_ptr<CRCCore> CRC_API CreateCRCCore();
+CRC_API std::unique_ptr<CRCCore>& Core();
 
-std::unique_ptr<CRCContainer> CRC_API CreateWindowContainer();
-std::unique_ptr<CRCData> CRC_API CreateWindowData(CRCWindowAttr& attr);
+CRC_API std::unique_ptr<CRCContainer> CreateWindowContainer();
+
+CRC_API std::unique_ptr<CRCData> CreateCRCWindow(CRCWindowAttr& attr);
+CRC_API HRESULT ShowCRCWindow(std::unique_ptr<CRCData>& data);
 
 }

@@ -6,11 +6,34 @@
 #include <memory>
 #include <vector>
 
+class CRCWindowData : public CRCData
+{
+public:
+    virtual ~CRCWindowData() = default;
+
+    HWND hWnd_ = nullptr;
+};
+
 class CRCWindowAttr
 {
 public:
-    WNDCLASSEX wcex_ = { 0 };
-    LPCWSTR name_ = L"CuRendCore Window";
+    WNDCLASSEX wcex_ = 
+    {
+        sizeof(WNDCLASSEX),
+        CS_HREDRAW | CS_VREDRAW,
+        nullptr,
+        0,
+        0,
+        nullptr,
+        LoadIcon(nullptr, IDI_APPLICATION),
+        LoadCursor(nullptr, IDC_ARROW),
+        (HBRUSH)(COLOR_WINDOW + 1),
+        nullptr,
+        L"Window",
+        LoadIcon(nullptr, IDI_APPLICATION)
+    };
+
+    LPCWSTR name_ = L"Window";
     int initialPosX_ = CW_USEDEFAULT;
     int initialPosY_ = CW_USEDEFAULT;
     unsigned int width_ = 800;
@@ -18,12 +41,6 @@ public:
     DWORD style_ = WS_OVERLAPPEDWINDOW;
     HWND hWndParent_ = NULL;
     HINSTANCE hInstance = nullptr;
-};
-
-class CRCWindowData : public CRCData
-{
-public:
-    virtual ~CRCWindowData() = default;
 };
 
 class CRCWindowContainer : public CRCContainer
