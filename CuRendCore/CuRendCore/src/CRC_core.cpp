@@ -54,4 +54,5 @@ HRESULT CRCCore::SetSceneToWindow(int idWindow, int idScene)
     if (idWindow >= windowContainer_->GetSize() || idScene >= sceneContainer_->GetSize()) return E_FAIL;
 
     std::unique_ptr<CRCWindowData>& windowData = CRC::CastRef<CRCWindowData>(windowContainer_->Get(idWindow));
+    windowData->idScene_ = idScene;
 }

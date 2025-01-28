@@ -12,6 +12,7 @@ public:
     virtual ~CRCWindowData() = default;
 
     HWND hWnd_ = nullptr;
+    int idScene_ = CRC::INVALID_ID;
 };
 
 class CRCWindowAttr
