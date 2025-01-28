@@ -21,7 +21,6 @@ CRC_API std::unique_ptr<CRCData> CRC::CreateCRCWindow(CRCWindowAttr& attr)
 {
     std::unique_ptr<CRCWindowData> windowData = std::make_unique<CRCWindowData>();
 
-    // Set windowData properties.
     if (!RegisterClassEx(&attr.wcex_)) return nullptr;
 
     windowData->hWnd_ = CreateWindow
@@ -61,4 +60,13 @@ CRC_API std::unique_ptr<CRCContainer> CRC::CreateSceneContainer()
 {
     std::unique_ptr<CRCContainer> sceneContainer = std::make_unique<CRCSceneContainer>();
     return sceneContainer;
+}
+
+CRC_API std::unique_ptr<CRCData> CRC::CreateCRCScene(CRCSceneAttr &attr)
+{
+    std::unique_ptr<CRCSceneData> sceneData = std::make_unique<CRCSceneData>();
+
+    // Set scene attributes.
+
+    return sceneData;
 }

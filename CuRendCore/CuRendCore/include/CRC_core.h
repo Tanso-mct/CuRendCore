@@ -20,7 +20,6 @@ public:
     virtual ~CRCCore();
 
     virtual void Initialize();
-    virtual void Run();
     virtual int Shutdown();
 
     virtual HRESULT MoveWindowContainer(std::unique_ptr<CRCContainer>& container);

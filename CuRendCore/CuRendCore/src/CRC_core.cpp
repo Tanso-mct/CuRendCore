@@ -17,10 +17,6 @@ void CRCCore::Initialize()
 {
 }
 
-void CRCCore::Run()
-{
-}
-
 int CRCCore::Shutdown()
 {
     CRC::Core() = nullptr;

@@ -7,6 +7,7 @@
 
 class CRCCore;
 struct CRCWindowAttr; 
+struct CRCSceneAttr;
 
 namespace CRC
 {
@@ -58,5 +59,6 @@ CRC_API std::unique_ptr<CRCData> CreateCRCWindow(CRCWindowAttr& attr);
 CRC_API HRESULT ShowCRCWindow(std::unique_ptr<CRCData>& data);
 
 CRC_API std::unique_ptr<CRCContainer> CreateSceneContainer();
+CRC_API std::unique_ptr<CRCData> CreateCRCScene(CRCSceneAttr& attr);
 
 }

@@ -7,4 +7,5 @@
 #include "CRC_interface.h"
 
 #include "CRC_window.h"
+#include "CRC_scene.h"
 
