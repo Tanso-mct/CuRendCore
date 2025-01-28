@@ -22,11 +22,7 @@ CRC_API std::unique_ptr<CRCData> CRC::CreateCRCWindow(CRCWindowAttr& attr)
     std::unique_ptr<CRCWindowData> windowData = std::make_unique<CRCWindowData>();
 
     // Set windowData properties.
-    if (!RegisterClassEx(&attr.wcex_))
-    {
-        UnregisterClass(attr.wcex_.lpszClassName, attr.wcex_.hInstance);
-        return nullptr;
-    }
+    if (!RegisterClassEx(&attr.wcex_)) return nullptr;
 
     windowData->hWnd_ = CreateWindow
     (
