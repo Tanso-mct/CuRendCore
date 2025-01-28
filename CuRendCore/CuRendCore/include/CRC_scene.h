@@ -13,9 +13,8 @@ public:
     virtual ~CRCSceneData() = default;
 };
 
-class CRCSceneAttr
+struct CRCSceneAttr
 {
-public:
     std::string name_ = "Scene";
 };
 
