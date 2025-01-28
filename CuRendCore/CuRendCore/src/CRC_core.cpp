@@ -46,3 +46,12 @@ HRESULT CRCCore::MoveSceneContainer(std::unique_ptr<CRCContainer> &container)
     }
     else return E_FAIL;
 }
+
+HRESULT CRCCore::SetSceneToWindow(int idWindow, int idScene)
+{
+    if (windowContainer_ == nullptr || sceneContainer_ == nullptr) return E_FAIL;
+    if (idWindow == CRC::INVALID_ID || idScene == CRC::INVALID_ID) return E_FAIL;
+    if (idWindow >= windowContainer_->GetSize() || idScene >= sceneContainer_->GetSize()) return E_FAIL;
+
+    std::unique_ptr<CRCWindowData>& windowData = CRC::CastRef<CRCWindowData>(windowContainer_->Get(idWindow));
+}
