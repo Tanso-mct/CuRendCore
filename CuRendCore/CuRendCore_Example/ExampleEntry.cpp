@@ -11,9 +11,10 @@ int APIENTRY WinMain
 ) {
     CRC::Core()->Initialize();
 
-    std::unique_ptr<CRCContainer> windowContainer = CRC::CreateWindowContainer();
-    int idMainWindow = -1;
+    int idMainWindow = CRC::INVALID_ID;
     {
+        std::unique_ptr<CRCContainer> windowContainer = CRC::CreateWindowContainer();
+
         CRCWindowAttr windowAttr;
         windowAttr.hInstance = hInstance;
         windowAttr.wcex_.lpfnWndProc = WindowProc;
@@ -25,9 +26,9 @@ int APIENTRY WinMain
         if (FAILED(hr)) return CRC::ERROR_SHOW_WINDOW;
 
         idMainWindow = windowContainer->Add(windowData);
-    }
 
-    CRC::Core()->SetWindowContainer(windowContainer);
+        CRC::Core()->MoveWindowContainer(windowContainer);
+    }
 
     CRC::Core()->Run();
 

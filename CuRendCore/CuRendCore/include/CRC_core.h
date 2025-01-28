@@ -21,5 +21,5 @@ public:
     virtual void Run();
     virtual int Shutdown();
 
-    virtual HRESULT SetWindowContainer(std::unique_ptr<CRCContainer>& container);
+    virtual HRESULT MoveWindowContainer(std::unique_ptr<CRCContainer>& container);
 };

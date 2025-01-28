@@ -22,10 +22,11 @@ void CRCCore::Run()
 
 int CRCCore::Shutdown()
 {
+    CRC::Core() = nullptr;
     return 0;
 }
 
-HRESULT CRCCore::SetWindowContainer(std::unique_ptr<CRCContainer>& container)
+HRESULT CRCCore::MoveWindowContainer(std::unique_ptr<CRCContainer>& container)
 {
     std::unique_ptr<CRCWindowContainer> windowContainer = CRC::CastMove<CRCWindowContainer>(container);
 
