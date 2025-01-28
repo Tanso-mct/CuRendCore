@@ -1,9 +1,9 @@
 #include "CRC_pch.h"
-
 #include "CRC_funcs.h"
 
 #include "CRC_core.h"
 #include "CRC_window.h"
+#include "CRC_scene.h"
 
 CRC_API std::unique_ptr<CRCCore>& CRC::Core()
 {
@@ -55,4 +55,10 @@ CRC_API HRESULT CRC::ShowCRCWindow(std::unique_ptr<CRCData> &data)
     hr = UpdateWindow(windowData->hWnd_);
 
     return hr;
+}
+
+CRC_API std::unique_ptr<CRCContainer> CRC::CreateSceneContainer()
+{
+    std::unique_ptr<CRCContainer> sceneContainer = std::make_unique<CRCSceneContainer>();
+    return sceneContainer;
 }

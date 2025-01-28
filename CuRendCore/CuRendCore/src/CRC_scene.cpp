@@ -1,21 +1,21 @@
-#include "CRC_pch.h"
+﻿#include "CRC_pch.h"
 #include "CRC_funcs.h"
 
-#include "CRC_window.h"
+#include "CRC_scene.h"
 
-int CRCWindowContainer::Add(std::unique_ptr<CRCData>& data)
+int CRCSceneContainer::Add(std::unique_ptr<CRCData> &data)
 {
-    std::unique_ptr<CRCWindowData> windowData = CRC::CastMove<CRCWindowData>(data);
+    std::unique_ptr<CRCSceneData> sceneData = CRC::CastMove<CRCSceneData>(data);
 
-    if (windowData)
+    if (sceneData)
     {
-        data_.push_back(std::move(windowData));
+        data_.push_back(std::move(sceneData));
         return data_.size() - 1;
     }
     else return CRC::INVALID_ID;
 }
 
-HRESULT CRCWindowContainer::Remove(int id)
+HRESULT CRCSceneContainer::Remove(int id)
 {
     if (id < 0 || id >= data_.size()) return E_FAIL;
 
@@ -23,23 +23,23 @@ HRESULT CRCWindowContainer::Remove(int id)
     return S_OK;
 }
 
-std::unique_ptr<CRCData> &CRCWindowContainer::Get(int id)
+std::unique_ptr<CRCData> &CRCSceneContainer::Get(int id)
 {
     if (id < 0 || id >= data_.size())
     {
         std::unique_ptr<CRCData> emptyData = nullptr;
         return emptyData;
     }
-
+    
     return CRC::CastRef<CRCData>(data_[id]);
 }
 
-int CRCWindowContainer::GetSize()
+int CRCSceneContainer::GetSize()
 {
     return data_.size();
 }
 
-void CRCWindowContainer::Clear()
+void CRCSceneContainer::Clear()
 {
     data_.clear();
 }

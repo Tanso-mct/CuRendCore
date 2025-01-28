@@ -7,11 +7,13 @@
 #include "CRC_interface.h"
 
 class CRCWindowContainer;
+class CRCSceneContainer;
 
 class CRCCore
 {
 private:
     std::unique_ptr<CRCWindowContainer> windowContainer_ = nullptr;
+    std::unique_ptr<CRCSceneContainer> sceneContainer_ = nullptr;
 
 public:
     CRCCore();
@@ -22,4 +24,5 @@ public:
     virtual int Shutdown();
 
     virtual HRESULT MoveWindowContainer(std::unique_ptr<CRCContainer>& container);
+    virtual HRESULT MoveSceneContainer(std::unique_ptr<CRCContainer>& container);
 };
