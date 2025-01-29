@@ -1,5 +1,5 @@
 {
-    "commentTranslate.hover.enabled": false,
+    "commentTranslate.hover.enabled": true,
     "commentTranslate.targetLanguage": "en",
     "cSpell.words": [
         "Backgroud",
@@ -16,6 +16,7 @@
         "nullptr",
         "OBJECTATTR",
         "OVERLAPPEDWINDOW",
+        "Thrd",
         "UIATTR",
         "utattr",
         "UTILITYATTR",

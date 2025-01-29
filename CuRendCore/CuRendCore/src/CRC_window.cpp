@@ -15,28 +15,30 @@ int CRCWindowContainer::Add(std::unique_ptr<CRCData>& data)
     else return CRC::INVALID_ID;
 }
 
-HRESULT CRCWindowContainer::Remove(int id)
+std::unique_ptr<CRCData> CRCWindowContainer::Take(int id)
+{
+    if (id < 0 || id >= data_.size()) return nullptr;
+
+    return std::move(data_[id]);
+}
+
+HRESULT CRCWindowContainer::Set(int id, std::unique_ptr<CRCData> &data)
 {
     if (id < 0 || id >= data_.size()) return E_FAIL;
-
-    data_.erase(data_.begin() + id);
-    return S_OK;
+    
+    data_[id] = std::move(CRC::CastMove<CRCWindowData>(data));
 }
 
-std::unique_ptr<CRCData> &CRCWindowContainer::Get(int id)
-{
-    if (id < 0 || id >= data_.size())
-    {
-        std::unique_ptr<CRCData> emptyData = nullptr;
-        return emptyData;
-    }
-
-    return CRC::CastRef<CRCData>(data_[id]);
-}
-
-int CRCWindowContainer::GetSize()
+UINT CRCWindowContainer::GetSize()
 {
     return data_.size();
+}
+
+void CRCWindowContainer::Clear(int id)
+{
+    if (id < 0 || id >= data_.size()) return;
+
+    data_[id] = nullptr;
 }
 
 void CRCWindowContainer::Clear()

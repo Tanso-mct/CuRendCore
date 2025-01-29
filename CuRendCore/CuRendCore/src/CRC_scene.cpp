@@ -15,28 +15,30 @@ int CRCSceneContainer::Add(std::unique_ptr<CRCData> &data)
     else return CRC::INVALID_ID;
 }
 
-HRESULT CRCSceneContainer::Remove(int id)
+std::unique_ptr<CRCData> CRCSceneContainer::Take(int id)
+{
+    if (id < 0 || id >= data_.size()) return nullptr;
+    
+    return std::move(data_[id]);
+}
+
+HRESULT CRCSceneContainer::Set(int id, std::unique_ptr<CRCData> &data)
 {
     if (id < 0 || id >= data_.size()) return E_FAIL;
 
-    data_.erase(data_.begin() + id);
-    return S_OK;
+    data_[id] = CRC::CastMove<CRCSceneData>(data);
 }
 
-std::unique_ptr<CRCData> &CRCSceneContainer::Get(int id)
-{
-    if (id < 0 || id >= data_.size())
-    {
-        std::unique_ptr<CRCData> emptyData = nullptr;
-        return emptyData;
-    }
-    
-    return CRC::CastRef<CRCData>(data_[id]);
-}
-
-int CRCSceneContainer::GetSize()
+UINT CRCSceneContainer::GetSize()
 {
     return data_.size();
+}
+
+void CRCSceneContainer::Clear(int id)
+{
+    if (id < 0 || id >= data_.size()) return;
+
+    data_[id] = nullptr;
 }
 
 void CRCSceneContainer::Clear()

@@ -6,6 +6,8 @@
 #include <memory>
 
 class CRCCore;
+class CRCContainer;
+
 struct CRCWindowAttr; 
 struct CRCSceneAttr;
 
@@ -54,11 +56,12 @@ std::unique_ptr<T>& CastRef(std::unique_ptr<S>& source)
 
 CRC_API std::unique_ptr<CRCCore>& Core();
 
-CRC_API std::unique_ptr<CRCContainer> CreateWindowContainer();
-CRC_API std::unique_ptr<CRCData> CreateCRCWindow(CRCWindowAttr& attr);
-CRC_API HRESULT ShowCRCWindow(std::unique_ptr<CRCData>& data);
+CRC_API std::unique_ptr<CRCData> CreateWindowData(std::unique_ptr<CRCWindowAttr>& attr);
+CRC_API void CreateWindowsAsync();
 
-CRC_API std::unique_ptr<CRCContainer> CreateSceneContainer();
-CRC_API std::unique_ptr<CRCData> CreateCRCScene(CRCSceneAttr& attr);
+CRC_API std::unique_ptr<CRCData> CreateSceneData(std::unique_ptr<CRCSceneAttr>& attr);
+CRC_API void CreateScenesAsync();
+
+
 
 }

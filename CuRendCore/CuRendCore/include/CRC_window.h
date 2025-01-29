@@ -5,6 +5,9 @@
 #include <Windows.h>
 #include <memory>
 #include <vector>
+#include <mutex>
+
+struct CRCWindowAttr;
 
 class CRCWindowData : public CRCData
 {
@@ -13,11 +16,16 @@ public:
 
     HWND hWnd_ = nullptr;
     int idScene_ = CRC::INVALID_ID;
+
+    // If this flag is true, a window is created when a creative command is sent to the Window thread.
+    bool needCreateFlag_ = true;
+
+    // Used when creating a window. After creation, nullPtr.
+    std::unique_ptr<CRCWindowAttr> src_ = nullptr;
 };
 
-class CRCWindowAttr
+struct CRCWindowAttr
 {
-public:
     WNDCLASSEX wcex_ = 
     {
         sizeof(WNDCLASSEX),
@@ -42,6 +50,8 @@ public:
     DWORD style_ = WS_OVERLAPPEDWINDOW;
     HWND hWndParent_ = NULL;
     HINSTANCE hInstance = nullptr;
+
+    bool needCreateFlag_ = true;
 };
 
 class CRCWindowContainer : public CRCContainer
@@ -51,12 +61,15 @@ private:
 
 public:
     virtual ~CRCWindowContainer() = default;
+    std::mutex mtx;
 
     virtual int Add(std::unique_ptr<CRCData>& data) override;
-    virtual HRESULT Remove(int id) override;
 
-    virtual std::unique_ptr<CRCData>& Get(int id) override;
-    virtual int GetSize() override;
+    virtual std::unique_ptr<CRCData> Take(int id) override;
+    virtual HRESULT Set(int id, std::unique_ptr<CRCData>& data) override;
 
+    virtual UINT GetSize() override;
+
+    virtual void Clear(int id) override;
     virtual void Clear() override;
 };

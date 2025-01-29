@@ -28,11 +28,13 @@ public:
     virtual ~CRCContainer() = default;
 
     virtual int Add(std::unique_ptr<CRCData>& data) = 0;
-    virtual HRESULT Remove(int id) = 0;
 
-    virtual std::unique_ptr<CRCData>& Get(int id) = 0;
-    virtual int GetSize() = 0;
+    virtual std::unique_ptr<CRCData> Take(int id) = 0;
+    virtual HRESULT Set(int id, std::unique_ptr<CRCData>& data) = 0;
 
+    virtual UINT GetSize() = 0;
+
+    virtual void Clear(int id) = 0;
     virtual void Clear() = 0;
 };
 
