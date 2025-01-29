@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <Windows.h>
+#include <mutex>
 
 class CRCComponent
 {
@@ -25,6 +26,7 @@ public:
 class CRCContainer
 {
 public:
+    std::mutex mtx;
     virtual ~CRCContainer() = default;
 
     virtual int Add(std::unique_ptr<CRCData>& data) = 0;

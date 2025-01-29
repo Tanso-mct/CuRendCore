@@ -61,7 +61,6 @@ private:
 
 public:
     virtual ~CRCWindowContainer() = default;
-    std::mutex mtx;
 
     virtual int Add(std::unique_ptr<CRCData>& data) override;
 

@@ -10,19 +10,11 @@
 void CRCCore::Initialize()
 {
     // Start window thread.
-    CRC::Core()->threadWindow_.thread_ = std::thread
-    (
-        CRCCore::WindowThread, 
-        std::ref(threadWindow_), std::ref(windowContainer_)
-    );
+    CRC::Core()->threadWindow_.thread_ = std::thread(CRCCore::WindowThread, std::ref(threadWindow_));
     CRC::Core()->threadWindow_.isRunning_ = true;
 
     // Start scene thread.
-    CRC::Core()->threadScene_.thread_ = std::thread
-    (
-        CRCCore::SceneThread, 
-        std::ref(threadScene_), std::ref(sceneContainer_)
-    );
+    CRC::Core()->threadScene_.thread_ = std::thread(CRCCore::SceneThread, std::ref(threadScene_));
     CRC::Core()->threadScene_.isRunning_ = true;
 }
 
@@ -42,7 +34,7 @@ int CRCCore::Shutdown()
 
 std::unique_ptr<CRCContainer>& CRCCore::WindowContainer()
 {
-    if (windowContainer_ == nullptr) windowContainer_ = std::make_unique<CRCWindowContainer>();
+    static std::unique_ptr<CRCWindowContainer> windowContainer_ = std::make_unique<CRCWindowContainer>();
 
     std::lock_guard<std::mutex> lock(windowContainer_->mtx);
     return CRC::CastRef<CRCContainer>(windowContainer_);
@@ -50,7 +42,7 @@ std::unique_ptr<CRCContainer>& CRCCore::WindowContainer()
 
 std::unique_ptr<CRCContainer> &CRCCore::SceneContainer()
 {
-    if (sceneContainer_ == nullptr) sceneContainer_ = std::make_unique<CRCSceneContainer>();
+    static std::unique_ptr<CRCSceneContainer> sceneContainer_ = std::make_unique<CRCSceneContainer>();
 
     std::lock_guard<std::mutex> lock(sceneContainer_->mtx);
     return CRC::CastRef<CRCContainer>(sceneContainer_);
@@ -88,7 +80,7 @@ void CRCCore::GetResultFromSceneThrd(int &didCmd, int &error)
     error = threadScene_.error;
 }
 
-void CRCCore::WindowThread(CRCThread& thread, std::unique_ptr<CRCWindowContainer> &container)
+void CRCCore::WindowThread(CRCThread& thread)
 {
     while (thread.isRunning_)
     {
@@ -101,11 +93,12 @@ void CRCCore::WindowThread(CRCThread& thread, std::unique_ptr<CRCWindowContainer
         {
             std::vector<std::unique_ptr<CRCWindowData>> datas;
             {
+                std::unique_ptr<CRCContainer>& container = CRC::Core()->WindowContainer();
                 std::lock_guard<std::mutex> lock(container->mtx);
 
                 for (int i = 0; i < container->GetSize(); i++)
                 {
-                    datas.push_back(CRC::CastMove<CRCWindowData>(container->Take(i)));
+                    datas.push_back(CRC::GetAs<CRCWindowData>(container->Take(i)));
                 }
             }
 
@@ -149,11 +142,12 @@ void CRCCore::WindowThread(CRCThread& thread, std::unique_ptr<CRCWindowContainer
             }
 
             {
+                std::unique_ptr<CRCContainer>& container = CRC::Core()->WindowContainer();
                 std::lock_guard<std::mutex> lock(container->mtx);
 
                 for (int i = 0; i < datas.size(); i++)
                 {
-                    container->Set(i, CRC::CastMove<CRCData>(datas[i]));
+                    container->Set(i, CRC::CastRef<CRCData>(datas[i]));
                 }
             }
 
@@ -172,7 +166,7 @@ void CRCCore::WindowThread(CRCThread& thread, std::unique_ptr<CRCWindowContainer
     }
 }
 
-void CRCCore::SceneThread(CRCThread& thread, std::unique_ptr<CRCSceneContainer> &container)
+void CRCCore::SceneThread(CRCThread& thread)
 {
     std::mutex mtx;
     while (thread.isRunning_)
@@ -186,15 +180,16 @@ void CRCCore::SceneThread(CRCThread& thread, std::unique_ptr<CRCSceneContainer> 
         {
             std::vector<std::unique_ptr<CRCSceneData>> datas;
             {
+                std::unique_ptr<CRCContainer>& container = CRC::Core()->SceneContainer();
                 std::lock_guard<std::mutex> lock(container->mtx);
 
                 for (int i = 0; i < container->GetSize(); i++)
                 {
-                    datas.push_back(CRC::CastMove<CRCSceneData>(container->Take(i)));
+                    datas.push_back(CRC::GetAs<CRCSceneData>(container->Take(i)));
                 }
             }
 
-            for (int i = 0; i < container->GetSize(); i++)
+            for (int i = 0; i < datas.size(); i++)
             {
                 // If the scene needs to be created, create it.
                 if (datas[i]->needCreateFlag_ == false) continue;
@@ -210,11 +205,12 @@ void CRCCore::SceneThread(CRCThread& thread, std::unique_ptr<CRCSceneContainer> 
             }
 
             {
+                std::unique_ptr<CRCContainer>& container = CRC::Core()->SceneContainer();
                 std::lock_guard<std::mutex> lock(container->mtx);
 
                 for (int i = 0; i < datas.size(); i++)
                 {
-                    container->Set(i, CRC::CastMove<CRCData>(datas[i]));
+                    container->Set(i, CRC::CastRef<CRCData>(datas[i]));
                 }
             }
 
@@ -236,13 +232,14 @@ void CRCCore::SceneThread(CRCThread& thread, std::unique_ptr<CRCSceneContainer> 
 
 HRESULT CRCCore::SetSceneToWindow(int idWindow, int idScene)
 {
-    if (windowContainer_ == nullptr || sceneContainer_ == nullptr) return E_FAIL;
+    if (WindowContainer() == nullptr || SceneContainer() == nullptr) return E_FAIL;
     if (idWindow == CRC::INVALID_ID || idScene == CRC::INVALID_ID) return E_FAIL;
-    if (idWindow >= windowContainer_->GetSize() || idScene >= sceneContainer_->GetSize()) return E_FAIL;
+    if (idWindow >= WindowContainer()->GetSize() || idScene >= SceneContainer()->GetSize()) return E_FAIL;
 
-    std::lock_guard<std::mutex> lock(windowContainer_->mtx);
+    std::unique_ptr<CRCContainer>& container = WindowContainer();
+    std::lock_guard<std::mutex> lock(container->mtx);
 
-    std::unique_ptr<CRCWindowData> windowData = CRC::CastMove<CRCWindowData>(windowContainer_->Take(idWindow));
+    std::unique_ptr<CRCWindowData> windowData = CRC::GetAs<CRCWindowData>(container->Take(idWindow));
     if (!windowData) return E_FAIL;
 
     windowData->idScene_ = idScene;

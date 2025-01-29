@@ -14,14 +14,11 @@ class CRCSceneContainer;
 class CRCCore
 {
 private:
-    std::unique_ptr<CRCWindowContainer> windowContainer_ = nullptr;
-    std::unique_ptr<CRCSceneContainer> sceneContainer_ = nullptr;
-
     CRCThread threadWindow_;
-    static void WindowThread(CRCThread& thread, std::unique_ptr<CRCWindowContainer> &container);
+    static void WindowThread(CRCThread& thread);
 
     CRCThread threadScene_;
-    static void SceneThread(CRCThread& thread, std::unique_ptr<CRCSceneContainer> &container);
+    static void SceneThread(CRCThread& thread);
 
 public:
     CRCCore() = default;

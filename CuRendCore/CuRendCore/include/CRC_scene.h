@@ -34,7 +34,6 @@ private:
 
 public:
     virtual ~CRCSceneContainer() = default;
-    std::mutex mtx;
 
     virtual int Add(std::unique_ptr<CRCData>& data) override;
 
