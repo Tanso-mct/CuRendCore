@@ -13,9 +13,6 @@ class CRCSceneData : public CRCData
 public:
     virtual ~CRCSceneData() = default;
 
-    // If this flag is true, a scene is created when a creative command is sent to the Scene thread.
-    bool needCreateFlag_ = true;
-
     // Used when creating a window. After creation, nullPtr.
     std::unique_ptr<CRCSceneAttr> src_ = nullptr;
 };

@@ -17,9 +17,6 @@ public:
     HWND hWnd_ = nullptr;
     int idScene_ = CRC::INVALID_ID;
 
-    // If this flag is true, a window is created when a creative command is sent to the Window thread.
-    bool needCreateFlag_ = true;
-
     // Used when creating a window. After creation, nullPtr.
     std::unique_ptr<CRCWindowAttr> src_ = nullptr;
 };

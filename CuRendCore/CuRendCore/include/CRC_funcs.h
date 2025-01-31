@@ -57,10 +57,10 @@ std::unique_ptr<T>& CastRef(std::unique_ptr<S>& source)
 CRC_API std::unique_ptr<CRCCore>& Core();
 
 CRC_API std::unique_ptr<CRCData> CreateWindowData(std::unique_ptr<CRCWindowAttr>& attr);
-CRC_API void CreateWindowsAsync();
+CRC_API HRESULT CreateCRCWindow(int id);
 
 CRC_API std::unique_ptr<CRCData> CreateSceneData(std::unique_ptr<CRCSceneAttr>& attr);
-CRC_API void CreateScenesAsync();
+CRC_API void CreateSceneAsync(int id);
 
 
 
