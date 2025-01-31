@@ -23,7 +23,9 @@ CRC_API HRESULT CRC::CreateCRCWindow(int id)
 {
     std::unique_ptr<CRCWindowData> windowData = CRC::GetAs<CRCWindowData>(CRC::Core()->WindowContainer()->Take(id));
 
+    if (!windowData) return CRC::ERROR_CREATE_WINDOW;
 
+    if (!Register)
 
 
     if (!RegisterClassEx(&datas[i]->src_->wcex_))
