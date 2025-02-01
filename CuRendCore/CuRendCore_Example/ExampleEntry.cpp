@@ -17,19 +17,15 @@ int APIENTRY WinMain
     {
         // Create window container.
         std::unique_ptr<CRCContainer> windowContainer = CRC::CreateWindowContainer();
+        // std::unique_ptr<CRCContainer> windowContainer = std::make_unique<CRCWindowContainer>();
 
         // Create window by window attributes.
-        CRCWindowAttr windowAttr;
-        windowAttr.wcex_.lpszClassName = L"Main Window";
-        windowAttr.wcex_.lpfnWndProc = WindowProc;
-        windowAttr.name_ = L"Main Window";
-        windowAttr.hInstance = hInstance;
-
-        std::unique_ptr<CRCData> windowData = CRC::CreateCRCWindow(windowAttr);
-        if (!windowData) return CRC::ERROR_CREATE_WINDOW;
-
-        HRESULT hr = CRC::ShowCRCWindow(windowData);
-        if (FAILED(hr)) return CRC::ERROR_SHOW_WINDOW;
+        std::unique_ptr<CRCWindowAttr> windowAttr = std::make_unique<CRCWindowAttr>();
+        windowAttr->wcex_.lpszClassName = L"Main Window";
+        windowAttr->wcex_.lpfnWndProc = WindowProc;
+        windowAttr->name_ = L"Main Window";
+        windowAttr->hInstance = hInstance;
+        std::unique_ptr<CRCData> windowData = CRC::CreateWindowData(windowAttr);
 
         // Add window to window container.
         idMainWindow = windowContainer->Add(windowData);
@@ -45,11 +41,9 @@ int APIENTRY WinMain
         std::unique_ptr<CRCContainer> sceneContainer = CRC::CreateSceneContainer();
 
         // Create scene by scene attributes.
-        CRCSceneAttr sceneAttr;
-        sceneAttr.name_ = "MainScene";
-
-        std::unique_ptr<CRCData> sceneData = CRC::CreateCRCScene(sceneAttr);
-        if (!sceneData) return CRC::ERROR_CREATE_SCENE;
+        std::unique_ptr<CRCSceneAttr> sceneAttr = std::make_unique<CRCSceneAttr>();
+        sceneAttr->name_ = "MainScene";
+        std::unique_ptr<CRCData> sceneData = CRC::CreateSceneData(sceneAttr);
 
         // Add scene to scene container.
         idMainScene = sceneContainer->Add(sceneData);

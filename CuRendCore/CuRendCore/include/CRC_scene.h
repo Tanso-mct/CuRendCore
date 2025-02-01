@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include "CRC_config.h"
 #include "CRC_interface.h"
 
 #include <Windows.h>
@@ -7,15 +8,17 @@
 #include <vector>
 #include <string>
 
+struct CRCSceneAttr
+{
+    std::string name_ = "Scene";
+};
+
 class CRCSceneData : public CRCData
 {
 public:
     virtual ~CRCSceneData() = default;
-};
 
-struct CRCSceneAttr
-{
-    std::string name_ = "Scene";
+    std::unique_ptr<CRCSceneAttr> src_ = nullptr;
 };
 
 class CRCSceneContainer : public CRCContainer

@@ -1,20 +1,13 @@
 #pragma once
 
+#include "CRC_config.h"
 #include "CRC_interface.h"
 
 #include <Windows.h>
 #include <memory>
 #include <vector>
 
-class CRCWindowData : public CRCData
-{
-public:
-    virtual ~CRCWindowData() = default;
-
-    HWND hWnd_ = nullptr;
-};
-
-class CRCWindowAttr
+struct CRCWindowAttr
 {
 public:
     WNDCLASSEX wcex_ = 
@@ -41,6 +34,15 @@ public:
     DWORD style_ = WS_OVERLAPPEDWINDOW;
     HWND hWndParent_ = NULL;
     HINSTANCE hInstance = nullptr;
+};
+
+class CRCWindowData : public CRCData
+{
+public:
+    virtual ~CRCWindowData() = default;
+
+    HWND hWnd_ = nullptr;
+    std::unique_ptr<CRCWindowAttr> src_ = nullptr;
 };
 
 class CRCWindowContainer : public CRCContainer

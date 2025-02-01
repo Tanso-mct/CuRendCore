@@ -93,6 +93,11 @@
         "xloctime": "cpp",
         "fstream": "cpp",
         "__config": "cpp",
-        "*.rh": "cpp"
+        "*.rh": "cpp",
+        "condition_variable": "cpp",
+        "deque": "cpp",
+        "queue": "cpp",
+        "ranges": "cpp",
+        "span": "cpp"
     }
 }
