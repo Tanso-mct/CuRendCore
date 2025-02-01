@@ -11,68 +11,62 @@ CRC_API std::unique_ptr<CRCCore>& CRC::Core()
     return core;
 }
 
-CRC_API std::unique_ptr<CRCData> CRC::CreateWindowData(std::unique_ptr<CRCWindowAttr> &attr)
+CRC_API std::unique_ptr<CRCContainer> CRC::CreateWindowContainer()
+{
+    std::unique_ptr<CRCContainer> windowContainer = std::make_unique<CRCWindowContainer>();
+    return windowContainer;
+}
+
+CRC_API std::unique_ptr<CRCData> CRC::CreateCRCWindow(CRCWindowAttr& attr)
 {
     std::unique_ptr<CRCWindowData> windowData = std::make_unique<CRCWindowData>();
 
-    windowData->src_ = std::move(attr);
+    if (!RegisterClassEx(&attr.wcex_)) return nullptr;
+
+    windowData->hWnd_ = CreateWindow
+    (
+        attr.wcex_.lpszClassName,
+        attr.name_,
+        attr.style_,
+        attr.initialPosX_,
+        attr.initialPosY_,
+        attr.width_,
+        attr.height_,
+        attr.hWndParent_,
+        nullptr,
+        attr.hInstance,
+        nullptr
+    );
+    if (!windowData->hWnd_) return nullptr;
+
     return windowData;
 }
 
-CRC_API HRESULT CRC::CreateCRCWindow(int id)
+CRC_API HRESULT CRC::ShowCRCWindow(std::unique_ptr<CRCData> &data)
 {
-    std::unique_ptr<CRCWindowData> windowData = CRC::GetAs<CRCWindowData>(CRC::Core()->WindowContainer()->Take(id));
+    std::unique_ptr<CRCWindowData>& windowData = CastRef<CRCWindowData>(data);
 
-    if (!windowData) return CRC::ERROR_CREATE_WINDOW;
+    if (!windowData->hWnd_) return E_FAIL;
 
-    if (!Register)
+    HRESULT hr = ShowWindow(windowData->hWnd_, SW_SHOW);
+    if (FAILED(hr)) return hr;
 
+    hr = UpdateWindow(windowData->hWnd_);
 
-    if (!RegisterClassEx(&datas[i]->src_->wcex_))
-    {
-        thread.error = CRC::THRD_ERROR_FAIL;
-        break;
-    }
-
-    datas[i]->hWnd_ = CreateWindow
-    (
-        datas[i]->src_->wcex_.lpszClassName,
-        datas[i]->src_->name_,
-        datas[i]->src_->style_,
-        datas[i]->src_->initialPosX_,
-        datas[i]->src_->initialPosY_,
-        datas[i]->src_->width_,
-        datas[i]->src_->height_,
-        datas[i]->src_->hWndParent_,
-        nullptr,
-        datas[i]->src_->hInstance,
-        nullptr
-    );
-
-    if (!datas[i]->hWnd_)
-    {
-        thread.error = CRC::THRD_ERROR_FAIL;
-        break;
-    }
-
-    // The source data is no longer needed, so make it nullptr
-    datas[i]->src_ = nullptr;
-
-    // Because it was created, set the flag to False.
-    datas[i]->needCreateFlag_ = false;
+    return hr;
 }
 
-CRC_API std::unique_ptr<CRCData> CRC::CreateSceneData(std::unique_ptr<CRCSceneAttr> &attr)
+CRC_API std::unique_ptr<CRCContainer> CRC::CreateSceneContainer()
+{
+    std::unique_ptr<CRCContainer> sceneContainer = std::make_unique<CRCSceneContainer>();
+    return sceneContainer;
+}
+
+CRC_API std::unique_ptr<CRCData> CRC::CreateCRCScene(CRCSceneAttr &attr)
 {
     std::unique_ptr<CRCSceneData> sceneData = std::make_unique<CRCSceneData>();
 
-    sceneData->needCreateFlag_ = attr->needCreateFlag_;
-    sceneData->src_ = std::move(attr);
+    // Set scene attributes.
 
     return sceneData;
-}
-
-CRC_API void CRC::CreateSceneAsync(int id)
-{
-    CRC::Core()->SendCmdToSceneThrd(CRC::THRD_CMD_CREATE_SCENES);
 }

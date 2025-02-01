@@ -5,9 +5,6 @@
 #include <Windows.h>
 #include <memory>
 #include <vector>
-#include <mutex>
-
-struct CRCWindowAttr;
 
 class CRCWindowData : public CRCData
 {
@@ -15,14 +12,11 @@ public:
     virtual ~CRCWindowData() = default;
 
     HWND hWnd_ = nullptr;
-    int idScene_ = CRC::INVALID_ID;
-
-    // Used when creating a window. After creation, nullPtr.
-    std::unique_ptr<CRCWindowAttr> src_ = nullptr;
 };
 
-struct CRCWindowAttr
+class CRCWindowAttr
 {
+public:
     WNDCLASSEX wcex_ = 
     {
         sizeof(WNDCLASSEX),
@@ -47,8 +41,6 @@ struct CRCWindowAttr
     DWORD style_ = WS_OVERLAPPEDWINDOW;
     HWND hWndParent_ = NULL;
     HINSTANCE hInstance = nullptr;
-
-    bool needCreateFlag_ = true;
 };
 
 class CRCWindowContainer : public CRCContainer
@@ -60,12 +52,10 @@ public:
     virtual ~CRCWindowContainer() = default;
 
     virtual int Add(std::unique_ptr<CRCData>& data) override;
+    virtual HRESULT Remove(int id) override;
 
-    virtual std::unique_ptr<CRCData> Take(int id) override;
-    virtual HRESULT Set(int id, std::unique_ptr<CRCData>& data) override;
+    virtual std::unique_ptr<CRCData>& Get(int id) override;
+    virtual int GetSize() override;
 
-    virtual UINT GetSize() override;
-
-    virtual void Clear(int id) override;
     virtual void Clear() override;
 };
