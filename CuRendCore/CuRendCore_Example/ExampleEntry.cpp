@@ -66,6 +66,10 @@ int APIENTRY WinMain
     hr = CRC::Core()->CreateScene(idMainScene);
     if (FAILED(hr)) return CRC::ERROR_CREATE_SCENE;
 
+    // Set scene to window.
+    hr = CRC::Core()->SetSceneToWindow(idMainWindow, idMainScene);
+    if (FAILED(hr)) return CRC::ERROR_SET_SCENE_TO_WINDOW;
+
     // Main loop.
     MSG msg = {};
     while (msg.message != WM_QUIT)
