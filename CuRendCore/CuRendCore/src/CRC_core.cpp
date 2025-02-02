@@ -24,7 +24,7 @@ int CRCCore::Shutdown()
     return 0;
 }
 
-HRESULT CRCCore::MoveWindowContainer(std::unique_ptr<CRCContainer>& container)
+HRESULT CRCCore::SetWindowContainer(std::unique_ptr<CRCContainer> container)
 {
     std::unique_ptr<CRCWindowContainer> windowContainer = CRC::CastMove<CRCWindowContainer>(container);
 
@@ -36,7 +36,7 @@ HRESULT CRCCore::MoveWindowContainer(std::unique_ptr<CRCContainer>& container)
     else return E_FAIL;
 }
 
-HRESULT CRCCore::MoveSceneContainer(std::unique_ptr<CRCContainer> &container)
+HRESULT CRCCore::SetSceneContainer(std::unique_ptr<CRCContainer> container)
 {
     std::unique_ptr<CRCSceneContainer> sceneContainer = CRC::CastMove<CRCSceneContainer>(container);
 
@@ -50,11 +50,11 @@ HRESULT CRCCore::MoveSceneContainer(std::unique_ptr<CRCContainer> &container)
 
 HRESULT CRCCore::SetSceneToWindow(int idWindow, int idScene)
 {
-    if (windowContainer_ == nullptr || sceneContainer_ == nullptr) return E_FAIL;
-    if (idWindow == CRC::INVALID_ID || idScene == CRC::INVALID_ID) return E_FAIL;
-    if (idWindow >= windowContainer_->GetSize() || idScene >= sceneContainer_->GetSize()) return E_FAIL;
+    // if (windowContainer_ == nullptr || sceneContainer_ == nullptr) return E_FAIL;
+    // if (idWindow == CRC::INVALID_ID || idScene == CRC::INVALID_ID) return E_FAIL;
+    // if (idWindow >= windowContainer_->GetSize() || idScene >= sceneContainer_->GetSize()) return E_FAIL;
 
-    std::unique_ptr<CRCWindowData>& windowData = CRC::CastRef<CRCWindowData>(windowContainer_->Get(idWindow));
+    // std::unique_ptr<CRCWindowData>& windowData = CRC::CastRef<CRCWindowData>(windowContainer_->Get(idWindow));
 
     return S_OK;
 }

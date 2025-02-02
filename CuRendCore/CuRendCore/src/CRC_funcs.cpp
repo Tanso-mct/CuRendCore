@@ -11,18 +11,20 @@ CRC_API std::unique_ptr<CRCCore>& CRC::Core()
     return core;
 }
 
-CRC_API std::unique_ptr<CRCContainer> CRC::CreateWindowContainer()
-{
-    std::unique_ptr<CRCContainer> windowContainer = std::make_unique<CRCWindowContainer>();
-    return windowContainer;
-}
-
-CRC_API std::unique_ptr<CRCData> CRC::CreateWindowData(std::unique_ptr<CRCWindowAttr> &attr)
+CRC_API std::unique_ptr<CRCData> CRC::CreateWindowData(std::unique_ptr<CRCWindowAttr> attr)
 {
     std::unique_ptr<CRCWindowData> windowData = std::make_unique<CRCWindowData>();
 
     windowData->src_ = std::move(attr);
     return windowData;
+}
+
+CRC_API std::unique_ptr<CRCData> CRC::CreateSceneData(std::unique_ptr<CRCSceneAttr> attr)
+{
+    std::unique_ptr<CRCSceneData> sceneData = std::make_unique<CRCSceneData>();
+
+    sceneData->src_ = std::move(attr);
+    return sceneData;
 }
 
 // CRC_API std::unique_ptr<CRCData> CRC::CreateCRCWindow(CRCWindowAttr& attr)
@@ -63,17 +65,3 @@ CRC_API std::unique_ptr<CRCData> CRC::CreateWindowData(std::unique_ptr<CRCWindow
 
 //     return hr;
 // }
-
-CRC_API std::unique_ptr<CRCContainer> CRC::CreateSceneContainer()
-{
-    std::unique_ptr<CRCContainer> sceneContainer = std::make_unique<CRCSceneContainer>();
-    return sceneContainer;
-}
-
-CRC_API std::unique_ptr<CRCData> CRC::CreateSceneData(std::unique_ptr<CRCSceneAttr> &attr)
-{
-    std::unique_ptr<CRCSceneData> sceneData = std::make_unique<CRCSceneData>();
-
-    sceneData->src_ = std::move(attr);
-    return sceneData;
-}

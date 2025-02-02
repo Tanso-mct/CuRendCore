@@ -54,11 +54,8 @@ std::unique_ptr<T>& CastRef(std::unique_ptr<S>& source)
 
 CRC_API std::unique_ptr<CRCCore>& Core();
 
-CRC_API std::unique_ptr<CRCContainer> CreateWindowContainer();
-CRC_API std::unique_ptr<CRCData> CreateWindowData(std::unique_ptr<CRCWindowAttr>& attr);
-
-CRC_API std::unique_ptr<CRCContainer> CreateSceneContainer();
-CRC_API std::unique_ptr<CRCData> CreateSceneData(std::unique_ptr<CRCSceneAttr>& attr);
+CRC_API std::unique_ptr<CRCData> CreateWindowData(std::unique_ptr<CRCWindowAttr> attr);
+CRC_API std::unique_ptr<CRCData> CreateSceneData(std::unique_ptr<CRCSceneAttr> attr);
 
 
 }

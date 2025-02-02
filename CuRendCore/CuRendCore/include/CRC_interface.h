@@ -5,26 +5,26 @@
 #include <memory>
 #include <Windows.h>
 
-class CRCComponent
+class CRC_API CRCComponent
 {
 public:
     virtual ~CRCComponent() = default;
 };
 
-class CRCFactory
+class CRC_API CRCFactory
 {
 public:
     virtual ~CRCFactory() = default;
     virtual std::unique_ptr<CRCComponent> Create() = 0;
 };
 
-class CRCData
+class CRC_API CRCData
 {
 public:
     virtual ~CRCData() = default;
 };
 
-class CRCContainer
+class CRC_API CRCContainer
 {
 public:
     virtual ~CRCContainer() = default;
@@ -32,19 +32,19 @@ public:
     virtual int Add(std::unique_ptr<CRCData>& data) = 0;
     virtual HRESULT Remove(int id) = 0;
 
-    virtual std::unique_ptr<CRCData>& Get(int id) = 0;
+    virtual CRCData* Get(int id) = 0;
     virtual int GetSize() = 0;
 
     virtual void Clear() = 0;
 };
 
-class CRCLayout
+class CRC_API CRCLayout
 {
 public:
     virtual ~CRCLayout() = default;
 };
 
-class CRCBuffer
+class CRC_API CRCBuffer
 {
 public:
     virtual ~CRCBuffer() = default;
@@ -54,13 +54,13 @@ public:
     virtual void Destroy() = 0;
 };
 
-class CRCShader
+class CRC_API CRCShader
 {
 public:
     virtual ~CRCShader() = default;
 };
 
-class CRCRasterizer
+class CRC_API CRCRasterizer
 {
 public:
     virtual ~CRCRasterizer() = default;

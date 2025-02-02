@@ -9,7 +9,7 @@
 class CRCWindowContainer;
 class CRCSceneContainer;
 
-class CRCCore
+class CRC_API CRCCore
 {
 private:
     std::unique_ptr<CRCWindowContainer> windowContainer_ = nullptr;
@@ -22,8 +22,8 @@ public:
     virtual void Initialize();
     virtual int Shutdown();
 
-    virtual HRESULT MoveWindowContainer(std::unique_ptr<CRCContainer>& container);
-    virtual HRESULT MoveSceneContainer(std::unique_ptr<CRCContainer>& container);
+    virtual HRESULT SetWindowContainer(std::unique_ptr<CRCContainer> container);
+    virtual HRESULT SetSceneContainer(std::unique_ptr<CRCContainer> container);
 
     virtual HRESULT SetSceneToWindow(int idWindow, int idScene);
 };

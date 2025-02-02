@@ -8,31 +8,36 @@
 #include <vector>
 #include <string>
 
-struct CRCSceneAttr
+struct CRC_API CRCSceneAttr
 {
     std::string name_ = "Scene";
 };
 
-class CRCSceneData : public CRCData
+class CRC_API CRCSceneData : public CRCData
 {
 public:
-    virtual ~CRCSceneData() = default;
+    virtual ~CRCSceneData() override = default;
 
     std::unique_ptr<CRCSceneAttr> src_ = nullptr;
 };
 
-class CRCSceneContainer : public CRCContainer
+class CRC_API CRCSceneContainer : public CRCContainer
 {
 private:
     std::vector<std::unique_ptr<CRCSceneData>> data_;
 
 public:
-    virtual ~CRCSceneContainer() = default;
+    CRCSceneContainer() = default;
+    virtual ~CRCSceneContainer() override = default;
+
+    // Delete copy constructor and operator=.
+    CRCSceneContainer(const CRCSceneContainer&) = delete;
+    CRCSceneContainer& operator=(const CRCSceneContainer&) = delete;
 
     virtual int Add(std::unique_ptr<CRCData>& data) override;
     virtual HRESULT Remove(int id) override;
 
-    virtual std::unique_ptr<CRCData>& Get(int id) override;
+    virtual CRCData* Get(int id) override;
     virtual int GetSize() override;
 
     virtual void Clear() override;

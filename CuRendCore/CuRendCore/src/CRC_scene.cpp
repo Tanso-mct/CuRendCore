@@ -23,15 +23,12 @@ HRESULT CRCSceneContainer::Remove(int id)
     return S_OK;
 }
 
-std::unique_ptr<CRCData> &CRCSceneContainer::Get(int id)
+CRCData* CRCSceneContainer::Get(int id)
 {
-    if (id < 0 || id >= data_.size())
-    {
-        std::unique_ptr<CRCData> emptyData = nullptr;
-        return emptyData;
-    }
+    if (id < 0 || id >= data_.size()) return nullptr;
     
-    return CRC::CastRef<CRCData>(data_[id]);
+    CRCData* data = data_[id].get();
+    return data;
 }
 
 int CRCSceneContainer::GetSize()

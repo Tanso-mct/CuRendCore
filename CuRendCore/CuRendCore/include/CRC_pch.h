@@ -7,6 +7,7 @@
 #include <Windows.h>
 #include <string>
 #include <memory>
+#include <vector>
 
 namespace CRC
 {
