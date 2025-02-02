@@ -3,32 +3,31 @@
 
 #include "CRC_scene.h"
 
-int CRCSceneContainer::Add(std::unique_ptr<CRCData> &data)
+int CRCSceneContainer::Add(std::unique_ptr<ICRCData>data)
 {
-    std::unique_ptr<CRCSceneData> sceneData = CRC::CastMove<CRCSceneData>(data);
+    std::unique_ptr<CRCSceneData> sceneData = CRC::UniqueAs<CRCSceneData>(data);
 
     if (sceneData)
     {
         data_.push_back(std::move(sceneData));
         return data_.size() - 1;
     }
-    else return CRC::INVALID_ID;
+    else return CRC::ID_INVALID;
 }
 
 HRESULT CRCSceneContainer::Remove(int id)
 {
     if (id < 0 || id >= data_.size()) return E_FAIL;
 
-    data_.erase(data_.begin() + id);
+    data_[id].reset();
     return S_OK;
 }
 
-CRCData* CRCSceneContainer::Get(int id)
+ICRCData* CRCSceneContainer::Get(int id)
 {
     if (id < 0 || id >= data_.size()) return nullptr;
     
-    CRCData* data = data_[id].get();
-    return data;
+    return CRC::PtrAs<ICRCData>(data_[id].get());
 }
 
 int CRCSceneContainer::GetSize()

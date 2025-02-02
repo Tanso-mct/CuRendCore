@@ -13,7 +13,14 @@ namespace CRC
 {
 
 template <typename T, typename S>
-std::unique_ptr<T> GetAs(std::unique_ptr<S> source)
+T* PtrAs(S* source)
+{
+    T* target = dynamic_cast<T*>(source);
+    return target;
+}
+
+template <typename T, typename S>
+std::unique_ptr<T> UniqueAs(std::unique_ptr<S>& source)
 {
     T* target = dynamic_cast<T*>(source.get());
 
@@ -22,40 +29,12 @@ std::unique_ptr<T> GetAs(std::unique_ptr<S> source)
         return std::unique_ptr<T>(static_cast<T*>(source.release()));
     }
     else return nullptr;
-}
-
-template <typename T, typename S>
-std::unique_ptr<T> CastMove(std::unique_ptr<S>& source)
-{
-    T* target = dynamic_cast<T*>(source.get());
-
-    if (target)
-    {
-        return std::unique_ptr<T>(static_cast<T*>(source.release()));
-    }
-    else return nullptr;
-}
-
-template <typename T, typename S>
-std::unique_ptr<T>& CastRef(std::unique_ptr<S>& source)
-{
-    T* target = dynamic_cast<T*>(source.get());
-
-    if (target)
-    {
-        return *reinterpret_cast<std::unique_ptr<T>*>(&source);
-    }
-    else
-    {
-        static std::unique_ptr<T> emptyData = nullptr;
-        return emptyData;
-    }
 }
 
 CRC_API std::unique_ptr<CRCCore>& Core();
 
-CRC_API std::unique_ptr<CRCData> CreateWindowData(std::unique_ptr<CRCWindowAttr> attr);
-CRC_API std::unique_ptr<CRCData> CreateSceneData(std::unique_ptr<CRCSceneAttr> attr);
+CRC_API std::unique_ptr<ICRCData> CreateWindowData(std::unique_ptr<CRCWindowAttr> attr);
+CRC_API std::unique_ptr<ICRCData> CreateSceneData(std::unique_ptr<CRCSceneAttr> attr);
 
 
 }

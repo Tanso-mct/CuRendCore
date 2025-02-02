@@ -3,32 +3,31 @@
 
 #include "CRC_window.h"
 
-int CRCWindowContainer::Add(std::unique_ptr<CRCData>& data)
+int CRCWindowContainer::Add(std::unique_ptr<ICRCData> data)
 {
-    std::unique_ptr<CRCWindowData> windowData = CRC::CastMove<CRCWindowData>(data);
+    std::unique_ptr<CRCWindowData> windowData = CRC::UniqueAs<CRCWindowData>(data);
 
     if (windowData)
     {
         data_.push_back(std::move(windowData));
         return data_.size() - 1;
     }
-    else return CRC::INVALID_ID;
+    else return CRC::ID_INVALID;
 }
 
 HRESULT CRCWindowContainer::Remove(int id)
 {
     if (id < 0 || id >= data_.size()) return E_FAIL;
 
-    data_.erase(data_.begin() + id);
+    data_[id].reset();
     return S_OK;
 }
 
-CRCData* CRCWindowContainer::Get(int id)
+ICRCData* CRCWindowContainer::Get(int id)
 {
     if (id < 0 || id >= data_.size()) return nullptr;
 
-    CRCData* data = data_[id].get();
-    return data;
+    return CRC::PtrAs<ICRCData>(data_[id].get());
 }
 
 int CRCWindowContainer::GetSize()

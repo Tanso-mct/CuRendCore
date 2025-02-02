@@ -5,63 +5,63 @@
 #include <memory>
 #include <Windows.h>
 
-class CRC_API CRCComponent
+class CRC_API ICRCComponent
 {
 public:
-    virtual ~CRCComponent() = default;
+    virtual ~ICRCComponent() = default;
 };
 
-class CRC_API CRCFactory
+class CRC_API ICRCFactory
 {
 public:
-    virtual ~CRCFactory() = default;
-    virtual std::unique_ptr<CRCComponent> Create() = 0;
+    virtual ~ICRCFactory() = default;
+    virtual std::unique_ptr<ICRCComponent> Create() = 0;
 };
 
-class CRC_API CRCData
+class CRC_API ICRCData
 {
 public:
-    virtual ~CRCData() = default;
+    virtual ~ICRCData() = default;
 };
 
-class CRC_API CRCContainer
+class CRC_API ICRCContainer
 {
 public:
-    virtual ~CRCContainer() = default;
+    virtual ~ICRCContainer() = default;
 
-    virtual int Add(std::unique_ptr<CRCData>& data) = 0;
+    virtual int Add(std::unique_ptr<ICRCData> data) = 0;
     virtual HRESULT Remove(int id) = 0;
 
-    virtual CRCData* Get(int id) = 0;
+    virtual ICRCData* Get(int id) = 0;
     virtual int GetSize() = 0;
 
     virtual void Clear() = 0;
 };
 
-class CRC_API CRCLayout
+class CRC_API ICRCLayout
 {
 public:
-    virtual ~CRCLayout() = default;
+    virtual ~ICRCLayout() = default;
 };
 
-class CRC_API CRCBuffer
+class CRC_API ICRCBuffer
 {
 public:
-    virtual ~CRCBuffer() = default;
+    virtual ~ICRCBuffer() = default;
 
-    virtual void Create(std::unique_ptr<CRCData>& data, CRCLayout& layout) = 0;
-    virtual void Update(std::unique_ptr<CRCData>& data, CRCLayout& layout) = 0;
+    virtual void Create(std::unique_ptr<ICRCData>& data, ICRCLayout& layout) = 0;
+    virtual void Update(std::unique_ptr<ICRCData>& data, ICRCLayout& layout) = 0;
     virtual void Destroy() = 0;
 };
 
-class CRC_API CRCShader
+class CRC_API ICRCShader
 {
 public:
-    virtual ~CRCShader() = default;
+    virtual ~ICRCShader() = default;
 };
 
-class CRC_API CRCRasterizer
+class CRC_API ICRCRasterizer
 {
 public:
-    virtual ~CRCRasterizer() = default;
+    virtual ~ICRCRasterizer() = default;
 };

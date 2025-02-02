@@ -16,6 +16,11 @@ constexpr UINT ERROR_CREATE_WINDOW = 0x0001;
 constexpr UINT ERROR_SHOW_WINDOW = 0x0002;
 constexpr UINT ERROR_CREATE_SCENE = 0x0003;
 
-constexpr int INVALID_ID = -1;
+constexpr int ID_INVALID = -1;
+
+constexpr int CORE_CONTAINER_COUNT = 2;
+constexpr int ID_WINDOW_CONTAINER = 0;
+constexpr int ID_SCENE_CONTAINER = 1;
+
 
 }
