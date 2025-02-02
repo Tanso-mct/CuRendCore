@@ -52,6 +52,20 @@ int APIENTRY WinMain
         CRC::Core()->SetSceneContainer(std::move(sceneContainer));
     }
 
+    HRESULT hr = S_OK;
+
+    // Create window.
+    hr = CRC::Core()->CreateWindowCRC(idMainWindow);
+    if (FAILED(hr)) return CRC::ERROR_CREATE_WINDOW;
+
+    // Show window.
+    hr = CRC::Core()->ShowWindowCRC(idMainWindow);
+    if (FAILED(hr)) return CRC::ERROR_SHOW_WINDOW;
+
+    // Create scene.
+    hr = CRC::Core()->CreateScene(idMainScene);
+    if (FAILED(hr)) return CRC::ERROR_CREATE_SCENE;
+
     // Main loop.
     MSG msg = {};
     while (msg.message != WM_QUIT)
