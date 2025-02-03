@@ -9,11 +9,8 @@
 
 static LRESULT CALLBACK WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
-int APIENTRY WinMain
-(
-    _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
-    _In_ LPSTR lpCmdLine, _In_ int nCmdShow
-) {
+int main() 
+{
     // Core initialization.
     CRC::Core()->Initialize();
 
@@ -28,7 +25,7 @@ int APIENTRY WinMain
         windowAttr->wcex_.lpszClassName = L"Main Window";
         windowAttr->wcex_.lpfnWndProc = WindowProc;
         windowAttr->name_ = L"Main Window";
-        windowAttr->hInstance = hInstance;
+        windowAttr->hInstance =  GetModuleHandle(NULL);
         std::unique_ptr<ICRCContainable> windowData = CRC::CreateWindowData(std::move(windowAttr));
 
         // Add window to window container.

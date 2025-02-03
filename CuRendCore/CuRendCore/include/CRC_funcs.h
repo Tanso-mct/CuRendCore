@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "CRC_config.h"
 #include "CRC_interface.h"
