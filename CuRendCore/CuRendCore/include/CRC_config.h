@@ -11,3 +11,10 @@
 #else
 #define CRC_API __declspec(dllimport)
 #endif
+
+namespace CRC
+{
+
+constexpr int ID_INVALID = -1;
+
+}

@@ -3,9 +3,9 @@
 
 #include "CRC_window.h"
 
-int CRCWindowContainer::Add(std::unique_ptr<ICRCData> data)
+int CRCWindowContainer::Add(std::unique_ptr<ICRCContainable> data)
 {
-    std::unique_ptr<CRCWindowData> windowData = CRC::UniqueAs<CRCWindowData>(data);
+    std::unique_ptr<CRCWindowAttr> windowData = CRC::UniqueAs<CRCWindowAttr>(data);
 
     if (windowData)
     {
@@ -23,11 +23,11 @@ HRESULT CRCWindowContainer::Remove(int id)
     return S_OK;
 }
 
-ICRCData* CRCWindowContainer::Get(int id)
+ICRCContainable* CRCWindowContainer::Get(int id)
 {
     if (id < 0 || id >= data_.size()) return nullptr;
 
-    return CRC::PtrAs<ICRCData>(data_[id].get());
+    return CRC::PtrAs<ICRCContainable>(data_[id].get());
 }
 
 int CRCWindowContainer::GetSize()

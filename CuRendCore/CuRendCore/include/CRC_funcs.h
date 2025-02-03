@@ -6,8 +6,8 @@
 #include <memory>
 
 class CRCCore;
-struct CRCWindowAttr; 
-struct CRCSceneAttr;
+struct CRCWindowSrc; 
+struct CRCSceneSrc;
 
 namespace CRC
 {
@@ -33,8 +33,8 @@ std::unique_ptr<T> UniqueAs(std::unique_ptr<S>& source)
 
 CRC_API std::unique_ptr<CRCCore>& Core();
 
-CRC_API std::unique_ptr<ICRCData> CreateWindowData(std::unique_ptr<CRCWindowAttr> attr);
-CRC_API std::unique_ptr<ICRCData> CreateSceneData(std::unique_ptr<CRCSceneAttr> attr);
+CRC_API std::unique_ptr<ICRCContainable> CreateWindowData(std::unique_ptr<CRCWindowSrc> attr);
+CRC_API std::unique_ptr<ICRCContainable> CreateSceneData(std::unique_ptr<CRCSceneSrc> attr);
 
 
 }

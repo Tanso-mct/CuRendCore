@@ -7,7 +7,7 @@
 #include <memory>
 #include <vector>
 
-struct CRC_API CRCWindowAttr
+struct CRC_API CRCWindowSrc
 {
 public:
     WNDCLASSEX wcex_ = 
@@ -36,13 +36,13 @@ public:
     HINSTANCE hInstance = nullptr;
 };
 
-class CRC_API CRCWindowData : public ICRCData
+class CRC_API CRCWindowAttr : public ICRCContainable
 {
 public:
-    virtual ~CRCWindowData() override = default;
+    virtual ~CRCWindowAttr() override = default;
 
     HWND hWnd_ = nullptr;
-    std::unique_ptr<CRCWindowAttr> src_ = nullptr;
+    std::unique_ptr<CRCWindowSrc> src_ = nullptr;
 
     int idScene_ = CRC::ID_INVALID;
 };
@@ -50,7 +50,7 @@ public:
 class CRC_API CRCWindowContainer : public ICRCContainer
 {
 private:
-    std::vector<std::unique_ptr<CRCWindowData>> data_;
+    std::vector<std::unique_ptr<CRCWindowAttr>> data_;
 
 public:
     CRCWindowContainer() = default;
@@ -60,10 +60,10 @@ public:
     CRCWindowContainer(const CRCWindowContainer&) = delete;
     CRCWindowContainer& operator=(const CRCWindowContainer&) = delete;
 
-    int Add(std::unique_ptr<ICRCData> data);
+    int Add(std::unique_ptr<ICRCContainable> data);
     HRESULT Remove(int id) override;
 
-    ICRCData* Get(int id);
+    ICRCContainable* Get(int id);
     int GetSize();
 
     void Clear();

@@ -3,9 +3,9 @@
 
 #include "CRC_scene.h"
 
-int CRCSceneContainer::Add(std::unique_ptr<ICRCData>data)
+int CRCSceneContainer::Add(std::unique_ptr<ICRCContainable>data)
 {
-    std::unique_ptr<CRCSceneData> sceneData = CRC::UniqueAs<CRCSceneData>(data);
+    std::unique_ptr<CRCSceneAttr> sceneData = CRC::UniqueAs<CRCSceneAttr>(data);
 
     if (sceneData)
     {
@@ -23,11 +23,11 @@ HRESULT CRCSceneContainer::Remove(int id)
     return S_OK;
 }
 
-ICRCData* CRCSceneContainer::Get(int id)
+ICRCContainable* CRCSceneContainer::Get(int id)
 {
     if (id < 0 || id >= data_.size()) return nullptr;
     
-    return CRC::PtrAs<ICRCData>(data_[id].get());
+    return CRC::PtrAs<ICRCContainable>(data_[id].get());
 }
 
 int CRCSceneContainer::GetSize()

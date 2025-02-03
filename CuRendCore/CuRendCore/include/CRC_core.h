@@ -29,10 +29,10 @@ public:
     virtual HRESULT SetWindowContainer(std::unique_ptr<ICRCContainer> container);
     virtual HRESULT SetSceneContainer(std::unique_ptr<ICRCContainer> container);
 
-    virtual HRESULT CreateWindowCRC(int idWindow);
+    virtual HRESULT CreateWindowCRC(int idWindow, std::unique_ptr<ICRCPhaseMethod> phaseMethod);
     virtual HRESULT ShowWindowCRC(int idWindow);
 
-    virtual HRESULT CreateScene(int idScene);
+    virtual HRESULT CreateScene(int idScene, std::unique_ptr<ICRCPhaseMethod> phaseMethod);
 
     virtual HRESULT SetSceneToWindow(int idWindow, int idScene);
 };

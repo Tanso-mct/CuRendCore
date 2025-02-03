@@ -1,7 +1,11 @@
 ﻿#include "CRC_pch.h"
 
 #include "CuRendCore.h"
-#pragma comment(lib, "CuRendCore.lib")
+
+#include <Windows.h>
+
+#include "window.h"
+#include "scene.h"
 
 static LRESULT CALLBACK WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -20,12 +24,12 @@ int APIENTRY WinMain
         std::unique_ptr<ICRCContainer> windowContainer = std::make_unique<CRCWindowContainer>();
 
         // Create window by window attributes.
-        std::unique_ptr<CRCWindowAttr> windowAttr = std::make_unique<CRCWindowAttr>();
+        std::unique_ptr<CRCWindowSrc> windowAttr = std::make_unique<CRCWindowSrc>();
         windowAttr->wcex_.lpszClassName = L"Main Window";
         windowAttr->wcex_.lpfnWndProc = WindowProc;
         windowAttr->name_ = L"Main Window";
         windowAttr->hInstance = hInstance;
-        std::unique_ptr<ICRCData> windowData = CRC::CreateWindowData(std::move(windowAttr));
+        std::unique_ptr<ICRCContainable> windowData = CRC::CreateWindowData(std::move(windowAttr));
 
         // Add window to window container.
         idMainWindow = windowContainer->Add(std::move(windowData));
@@ -41,9 +45,9 @@ int APIENTRY WinMain
         std::unique_ptr<ICRCContainer> sceneContainer = std::make_unique<CRCSceneContainer>();
 
         // Create scene by scene attributes.
-        std::unique_ptr<CRCSceneAttr> sceneAttr = std::make_unique<CRCSceneAttr>();
+        std::unique_ptr<CRCSceneSrc> sceneAttr = std::make_unique<CRCSceneSrc>();
         sceneAttr->name_ = "MainScene";
-        std::unique_ptr<ICRCData> sceneData = CRC::CreateSceneData(std::move(sceneAttr));
+        std::unique_ptr<ICRCContainable> sceneData = CRC::CreateSceneData(std::move(sceneAttr));
 
         // Add scene to scene container.
         idMainScene = sceneContainer->Add(std::move(sceneData));
@@ -54,8 +58,12 @@ int APIENTRY WinMain
 
     HRESULT hr = S_OK;
 
+    // Create phase method.
+    std::unique_ptr<ICRCPhaseMethod> mainWindowPhaseMethod = std::make_unique<MainWindowPhaseMethod>();
+    std::unique_ptr<ICRCPhaseMethod> mainScenePhaseMethod = std::make_unique<MainScenePhaseMethod>();
+
     // Create window.
-    hr = CRC::Core()->CreateWindowCRC(idMainWindow);
+    hr = CRC::Core()->CreateWindowCRC(idMainWindow, std::move(mainWindowPhaseMethod));
     if (FAILED(hr)) return CRC::ERROR_CREATE_WINDOW;
 
     // Show window.
@@ -63,7 +71,7 @@ int APIENTRY WinMain
     if (FAILED(hr)) return CRC::ERROR_SHOW_WINDOW;
 
     // Create scene.
-    hr = CRC::Core()->CreateScene(idMainScene);
+    hr = CRC::Core()->CreateScene(idMainScene, std::move(mainScenePhaseMethod));
     if (FAILED(hr)) return CRC::ERROR_CREATE_SCENE;
 
     // Set scene to window.

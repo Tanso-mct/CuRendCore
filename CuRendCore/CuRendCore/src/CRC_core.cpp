@@ -41,7 +41,7 @@ HRESULT CRCCore::SetSceneContainer(std::unique_ptr<ICRCContainer> container)
     else return E_FAIL;
 }
 
-HRESULT CRCCore::CreateWindowCRC(int idWindow)
+HRESULT CRCCore::CreateWindowCRC(int idWindow, std::unique_ptr<ICRCPhaseMethod> phaseMethod)
 {
     if(
         containers_[CRC::ID_WINDOW_CONTAINER] == nullptr || 
@@ -49,7 +49,7 @@ HRESULT CRCCore::CreateWindowCRC(int idWindow)
         idWindow >= containers_[CRC::ID_WINDOW_CONTAINER]->GetSize()
     ) return E_FAIL;
 
-    CRCWindowData* windowData = CRC::PtrAs<CRCWindowData>(containers_[CRC::ID_WINDOW_CONTAINER]->Get(idWindow));
+    CRCWindowAttr* windowData = CRC::PtrAs<CRCWindowAttr>(containers_[CRC::ID_WINDOW_CONTAINER]->Get(idWindow));
 
     if (!RegisterClassEx(&windowData->src_->wcex_)) return E_FAIL;
 
@@ -80,7 +80,7 @@ HRESULT CRCCore::ShowWindowCRC(int idWindow)
         idWindow >= containers_[CRC::ID_WINDOW_CONTAINER]->GetSize()
     ) return E_FAIL;
 
-    CRCWindowData* windowData = CRC::PtrAs<CRCWindowData>(containers_[CRC::ID_WINDOW_CONTAINER]->Get(idWindow));
+    CRCWindowAttr* windowData = CRC::PtrAs<CRCWindowAttr>(containers_[CRC::ID_WINDOW_CONTAINER]->Get(idWindow));
 
     if (!windowData->hWnd_) return E_FAIL;
 
@@ -90,7 +90,7 @@ HRESULT CRCCore::ShowWindowCRC(int idWindow)
     return S_OK;
 }
 
-HRESULT CRCCore::CreateScene(int idScene)
+HRESULT CRCCore::CreateScene(int idScene, std::unique_ptr<ICRCPhaseMethod> phaseMethod)
 {
     if(
         containers_[CRC::ID_SCENE_CONTAINER] == nullptr || 
@@ -112,7 +112,7 @@ HRESULT CRCCore::SetSceneToWindow(int idWindow, int idScene)
         idScene >= containers_[CRC::ID_SCENE_CONTAINER]->GetSize()
     ) return E_FAIL;
 
-    CRCWindowData* windowData = CRC::PtrAs<CRCWindowData>(containers_[CRC::ID_WINDOW_CONTAINER]->Get(idWindow));
+    CRCWindowAttr* windowData = CRC::PtrAs<CRCWindowAttr>(containers_[CRC::ID_WINDOW_CONTAINER]->Get(idWindow));
     windowData->idScene_ = idScene;
 
     return S_OK;

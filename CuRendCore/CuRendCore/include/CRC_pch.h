@@ -17,8 +17,6 @@ constexpr int ERROR_SHOW_WINDOW = 0x0002;
 constexpr int ERROR_CREATE_SCENE = 0x0003;
 constexpr int ERROR_SET_SCENE_TO_WINDOW = 0x0004;
 
-constexpr int ID_INVALID = -1;
-
 constexpr int CORE_CONTAINER_COUNT = 2;
 constexpr int ID_WINDOW_CONTAINER = 0;
 constexpr int ID_SCENE_CONTAINER = 1;

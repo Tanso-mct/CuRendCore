@@ -18,10 +18,10 @@ public:
     virtual std::unique_ptr<ICRCComponent> Create() = 0;
 };
 
-class CRC_API ICRCData
+class CRC_API ICRCContainable
 {
 public:
-    virtual ~ICRCData() = default;
+    virtual ~ICRCContainable() = default;
 };
 
 class CRC_API ICRCContainer
@@ -29,10 +29,10 @@ class CRC_API ICRCContainer
 public:
     virtual ~ICRCContainer() = default;
 
-    virtual int Add(std::unique_ptr<ICRCData> data) = 0;
+    virtual int Add(std::unique_ptr<ICRCContainable> data) = 0;
     virtual HRESULT Remove(int id) = 0;
 
-    virtual ICRCData* Get(int id) = 0;
+    virtual ICRCContainable* Get(int id) = 0;
     virtual int GetSize() = 0;
 
     virtual void Clear() = 0;
@@ -49,8 +49,8 @@ class CRC_API ICRCBuffer
 public:
     virtual ~ICRCBuffer() = default;
 
-    virtual void Create(std::unique_ptr<ICRCData>& data, ICRCLayout& layout) = 0;
-    virtual void Update(std::unique_ptr<ICRCData>& data, ICRCLayout& layout) = 0;
+    virtual void Create(std::unique_ptr<ICRCContainable>& data, ICRCLayout& layout) = 0;
+    virtual void Update(std::unique_ptr<ICRCContainable>& data, ICRCLayout& layout) = 0;
     virtual void Destroy() = 0;
 };
 
@@ -64,4 +64,15 @@ class CRC_API ICRCRasterizer
 {
 public:
     virtual ~ICRCRasterizer() = default;
+};
+
+class CRC_API ICRCPhaseMethod
+{
+public:
+    virtual ~ICRCPhaseMethod() = default;
+
+    virtual void Awake() = 0;
+    virtual void Start() = 0;
+    virtual void Update() = 0;
+    virtual void End() = 0;
 };
