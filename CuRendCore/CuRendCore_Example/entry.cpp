@@ -92,6 +92,8 @@ int main()
 
 static LRESULT CALLBACK WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
+    CRC::Core()->HandleWindowProc(hWnd, msg, wParam, lParam);
+
     switch (msg)
     {
     case WM_DESTROY:

@@ -3,17 +3,16 @@
 #include <memory>
 #include <vector>
 #include <Windows.h>
+#include <unordered_map>
 
 #include "CRC_config.h"
 #include "CRC_interface.h"
-
-class CRCWindowContainer;
-class CRCSceneContainer;
 
 class CRC_API CRCCore
 {
 private:
     std::vector<std::unique_ptr<ICRCContainer>> containers_;
+    std::unordered_map<HWND, std::pair<ICRCContainer*, std::unique_ptr<ICRCPhaseMethod>>> existWindows_;
 
 public:
     CRCCore();
@@ -35,4 +34,6 @@ public:
     virtual HRESULT CreateScene(int idScene, std::unique_ptr<ICRCPhaseMethod> phaseMethod);
 
     virtual HRESULT SetSceneToWindow(int idWindow, int idScene);
+
+    virtual void HandleWindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 };

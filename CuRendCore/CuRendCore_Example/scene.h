@@ -9,7 +9,8 @@ public:
     ~MainScenePhaseMethod() override = default;
 
     void Awake() override;
-    void Start() override;
     void Update() override;
+    void Show() override;
+    void Hide() override;
     void End() override;
 };

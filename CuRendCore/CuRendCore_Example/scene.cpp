@@ -4,11 +4,15 @@ void MainScenePhaseMethod::Awake()
 {
 }
 
-void MainScenePhaseMethod::Start()
+void MainScenePhaseMethod::Update()
 {
 }
 
-void MainScenePhaseMethod::Update()
+void MainScenePhaseMethod::Show()
+{
+}
+
+void MainScenePhaseMethod::Hide()
 {
 }
 

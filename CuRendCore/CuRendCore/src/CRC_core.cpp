@@ -49,25 +49,34 @@ HRESULT CRCCore::CreateWindowCRC(int idWindow, std::unique_ptr<ICRCPhaseMethod> 
         idWindow >= containers_[CRC::ID_WINDOW_CONTAINER]->GetSize()
     ) return E_FAIL;
 
-    CRCWindowAttr* windowData = CRC::PtrAs<CRCWindowAttr>(containers_[CRC::ID_WINDOW_CONTAINER]->Get(idWindow));
+    CRCWindowAttr* attr = CRC::PtrAs<CRCWindowAttr>(containers_[CRC::ID_WINDOW_CONTAINER]->Get(idWindow));
 
-    if (!RegisterClassEx(&windowData->src_->wcex_)) return E_FAIL;
+    if (!RegisterClassEx(&attr->src_->wcex_)) return E_FAIL;
 
-    windowData->hWnd_ = CreateWindow
+    attr->hWnd_ = CreateWindow
     (
-        windowData->src_->wcex_.lpszClassName,
-        windowData->src_->name_,
-        windowData->src_->style_,
-        windowData->src_->initialPosX_,
-        windowData->src_->initialPosY_,
-        windowData->src_->width_,
-        windowData->src_->height_,
-        windowData->src_->hWndParent_,
+        attr->src_->wcex_.lpszClassName,
+        attr->src_->name_,
+        attr->src_->style_,
+        attr->src_->initialPosX_,
+        attr->src_->initialPosY_,
+        attr->src_->width_,
+        attr->src_->height_,
+        attr->src_->hWndParent_,
         nullptr,
-        windowData->src_->hInstance,
+        attr->src_->hInstance,
         nullptr
     );
-    if (!windowData->hWnd_) return E_FAIL;
+    if (!attr->hWnd_) return E_FAIL;
+
+    // Awake window's phase method.
+    phaseMethod->Awake();
+
+    // Add window to existWindows_.
+    existWindows_[attr->hWnd_] = std::make_pair(containers_[CRC::ID_WINDOW_CONTAINER].get(), std::move(phaseMethod));
+
+    // Release source.
+    attr->src_.reset();
 
     return S_OK;
 }
@@ -116,4 +125,34 @@ HRESULT CRCCore::SetSceneToWindow(int idWindow, int idScene)
     windowData->idScene_ = idScene;
 
     return S_OK;
+}
+
+void CRCCore::HandleWindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+    if (existWindows_.find(hWnd) == existWindows_.end()) return;
+
+    switch (msg)
+    {
+    case WM_DESTROY:
+        existWindows_[hWnd].second->End();
+        PostQuitMessage(0);
+        break;
+
+    case WM_SHOWWINDOW:
+        if (wParam) existWindows_[hWnd].second->Show();
+        else existWindows_[hWnd].second->Hide();
+        break;
+
+    case WM_SIZE:
+        if (wParam == SIZE_MINIMIZED) existWindows_[hWnd].second->Hide();
+        else if (wParam == SIZE_RESTORED) existWindows_[hWnd].second->Show();
+        break;
+
+    case WM_PAINT:
+        existWindows_[hWnd].second->Update();
+        break;
+
+    default:
+        break;
+    }
 }
