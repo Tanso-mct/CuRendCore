@@ -28,11 +28,13 @@ public:
 
     virtual HRESULT SetWindowContainer(std::unique_ptr<ICRCContainer> container);
     virtual HRESULT SetSceneContainer(std::unique_ptr<ICRCContainer> container);
+    virtual HRESULT SetWindowPMContainer(std::unique_ptr<ICRCContainer> container);
+    virtual HRESULT SetScenePMContainer(std::unique_ptr<ICRCContainer> container);
 
-    virtual HRESULT CreateWindowCRC(int idWindow, ICRCPhaseMethod* phaseMethod);
+    virtual HRESULT CreateWindowCRC(int idWindow, int idWindowPM);
     virtual HRESULT ShowWindowCRC(int idWindow);
 
-    virtual HRESULT CreateScene(int idScene, ICRCPhaseMethod* phaseMethod);
+    virtual HRESULT CreateScene(int idScene, int idScenePM);
     virtual HRESULT SetSceneToWindow(int idWindow, int idScene);
 
     virtual void HandleWindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);

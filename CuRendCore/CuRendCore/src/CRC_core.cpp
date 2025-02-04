@@ -5,6 +5,7 @@
 
 #include "CRC_window.h"
 #include "CRC_scene.h"
+#include "CRC_phase_method.h"
 
 CRCCore::CRCCore()
 {
@@ -41,13 +42,30 @@ HRESULT CRCCore::SetSceneContainer(std::unique_ptr<ICRCContainer> container)
     else return E_FAIL;
 }
 
-HRESULT CRCCore::CreateWindowCRC(int idWindow, ICRCPhaseMethod* phaseMethod)
+HRESULT CRCCore::SetWindowPMContainer(std::unique_ptr<ICRCContainer> container)
+{
+    CRCPMContainer* windowPMContainer = CRC::PtrAs<CRCPMContainer>(container.get());
+
+    if (windowPMContainer) containers_[CRC::ID_WINDOW_PM_CONTAINER] = std::move(container);
+    else return E_FAIL;
+}
+
+HRESULT CRCCore::SetScenePMContainer(std::unique_ptr<ICRCContainer> container)
+{
+    CRCPMContainer* scenePMContainer = CRC::PtrAs<CRCPMContainer>(container.get());
+
+    if (scenePMContainer) containers_[CRC::ID_SCENE_PM_CONTAINER] = std::move(container);
+    else return E_FAIL;
+}
+
+HRESULT CRCCore::CreateWindowCRC(int idWindow, int idWindowPM)
 {
     if(
         containers_[CRC::ID_WINDOW_CONTAINER] == nullptr || 
-        idWindow == CRC::ID_INVALID || 
-        idWindow >= containers_[CRC::ID_WINDOW_CONTAINER]->GetSize() ||
-        phaseMethod == nullptr
+        idWindow == CRC::ID_INVALID || idWindow >= containers_[CRC::ID_WINDOW_CONTAINER]->GetSize() ||
+
+        containers_[CRC::ID_WINDOW_PM_CONTAINER] == nullptr ||
+        idWindowPM == CRC::ID_INVALID || idWindowPM >= containers_[CRC::ID_WINDOW_PM_CONTAINER]->GetSize()
     ) return E_FAIL;
 
     CRCWindowAttr* attr = CRC::PtrAs<CRCWindowAttr>(containers_[CRC::ID_WINDOW_CONTAINER]->Get(idWindow));
@@ -71,6 +89,7 @@ HRESULT CRCCore::CreateWindowCRC(int idWindow, ICRCPhaseMethod* phaseMethod)
     if (!attr->hWnd_) return E_FAIL;
 
     // Awake window's phase method.
+    ICRCPhaseMethod* phaseMethod = CRC::PtrAs<ICRCPhaseMethod>(containers_[CRC::ID_WINDOW_PM_CONTAINER]->Get(idWindowPM));
     phaseMethod->Awake();
 
     // Add window to existWindows_.
@@ -99,20 +118,22 @@ HRESULT CRCCore::ShowWindowCRC(int idWindow)
     return S_OK;
 }
 
-HRESULT CRCCore::CreateScene(int idScene, ICRCPhaseMethod* phaseMethod)
+HRESULT CRCCore::CreateScene(int idScene, int idScenePM)
 {
     if(
         containers_[CRC::ID_SCENE_CONTAINER] == nullptr || 
-        idScene == CRC::ID_INVALID || 
-        idScene >= containers_[CRC::ID_SCENE_CONTAINER]->GetSize() ||
-        phaseMethod == nullptr
+        idScene == CRC::ID_INVALID || idScene >= containers_[CRC::ID_SCENE_CONTAINER]->GetSize() ||
+        
+        containers_[CRC::ID_SCENE_PM_CONTAINER] == nullptr ||
+        idScenePM == CRC::ID_INVALID || idScenePM >= containers_[CRC::ID_SCENE_PM_CONTAINER]->GetSize()
     ) return E_FAIL;
 
     CRCSceneAttr* sceneAttr = CRC::PtrAs<CRCSceneAttr>(containers_[CRC::ID_SCENE_CONTAINER]->Get(idScene));
 
     if (sceneAttr->isAwaked_) return S_OK; // Already awaked.
 
-    sceneAttr->phaseMethod_ = phaseMethod;
+    // Awake scene's phase method.
+    sceneAttr->phaseMethod_ = CRC::PtrAs<ICRCPhaseMethod>(containers_[CRC::ID_SCENE_PM_CONTAINER]->Get(idScenePM));
     sceneAttr->phaseMethod_->Awake();
     sceneAttr->isAwaked_ = true;
 

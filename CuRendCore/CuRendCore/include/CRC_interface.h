@@ -66,7 +66,7 @@ public:
     virtual ~ICRCRasterizer() = default;
 };
 
-class CRC_API ICRCPhaseMethod
+class CRC_API ICRCPhaseMethod : public ICRCContainable
 {
 public:
     virtual ~ICRCPhaseMethod() = default;

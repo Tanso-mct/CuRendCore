@@ -8,3 +8,4 @@
 
 #include "CRC_window.h"
 #include "CRC_scene.h"
+#include "CRC_phase_method.h"
