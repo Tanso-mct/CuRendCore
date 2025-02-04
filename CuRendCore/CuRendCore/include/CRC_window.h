@@ -40,10 +40,9 @@ class CRC_API CRCWindowAttr : public ICRCContainable
 {
 public:
     virtual ~CRCWindowAttr() override = default;
-
-    HWND hWnd_ = nullptr;
     std::unique_ptr<CRCWindowSrc> src_ = nullptr;
 
+    HWND hWnd_ = nullptr;
     int idScene_ = CRC::ID_INVALID;
 };
 

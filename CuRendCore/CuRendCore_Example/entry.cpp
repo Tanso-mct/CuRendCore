@@ -60,7 +60,7 @@ int main()
     std::unique_ptr<ICRCPhaseMethod> mainScenePhaseMethod = std::make_unique<MainScenePhaseMethod>();
 
     // Create window.
-    hr = CRC::Core()->CreateWindowCRC(idMainWindow, std::move(mainWindowPhaseMethod));
+    hr = CRC::Core()->CreateWindowCRC(idMainWindow, mainWindowPhaseMethod.get());
     if (FAILED(hr)) return CRC::ERROR_CREATE_WINDOW;
 
     // Show window.
@@ -68,7 +68,7 @@ int main()
     if (FAILED(hr)) return CRC::ERROR_SHOW_WINDOW;
 
     // Create scene.
-    hr = CRC::Core()->CreateScene(idMainScene, std::move(mainScenePhaseMethod));
+    hr = CRC::Core()->CreateScene(idMainScene, mainScenePhaseMethod.get());
     if (FAILED(hr)) return CRC::ERROR_CREATE_SCENE;
 
     // Set scene to window.

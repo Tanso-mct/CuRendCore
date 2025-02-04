@@ -4,25 +4,25 @@
 
 void MainWindowPhaseMethod::Awake()
 {
-    std::cout << "MainWindow Awake" << std::endl;
+    std::cout << "Main Window Awake" << std::endl;
 }
 
 void MainWindowPhaseMethod::Update()
 {
-    std::cout << "MainWindow Update" << std::endl;
+    std::cout << "Main Window Update" << std::endl;
 }
 
 void MainWindowPhaseMethod::Show()
 {
-    std::cout << "MainWindow Show" << std::endl;
+    std::cout << "Main Window Show" << std::endl;
 }
 
 void MainWindowPhaseMethod::Hide()
 {
-    std::cout << "MainWindow Hide" << std::endl;
+    std::cout << "Main Window Hide" << std::endl;
 }
 
 void MainWindowPhaseMethod::End()
 {
-    std::cout << "MainWindow End" << std::endl;
+    std::cout << "Main Window End" << std::endl;
 }

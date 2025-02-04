@@ -41,12 +41,13 @@ HRESULT CRCCore::SetSceneContainer(std::unique_ptr<ICRCContainer> container)
     else return E_FAIL;
 }
 
-HRESULT CRCCore::CreateWindowCRC(int idWindow, std::unique_ptr<ICRCPhaseMethod> phaseMethod)
+HRESULT CRCCore::CreateWindowCRC(int idWindow, ICRCPhaseMethod* phaseMethod)
 {
     if(
         containers_[CRC::ID_WINDOW_CONTAINER] == nullptr || 
         idWindow == CRC::ID_INVALID || 
-        idWindow >= containers_[CRC::ID_WINDOW_CONTAINER]->GetSize()
+        idWindow >= containers_[CRC::ID_WINDOW_CONTAINER]->GetSize() ||
+        phaseMethod == nullptr
     ) return E_FAIL;
 
     CRCWindowAttr* attr = CRC::PtrAs<CRCWindowAttr>(containers_[CRC::ID_WINDOW_CONTAINER]->Get(idWindow));
@@ -73,11 +74,10 @@ HRESULT CRCCore::CreateWindowCRC(int idWindow, std::unique_ptr<ICRCPhaseMethod> 
     phaseMethod->Awake();
 
     // Add window to existWindows_.
-    existWindows_[attr->hWnd_] = std::make_pair(containers_[CRC::ID_WINDOW_CONTAINER].get(), std::move(phaseMethod));
+    existWindows_[attr->hWnd_] = std::make_tuple(attr, phaseMethod, nullptr);
 
     // Release source.
     attr->src_.reset();
-
     return S_OK;
 }
 
@@ -89,26 +89,35 @@ HRESULT CRCCore::ShowWindowCRC(int idWindow)
         idWindow >= containers_[CRC::ID_WINDOW_CONTAINER]->GetSize()
     ) return E_FAIL;
 
-    CRCWindowAttr* windowData = CRC::PtrAs<CRCWindowAttr>(containers_[CRC::ID_WINDOW_CONTAINER]->Get(idWindow));
+    CRCWindowAttr* windowAttr = CRC::PtrAs<CRCWindowAttr>(containers_[CRC::ID_WINDOW_CONTAINER]->Get(idWindow));
 
-    if (!windowData->hWnd_) return E_FAIL;
+    if (!windowAttr->hWnd_) return E_FAIL;
 
-    ShowWindow(windowData->hWnd_, SW_SHOW);
-    UpdateWindow(windowData->hWnd_);
+    ShowWindow(windowAttr->hWnd_, SW_SHOW);
+    UpdateWindow(windowAttr->hWnd_);
 
     return S_OK;
 }
 
-HRESULT CRCCore::CreateScene(int idScene, std::unique_ptr<ICRCPhaseMethod> phaseMethod)
+HRESULT CRCCore::CreateScene(int idScene, ICRCPhaseMethod* phaseMethod)
 {
     if(
         containers_[CRC::ID_SCENE_CONTAINER] == nullptr || 
         idScene == CRC::ID_INVALID || 
-        idScene >= containers_[CRC::ID_SCENE_CONTAINER]->GetSize()
+        idScene >= containers_[CRC::ID_SCENE_CONTAINER]->GetSize() ||
+        phaseMethod == nullptr
     ) return E_FAIL;
 
-    //TODO: Implement scene creation.
+    CRCSceneAttr* sceneAttr = CRC::PtrAs<CRCSceneAttr>(containers_[CRC::ID_SCENE_CONTAINER]->Get(idScene));
 
+    if (sceneAttr->isAwaked_) return S_OK; // Already awaked.
+
+    sceneAttr->phaseMethod_ = phaseMethod;
+    sceneAttr->phaseMethod_->Awake();
+    sceneAttr->isAwaked_ = true;
+
+    // Release source.
+    sceneAttr->src_.reset();
     return S_OK;
 }
 
@@ -121,8 +130,16 @@ HRESULT CRCCore::SetSceneToWindow(int idWindow, int idScene)
         idScene >= containers_[CRC::ID_SCENE_CONTAINER]->GetSize()
     ) return E_FAIL;
 
-    CRCWindowAttr* windowData = CRC::PtrAs<CRCWindowAttr>(containers_[CRC::ID_WINDOW_CONTAINER]->Get(idWindow));
-    windowData->idScene_ = idScene;
+    // Set scene id to window.
+    CRCWindowAttr* windowAttr = CRC::PtrAs<CRCWindowAttr>(containers_[CRC::ID_WINDOW_CONTAINER]->Get(idWindow));
+    windowAttr->idScene_ = idScene;
+
+    // hWnd_ must be exist.
+    if (existWindows_.find(windowAttr->hWnd_) == existWindows_.end()) return E_FAIL;
+
+    // Set scene phase method.
+    CRCSceneAttr* sceneAttr = CRC::PtrAs<CRCSceneAttr>(containers_[CRC::ID_SCENE_CONTAINER]->Get(idScene));
+    std::get<2>(existWindows_[windowAttr->hWnd_]) = sceneAttr->phaseMethod_;
 
     return S_OK;
 }
@@ -134,22 +151,27 @@ void CRCCore::HandleWindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam
     switch (msg)
     {
     case WM_DESTROY:
-        existWindows_[hWnd].second->End();
+        if (std::get<2>(existWindows_[hWnd])) std::get<2>(existWindows_[hWnd])->End();
+        std::get<1>(existWindows_[hWnd])->End();
         PostQuitMessage(0);
         break;
 
-    case WM_SHOWWINDOW:
-        if (wParam) existWindows_[hWnd].second->Show();
-        else existWindows_[hWnd].second->Hide();
-        break;
-
     case WM_SIZE:
-        if (wParam == SIZE_MINIMIZED) existWindows_[hWnd].second->Hide();
-        else if (wParam == SIZE_RESTORED) existWindows_[hWnd].second->Show();
+        if (wParam == SIZE_MINIMIZED)
+        {
+            if (std::get<2>(existWindows_[hWnd])) std::get<2>(existWindows_[hWnd])->Hide();
+            std::get<1>(existWindows_[hWnd])->Hide();
+        }
+        else if (wParam == SIZE_RESTORED)
+        {
+            if (std::get<2>(existWindows_[hWnd])) std::get<2>(existWindows_[hWnd])->Show();
+            std::get<1>(existWindows_[hWnd])->Show();
+        }
         break;
 
     case WM_PAINT:
-        existWindows_[hWnd].second->Update();
+        if (std::get<2>(existWindows_[hWnd])) std::get<2>(existWindows_[hWnd])->Update();
+        std::get<1>(existWindows_[hWnd])->Update();
         break;
 
     default:

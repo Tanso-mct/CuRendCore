@@ -4,6 +4,7 @@
 #include <vector>
 #include <Windows.h>
 #include <unordered_map>
+#include <tuple>
 
 #include "CRC_config.h"
 #include "CRC_interface.h"
@@ -12,7 +13,7 @@ class CRC_API CRCCore
 {
 private:
     std::vector<std::unique_ptr<ICRCContainer>> containers_;
-    std::unordered_map<HWND, std::pair<ICRCContainer*, std::unique_ptr<ICRCPhaseMethod>>> existWindows_;
+    std::unordered_map<HWND, std::tuple<ICRCContainable*, ICRCPhaseMethod*, ICRCPhaseMethod*>> existWindows_;
 
 public:
     CRCCore();
@@ -28,11 +29,10 @@ public:
     virtual HRESULT SetWindowContainer(std::unique_ptr<ICRCContainer> container);
     virtual HRESULT SetSceneContainer(std::unique_ptr<ICRCContainer> container);
 
-    virtual HRESULT CreateWindowCRC(int idWindow, std::unique_ptr<ICRCPhaseMethod> phaseMethod);
+    virtual HRESULT CreateWindowCRC(int idWindow, ICRCPhaseMethod* phaseMethod);
     virtual HRESULT ShowWindowCRC(int idWindow);
 
-    virtual HRESULT CreateScene(int idScene, std::unique_ptr<ICRCPhaseMethod> phaseMethod);
-
+    virtual HRESULT CreateScene(int idScene, ICRCPhaseMethod* phaseMethod);
     virtual HRESULT SetSceneToWindow(int idWindow, int idScene);
 
     virtual void HandleWindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
