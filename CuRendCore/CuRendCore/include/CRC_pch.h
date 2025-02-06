@@ -19,11 +19,4 @@ constexpr int ERROR_SET_SCENE_TO_WINDOW = 0x0004;
 constexpr int ERROR_CREATE_CONTAINER = 0x0005;
 constexpr int ERROR_CREATE_PM = 0x0006;
 
-constexpr int CORE_CONTAINER_COUNT = 4;
-constexpr int ID_WINDOW_CONTAINER = 0;
-constexpr int ID_SCENE_CONTAINER = 1;
-constexpr int ID_WINDOW_PM_CONTAINER = 2;
-constexpr int ID_SCENE_PM_CONTAINER = 3;
-
-
 }

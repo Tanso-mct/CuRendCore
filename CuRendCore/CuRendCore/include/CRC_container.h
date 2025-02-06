@@ -6,18 +6,18 @@
 #include <memory>
 #include <vector>
 
-class CRC_API CRCPMContainer : public ICRCContainer
+class CRC_API CRCContainer : public ICRCContainer
 {
 private:
-    std::vector<std::unique_ptr<ICRCPhaseMethod>> methods_;
+    std::vector<std::unique_ptr<ICRCContainable>> datas_;
 
 public:
-    CRCPMContainer() = default;
-    virtual ~CRCPMContainer() override = default;
+    CRCContainer() = default;
+    virtual ~CRCContainer() override = default;
 
     // Delete copy constructor and operator=.
-    CRCPMContainer(const CRCPMContainer&) = delete;
-    CRCPMContainer& operator=(const CRCPMContainer&) = delete;
+    CRCContainer(const CRCContainer&) = delete;
+    CRCContainer& operator=(const CRCContainer&) = delete;
 
     int Add(std::unique_ptr<ICRCContainable> data);
     HRESULT Remove(int id) override;

@@ -8,6 +8,7 @@
 
 #include "CRC_config.h"
 #include "CRC_interface.h"
+#include "CRC_container.h"
 
 class CRC_API CRCCore
 {
@@ -26,16 +27,13 @@ public:
     virtual void Initialize();
     virtual int Shutdown();
 
-    virtual ICRCContainer* SetWindowContainer(std::unique_ptr<ICRCContainer> container);
-    virtual ICRCContainer* SetSceneContainer(std::unique_ptr<ICRCContainer> container);
-    virtual ICRCContainer* SetWindowPMContainer(std::unique_ptr<ICRCContainer> container);
-    virtual ICRCContainer* SetScenePMContainer(std::unique_ptr<ICRCContainer> container);
+    virtual int AddContainer(std::unique_ptr<ICRCContainer> container);
 
-    virtual HRESULT CreateWindowCRC(int idWindow, int idWindowPM);
-    virtual HRESULT ShowWindowCRC(int idWindow);
+    virtual HRESULT CreateWindowCRC(int idWindow, int idWindowContainer, int idWindowPM, int idWindowPMContainer);
+    virtual HRESULT ShowWindowCRC(int idWindow, int idWindowContainer);
 
-    virtual HRESULT CreateScene(int idScene, int idScenePM);
-    virtual HRESULT SetSceneToWindow(int idWindow, int idScene);
+    virtual HRESULT CreateScene(int idScene, int idSceneContainer, int idScenePM, int idScenePMContainer);
+    virtual HRESULT SetSceneToWindow(int idWindow, int idWindowContainer, int idScene, int idSceneContainer);
 
     virtual void HandleWindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 };

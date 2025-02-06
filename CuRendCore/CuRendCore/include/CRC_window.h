@@ -45,25 +45,3 @@ public:
     HWND hWnd_ = nullptr;
     int idScene_ = CRC::ID_INVALID;
 };
-
-class CRC_API CRCWindowContainer : public ICRCContainer
-{
-private:
-    std::vector<std::unique_ptr<CRCWindowAttr>> data_;
-
-public:
-    CRCWindowContainer() = default;
-    virtual ~CRCWindowContainer() override = default;
-
-    // Delete copy constructor and operator=.
-    CRCWindowContainer(const CRCWindowContainer&) = delete;
-    CRCWindowContainer& operator=(const CRCWindowContainer&) = delete;
-
-    int Add(std::unique_ptr<ICRCContainable> data);
-    HRESULT Remove(int id) override;
-
-    ICRCContainable* Get(int id);
-    int GetSize();
-
-    void Clear();
-};

@@ -5,7 +5,6 @@
 
 #include "CRC_window.h"
 #include "CRC_scene.h"
-#include "CRC_phase_method.h"
 
 CRCCore::CRCCore()
 {
@@ -17,7 +16,6 @@ CRCCore::~CRCCore()
 
 void CRCCore::Initialize()
 {
-    containers_.resize(CRC::CORE_CONTAINER_COUNT);
 }
 
 int CRCCore::Shutdown()
@@ -26,57 +24,23 @@ int CRCCore::Shutdown()
     return 0;
 }
 
-ICRCContainer* CRCCore::SetWindowContainer(std::unique_ptr<ICRCContainer> container)
+int CRCCore::AddContainer(std::unique_ptr<ICRCContainer> container)
 {
-    CRCWindowContainer* windowContainer = CRC::PtrAs<CRCWindowContainer>(container.get());
-
-    if (windowContainer) containers_[CRC::ID_WINDOW_CONTAINER] = std::move(container);
-    else return nullptr;
-
-    return containers_[CRC::ID_WINDOW_CONTAINER].get();
+    containers_.emplace_back(std::move(container));
+    return containers_.size() - 1;
 }
 
-ICRCContainer* CRCCore::SetSceneContainer(std::unique_ptr<ICRCContainer> container)
-{
-    CRCSceneContainer* sceneContainer = CRC::PtrAs<CRCSceneContainer>(container.get());
-
-    if (sceneContainer) containers_[CRC::ID_SCENE_CONTAINER] = std::move(container);
-    else return nullptr;
-
-    return containers_[CRC::ID_SCENE_CONTAINER].get();
-}
-
-ICRCContainer* CRCCore::SetWindowPMContainer(std::unique_ptr<ICRCContainer> container)
-{
-    CRCPMContainer* windowPMContainer = CRC::PtrAs<CRCPMContainer>(container.get());
-
-    if (windowPMContainer) containers_[CRC::ID_WINDOW_PM_CONTAINER] = std::move(container);
-    else return nullptr;
-
-    return containers_[CRC::ID_WINDOW_PM_CONTAINER].get();
-}
-
-ICRCContainer* CRCCore::SetScenePMContainer(std::unique_ptr<ICRCContainer> container)
-{
-    CRCPMContainer* scenePMContainer = CRC::PtrAs<CRCPMContainer>(container.get());
-
-    if (scenePMContainer) containers_[CRC::ID_SCENE_PM_CONTAINER] = std::move(container);
-    else return nullptr;
-
-    return containers_[CRC::ID_SCENE_PM_CONTAINER].get();
-}
-
-HRESULT CRCCore::CreateWindowCRC(int idWindow, int idWindowPM)
+HRESULT CRCCore::CreateWindowCRC(int idWindow, int idWindowContainer, int idWindowPM, int idWindowPMContainer)
 {
     if(
-        containers_[CRC::ID_WINDOW_CONTAINER] == nullptr || 
-        idWindow == CRC::ID_INVALID || idWindow >= containers_[CRC::ID_WINDOW_CONTAINER]->GetSize() ||
+        idWindow < 0 || idWindow >= containers_[idWindowContainer]->GetSize() ||
+        idWindowContainer < 0 || idWindowContainer >= containers_.size() ||
 
-        containers_[CRC::ID_WINDOW_PM_CONTAINER] == nullptr ||
-        idWindowPM == CRC::ID_INVALID || idWindowPM >= containers_[CRC::ID_WINDOW_PM_CONTAINER]->GetSize()
+        idWindowPM < 0 || idWindowPM >= containers_[idWindowPMContainer]->GetSize() ||
+        idWindowPMContainer < 0 || idWindowPMContainer >= containers_.size()
     ) return E_FAIL;
 
-    CRCWindowAttr* attr = CRC::PtrAs<CRCWindowAttr>(containers_[CRC::ID_WINDOW_CONTAINER]->Get(idWindow));
+    CRCWindowAttr* attr = CRC::PtrAs<CRCWindowAttr>(containers_[idWindowContainer]->Get(idWindow));
 
     if (!RegisterClassEx(&attr->src_->wcex_)) return E_FAIL;
 
@@ -97,7 +61,7 @@ HRESULT CRCCore::CreateWindowCRC(int idWindow, int idWindowPM)
     if (!attr->hWnd_) return E_FAIL;
 
     // Awake window's phase method.
-    ICRCPhaseMethod* phaseMethod = CRC::PtrAs<ICRCPhaseMethod>(containers_[CRC::ID_WINDOW_PM_CONTAINER]->Get(idWindowPM));
+    ICRCPhaseMethod* phaseMethod = CRC::PtrAs<ICRCPhaseMethod>(containers_[idWindowPMContainer]->Get(idWindowPM));
     phaseMethod->Awake();
 
     // Add window to existWindows_.
@@ -108,15 +72,14 @@ HRESULT CRCCore::CreateWindowCRC(int idWindow, int idWindowPM)
     return S_OK;
 }
 
-HRESULT CRCCore::ShowWindowCRC(int idWindow)
+HRESULT CRCCore::ShowWindowCRC(int idWindow, int idWindowContainer)
 {
     if(
-        containers_[CRC::ID_WINDOW_CONTAINER] == nullptr || 
-        idWindow == CRC::ID_INVALID || 
-        idWindow >= containers_[CRC::ID_WINDOW_CONTAINER]->GetSize()
+        idWindow < 0 || idWindow >= containers_[idWindowContainer]->GetSize() ||
+        idWindowContainer < 0 || idWindowContainer >= containers_.size()
     ) return E_FAIL;
 
-    CRCWindowAttr* windowAttr = CRC::PtrAs<CRCWindowAttr>(containers_[CRC::ID_WINDOW_CONTAINER]->Get(idWindow));
+    CRCWindowAttr* windowAttr = CRC::PtrAs<CRCWindowAttr>(containers_[idWindowContainer]->Get(idWindow));
 
     if (!windowAttr->hWnd_) return E_FAIL;
 
@@ -126,22 +89,22 @@ HRESULT CRCCore::ShowWindowCRC(int idWindow)
     return S_OK;
 }
 
-HRESULT CRCCore::CreateScene(int idScene, int idScenePM)
+HRESULT CRCCore::CreateScene(int idScene, int idSceneContainer, int idScenePM, int idScenePMContainer)
 {
     if(
-        containers_[CRC::ID_SCENE_CONTAINER] == nullptr || 
-        idScene == CRC::ID_INVALID || idScene >= containers_[CRC::ID_SCENE_CONTAINER]->GetSize() ||
+        idScene < 0 || idScene >= containers_[idSceneContainer]->GetSize() ||
+        idSceneContainer < 0 || idSceneContainer >= containers_.size() ||
         
-        containers_[CRC::ID_SCENE_PM_CONTAINER] == nullptr ||
-        idScenePM == CRC::ID_INVALID || idScenePM >= containers_[CRC::ID_SCENE_PM_CONTAINER]->GetSize()
+        idScenePM < 0 || idScenePM >= containers_[idScenePMContainer]->GetSize() ||
+        idScenePMContainer < 0 || idScenePMContainer >= containers_.size()
     ) return E_FAIL;
 
-    CRCSceneAttr* sceneAttr = CRC::PtrAs<CRCSceneAttr>(containers_[CRC::ID_SCENE_CONTAINER]->Get(idScene));
+    CRCSceneAttr* sceneAttr = CRC::PtrAs<CRCSceneAttr>(containers_[idSceneContainer]->Get(idScene));
 
     if (sceneAttr->isAwaked_) return S_OK; // Already awaked.
 
     // Awake scene's phase method.
-    sceneAttr->phaseMethod_ = CRC::PtrAs<ICRCPhaseMethod>(containers_[CRC::ID_SCENE_PM_CONTAINER]->Get(idScenePM));
+    sceneAttr->phaseMethod_ = CRC::PtrAs<ICRCPhaseMethod>(containers_[idScenePMContainer]->Get(idScenePM));
     sceneAttr->phaseMethod_->Awake();
     sceneAttr->isAwaked_ = true;
 
@@ -150,24 +113,22 @@ HRESULT CRCCore::CreateScene(int idScene, int idScenePM)
     return S_OK;
 }
 
-HRESULT CRCCore::SetSceneToWindow(int idWindow, int idScene)
+HRESULT CRCCore::SetSceneToWindow(int idWindow, int idWindowContainer, int idScene, int idSceneContainer)
 {
     if(
-        containers_[CRC::ID_WINDOW_CONTAINER] == nullptr || containers_[CRC::ID_SCENE_CONTAINER] == nullptr ||
-        idWindow == CRC::ID_INVALID || idScene == CRC::ID_INVALID ||
-        idWindow >= containers_[CRC::ID_WINDOW_CONTAINER]->GetSize() || 
-        idScene >= containers_[CRC::ID_SCENE_CONTAINER]->GetSize()
+        idWindow < 0 || idWindow >= containers_[idWindowContainer]->GetSize() || 
+        idWindowContainer < 0 || idWindowContainer >= containers_.size() ||
+
+        idScene < 0 || idScene >= containers_[idSceneContainer]->GetSize() ||
+        idSceneContainer < 0 || idSceneContainer >= containers_.size()
     ) return E_FAIL;
 
     // Set scene id to window.
-    CRCWindowAttr* windowAttr = CRC::PtrAs<CRCWindowAttr>(containers_[CRC::ID_WINDOW_CONTAINER]->Get(idWindow));
+    CRCWindowAttr* windowAttr = CRC::PtrAs<CRCWindowAttr>(containers_[idWindowContainer]->Get(idWindow));
     windowAttr->idScene_ = idScene;
 
-    // hWnd_ must be exist.
-    if (existWindows_.find(windowAttr->hWnd_) == existWindows_.end()) return E_FAIL;
-
     // Set scene phase method.
-    CRCSceneAttr* sceneAttr = CRC::PtrAs<CRCSceneAttr>(containers_[CRC::ID_SCENE_CONTAINER]->Get(idScene));
+    CRCSceneAttr* sceneAttr = CRC::PtrAs<CRCSceneAttr>(containers_[idSceneContainer]->Get(idScene));
     std::get<2>(existWindows_[windowAttr->hWnd_]) = sceneAttr->phaseMethod_;
 
     return S_OK;

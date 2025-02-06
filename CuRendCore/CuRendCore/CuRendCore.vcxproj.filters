@@ -30,7 +30,7 @@
     <ClCompile Include="src\CRC_scene.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="src\CRC_phase_method.cpp">
+    <ClCompile Include="src\CRC_container.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
@@ -62,7 +62,7 @@
     <ClInclude Include="include\CRC_scene.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="include\CRC_phase_method.h">
+    <ClInclude Include="include\CRC_container.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
