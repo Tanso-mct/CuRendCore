@@ -26,36 +26,44 @@ int CRCCore::Shutdown()
     return 0;
 }
 
-HRESULT CRCCore::SetWindowContainer(std::unique_ptr<ICRCContainer> container)
+ICRCContainer* CRCCore::SetWindowContainer(std::unique_ptr<ICRCContainer> container)
 {
     CRCWindowContainer* windowContainer = CRC::PtrAs<CRCWindowContainer>(container.get());
 
     if (windowContainer) containers_[CRC::ID_WINDOW_CONTAINER] = std::move(container);
-    else return E_FAIL;
+    else return nullptr;
+
+    return containers_[CRC::ID_WINDOW_CONTAINER].get();
 }
 
-HRESULT CRCCore::SetSceneContainer(std::unique_ptr<ICRCContainer> container)
+ICRCContainer* CRCCore::SetSceneContainer(std::unique_ptr<ICRCContainer> container)
 {
     CRCSceneContainer* sceneContainer = CRC::PtrAs<CRCSceneContainer>(container.get());
 
     if (sceneContainer) containers_[CRC::ID_SCENE_CONTAINER] = std::move(container);
-    else return E_FAIL;
+    else return nullptr;
+
+    return containers_[CRC::ID_SCENE_CONTAINER].get();
 }
 
-HRESULT CRCCore::SetWindowPMContainer(std::unique_ptr<ICRCContainer> container)
+ICRCContainer* CRCCore::SetWindowPMContainer(std::unique_ptr<ICRCContainer> container)
 {
     CRCPMContainer* windowPMContainer = CRC::PtrAs<CRCPMContainer>(container.get());
 
     if (windowPMContainer) containers_[CRC::ID_WINDOW_PM_CONTAINER] = std::move(container);
-    else return E_FAIL;
+    else return nullptr;
+
+    return containers_[CRC::ID_WINDOW_PM_CONTAINER].get();
 }
 
-HRESULT CRCCore::SetScenePMContainer(std::unique_ptr<ICRCContainer> container)
+ICRCContainer* CRCCore::SetScenePMContainer(std::unique_ptr<ICRCContainer> container)
 {
     CRCPMContainer* scenePMContainer = CRC::PtrAs<CRCPMContainer>(container.get());
 
     if (scenePMContainer) containers_[CRC::ID_SCENE_PM_CONTAINER] = std::move(container);
-    else return E_FAIL;
+    else return nullptr;
+
+    return containers_[CRC::ID_SCENE_PM_CONTAINER].get();
 }
 
 HRESULT CRCCore::CreateWindowCRC(int idWindow, int idWindowPM)

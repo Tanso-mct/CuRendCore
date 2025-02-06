@@ -26,10 +26,10 @@ public:
     virtual void Initialize();
     virtual int Shutdown();
 
-    virtual HRESULT SetWindowContainer(std::unique_ptr<ICRCContainer> container);
-    virtual HRESULT SetSceneContainer(std::unique_ptr<ICRCContainer> container);
-    virtual HRESULT SetWindowPMContainer(std::unique_ptr<ICRCContainer> container);
-    virtual HRESULT SetScenePMContainer(std::unique_ptr<ICRCContainer> container);
+    virtual ICRCContainer* SetWindowContainer(std::unique_ptr<ICRCContainer> container);
+    virtual ICRCContainer* SetSceneContainer(std::unique_ptr<ICRCContainer> container);
+    virtual ICRCContainer* SetWindowPMContainer(std::unique_ptr<ICRCContainer> container);
+    virtual ICRCContainer* SetScenePMContainer(std::unique_ptr<ICRCContainer> container);
 
     virtual HRESULT CreateWindowCRC(int idWindow, int idWindowPM);
     virtual HRESULT ShowWindowCRC(int idWindow);
