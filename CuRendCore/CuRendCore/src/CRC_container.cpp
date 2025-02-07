@@ -19,7 +19,7 @@ HRESULT CRCContainer::Remove(int id)
 
 std::unique_ptr<ICRCContainable> &CRCContainer::Get(int id)
 {
-    if (id < 0 || id >= datas_.size()) return nullData_;
+    if (id < 0 || id >= datas_.size()) return emptyData_;
     return datas_[id];
 }
 

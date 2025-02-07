@@ -24,7 +24,7 @@ public:
     virtual ~ICRCContainable() = default;
 };
 
-class CRC_API ICRCContainer : public ICRCContainable
+class CRC_API ICRCContainer
 {
 public:
     virtual ~ICRCContainer() = default;
@@ -75,9 +75,8 @@ class CRC_API ICRCPhaseMethod : public ICRCContainable
 public:
     virtual ~ICRCPhaseMethod() = default;
 
-    virtual void Awake() = 0;
     virtual void Update() = 0;
-    virtual void Show() = 0;
     virtual void Hide() = 0;
+    virtual void Restored() = 0;
     virtual void End() = 0;
 };

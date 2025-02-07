@@ -18,7 +18,4 @@ class CRC_API CRCSceneAttr : public ICRCContainable
 public:
     virtual ~CRCSceneAttr() override = default;
     std::unique_ptr<CRCSceneSrc> src_ = nullptr;
-
-    bool isAwaked_ = false;
-    ICRCPhaseMethod* phaseMethod_ = nullptr;
 };

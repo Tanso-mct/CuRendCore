@@ -10,7 +10,7 @@ class CRC_API CRCContainer : public ICRCContainer
 {
 private:
     std::vector<std::unique_ptr<ICRCContainable>> datas_;
-    std::unique_ptr<ICRCContainable> nullData_ = nullptr;
+    std::unique_ptr<ICRCContainable> emptyData_ = nullptr;
 
 public:
     CRCContainer() = default;

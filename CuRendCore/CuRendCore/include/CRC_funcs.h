@@ -36,11 +36,9 @@ CRC_API std::unique_ptr<CRCCore>& Core();
 CRC_API std::unique_ptr<ICRCContainable> CreateWindowData(std::unique_ptr<CRCWindowSrc> attr);
 CRC_API std::unique_ptr<ICRCContainable> CreateSceneData(std::unique_ptr<CRCSceneSrc> attr);
 
-HRESULT CreateWindowCRC(std::unique_ptr<ICRCContainable>& windowAttr, std::unique_ptr<ICRCPhaseMethod>& windowPM);
-HRESULT ShowWindowCRC(std::unique_ptr<ICRCContainable>& windowAttr);
+CRC_API HRESULT CreateWindowCRC(std::unique_ptr<ICRCContainable>& windowAttr);
+CRC_API HRESULT ShowWindowCRC(std::unique_ptr<ICRCContainable>& windowAttr);
 
-HRESULT CreateScene(std::unique_ptr<ICRCContainable>& sceneAttr, std::unique_ptr<ICRCPhaseMethod>& scenePM);
-HRESULT SetSceneToWindow(std::unique_ptr<ICRCContainable>& windowAttr, std::unique_ptr<ICRCContainable>& sceneAttr);
-
+CRC_API HRESULT CreateScene(std::unique_ptr<ICRCContainable>& sceneAttr);
 
 }
