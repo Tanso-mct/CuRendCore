@@ -64,8 +64,8 @@ HRESULT CRCCore::CreateWindowCRC(int idWindow, int idWindowContainer, int idWind
     ICRCPhaseMethod* phaseMethod = CRC::PtrAs<ICRCPhaseMethod>(containers_[idWindowPMContainer]->Get(idWindowPM));
     phaseMethod->Awake();
 
-    // Add window to existWindows_.
-    existWindows_[attr->hWnd_] = std::make_tuple(attr, phaseMethod, nullptr);
+    // Set window's phase method.
+    hWndPMs[attr->hWnd_] = std::make_tuple(idWindowPMContainer, idWindowPM, CRC::ID_INVALID, CRC::ID_INVALID);
 
     // Release source.
     attr->src_.reset();

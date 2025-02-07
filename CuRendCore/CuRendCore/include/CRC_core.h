@@ -13,8 +13,7 @@
 class CRC_API CRCCore
 {
 private:
-    std::vector<std::unique_ptr<ICRCContainer>> containers_;
-    std::unordered_map<HWND, std::tuple<ICRCContainable*, ICRCPhaseMethod*, ICRCPhaseMethod*>> existWindows_;
+    std::unordered_map<HWND, std::pair<std::unique_ptr<ICRCPhaseMethod>, std::unique_ptr<ICRCPhaseMethod>>> hWndPMs;
 
 public:
     CRCCore();
@@ -26,14 +25,6 @@ public:
 
     virtual void Initialize();
     virtual int Shutdown();
-
-    virtual int AddContainer(std::unique_ptr<ICRCContainer> container);
-
-    virtual HRESULT CreateWindowCRC(int idWindow, int idWindowContainer, int idWindowPM, int idWindowPMContainer);
-    virtual HRESULT ShowWindowCRC(int idWindow, int idWindowContainer);
-
-    virtual HRESULT CreateScene(int idScene, int idSceneContainer, int idScenePM, int idScenePMContainer);
-    virtual HRESULT SetSceneToWindow(int idWindow, int idWindowContainer, int idScene, int idSceneContainer);
 
     virtual void HandleWindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 };

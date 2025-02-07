@@ -43,5 +43,7 @@ public:
     std::unique_ptr<CRCWindowSrc> src_ = nullptr;
 
     HWND hWnd_ = nullptr;
+
+    int idSceneContainer_ = CRC::ID_INVALID;
     int idScene_ = CRC::ID_INVALID;
 };

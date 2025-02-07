@@ -8,6 +8,9 @@
 #include <string>
 #include <memory>
 #include <vector>
+#include <unordered_map>
+#include <tuple>
+#include <utility>
 
 namespace CRC
 {

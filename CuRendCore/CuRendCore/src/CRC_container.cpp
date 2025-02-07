@@ -17,10 +17,24 @@ HRESULT CRCContainer::Remove(int id)
     return S_OK;
 }
 
-ICRCContainable *CRCContainer::Get(int id)
+std::unique_ptr<ICRCContainable> &CRCContainer::Get(int id)
+{
+    if (id < 0 || id >= datas_.size()) return nullData_;
+    return datas_[id];
+}
+
+std::unique_ptr<ICRCContainable> CRCContainer::Take(int id)
 {
     if (id < 0 || id >= datas_.size()) return nullptr;
-    return datas_[id].get();
+    return std::move(datas_[id]);
+}
+
+HRESULT CRCContainer::Put(int id, std::unique_ptr<ICRCContainable> data)
+{
+    if (id < 0 || id >= datas_.size()) return E_FAIL;
+    
+    datas_[id] = std::move(data);
+    return S_OK;
 }
 
 int CRCContainer::GetSize()

@@ -24,7 +24,7 @@ public:
     virtual ~ICRCContainable() = default;
 };
 
-class CRC_API ICRCContainer
+class CRC_API ICRCContainer : public ICRCContainable
 {
 public:
     virtual ~ICRCContainer() = default;
@@ -32,7 +32,11 @@ public:
     virtual int Add(std::unique_ptr<ICRCContainable> data) = 0;
     virtual HRESULT Remove(int id) = 0;
 
-    virtual ICRCContainable* Get(int id) = 0;
+    virtual std::unique_ptr<ICRCContainable>& Get(int id) = 0;
+
+    virtual std::unique_ptr<ICRCContainable> Take(int id) = 0;
+    virtual HRESULT Put(int id, std::unique_ptr<ICRCContainable> data) = 0;
+
     virtual int GetSize() = 0;
 
     virtual void Clear() = 0;
