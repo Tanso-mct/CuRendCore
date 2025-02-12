@@ -2,6 +2,7 @@
 
 #include "CRC_config.h"
 #include "CRC_container.h"
+#include "CRC_user_input.h"
 
 #include <Windows.h>
 #include <memory>

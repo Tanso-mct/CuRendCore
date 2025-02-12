@@ -34,6 +34,7 @@
     </ClCompile>
     <ClCompile Include="src\CRC_phase_method.cpp" />
     <ClCompile Include="src\CRC_scene.cpp" />
+    <ClCompile Include="src\CRC_user_input.cpp" />
     <ClCompile Include="src\CRC_window.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -44,6 +45,7 @@
     <ClInclude Include="include\CRC_container.h" />
     <ClInclude Include="include\CRC_phase_method.h" />
     <ClInclude Include="include\CRC_scene.h" />
+    <ClInclude Include="include\CRC_user_input.h" />
     <ClInclude Include="include\CRC_window.h" />
     <ClInclude Include="include\CuRendCore.h" />
     <ClInclude Include="include\stb_image.h" />
