@@ -37,12 +37,12 @@ int main()
         idMainWindow = container->Add(std::move(windowData));
 
         // Move window container to core.
-        idWindowContainer = CRC::Core()->containers_->Add(std::move(container));
+        idWindowContainer = CRC::Core()->containerSet_->Add(std::move(container));
     }
     if (idMainWindow == CRC::ID_INVALID) return CRC::ERROR_CREATE_WINDOW;
     if (idWindowContainer == CRC::ID_INVALID) return CRC::ERROR_CREATE_CONTAINER;
 
-    std::unique_ptr<ICRCContainer>& mainWindowContainer = CRC::Core()->containers_->Get(idWindowContainer);
+    std::unique_ptr<ICRCContainer>& mainWindowContainer = CRC::Core()->containerSet_->Get(idWindowContainer);
     std::unique_ptr<ICRCContainable>& mainWindowAttr = mainWindowContainer->Get(idMainWindow);
 
     /**************************************************************************************************************** */
@@ -63,12 +63,12 @@ int main()
         idMainScene = container->Add(std::move(sceneData));
 
         // Move scene container to core.
-        idSceneContainer = CRC::Core()->containers_->Add(std::move(container));
+        idSceneContainer = CRC::Core()->containerSet_->Add(std::move(container));
     }
     if (idMainScene == CRC::ID_INVALID) return CRC::ERROR_CREATE_CONTAINER;
     if (idSceneContainer == CRC::ID_INVALID) return CRC::ERROR_CREATE_CONTAINER;
 
-    std::unique_ptr<ICRCContainer>& mainSceneContainer = CRC::Core()->containers_->Get(idSceneContainer);
+    std::unique_ptr<ICRCContainer>& mainSceneContainer = CRC::Core()->containerSet_->Get(idSceneContainer);
     std::unique_ptr<ICRCContainable>& mainSceneAttr = mainSceneContainer->Get(idMainScene);
 
     /**************************************************************************************************************** */
@@ -96,15 +96,20 @@ int main()
     /**************************************************************************************************************** */
     // Set phase method to window.
     /**************************************************************************************************************** */
-    hr = CRC::Core()->AddPhaseMethodToWindow
+
+    CRC::Core()->pmCaller_->AddPhaseMethod
     (
-        CRC::PtrAs<CRCWindowAttr>(mainWindowAttr.get())->hWnd_, std::move(mainWindowPM)
+        std::move(mainWindowPM), 
+        CRC::PtrAs<CRCWindowAttr>(mainWindowAttr.get()), 
+        CRC::PtrAs<CRCWindowAttr>(mainWindowAttr.get())->hWnd_
     );
     if (FAILED(hr)) return CRC::ERROR_ADD_PM_TO_WINDOW;
 
-    hr = CRC::Core()->AddPhaseMethodToWindow
+    CRC::Core()->pmCaller_->AddPhaseMethod
     (
-        CRC::PtrAs<CRCWindowAttr>(mainWindowAttr.get())->hWnd_, std::move(mainScenePM)
+        std::move(mainScenePM), 
+        CRC::PtrAs<CRCSceneAttr>(mainSceneAttr.get()), 
+        CRC::PtrAs<CRCWindowAttr>(mainWindowAttr.get())->hWnd_
     );
     if (FAILED(hr)) return CRC::ERROR_ADD_PM_TO_WINDOW;
 
