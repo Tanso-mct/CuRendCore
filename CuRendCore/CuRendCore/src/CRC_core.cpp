@@ -25,23 +25,6 @@ int CRCCore::Shutdown()
     return 0;
 }
 
-HRESULT CRCCore::SetSceneToWindow(std::unique_ptr<ICRCContainable>& windowAttr, int idScene, int idSceneContainer)
-{
-    if(idSceneContainer < 0 || idSceneContainer >= containers_->GetSize()) return E_FAIL;
-    std::unique_ptr<ICRCContainer>& container = containers_->Get(idSceneContainer);
-
-    if (idScene < 0 || idScene >= container->GetSize()) return E_FAIL;
-
-    // Set scene id to window.
-    CRCWindowAttr* attr = CRC::PtrAs<CRCWindowAttr>(windowAttr.get());
-    if (!attr) return E_FAIL;
-
-    attr->idSceneContainer_ = idSceneContainer;
-    attr->idScene_ = idScene;
-
-    return S_OK;
-}
-
 HRESULT CRCCore::AddPhaseMethodToWindow(HWND hWnd, std::unique_ptr<ICRCPhaseMethod> phaseMethod)
 {
     if (!phaseMethod) return E_FAIL;

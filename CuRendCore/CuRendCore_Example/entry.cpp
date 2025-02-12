@@ -89,17 +89,9 @@ int main()
     hr = CRC::CreateWindowCRC(mainWindowAttr);
     if (FAILED(hr)) return CRC::ERROR_CREATE_WINDOW;
 
-    // Show window.
-    hr = CRC::ShowWindowCRC(mainWindowAttr);
-    if (FAILED(hr)) return CRC::ERROR_SHOW_WINDOW;
-
     // Create scene.
     hr = CRC::CreateScene(mainSceneAttr);
     if (FAILED(hr)) return CRC::ERROR_CREATE_SCENE;
-
-    // Set scene to window.
-    hr = CRC::Core()->SetSceneToWindow(mainWindowAttr, idMainScene, idSceneContainer);
-    if (FAILED(hr)) return CRC::ERROR_SET_SCENE_TO_WINDOW;
 
     /**************************************************************************************************************** */
     // Set phase method to window.
@@ -119,6 +111,11 @@ int main()
     /**************************************************************************************************************** */
     // Main loop.
     /**************************************************************************************************************** */
+    
+    // Show window.
+    hr = CRC::ShowWindowCRC(mainWindowAttr);
+    if (FAILED(hr)) return CRC::ERROR_SHOW_WINDOW;
+
     MSG msg = {};
     while (msg.message != WM_QUIT)
     {

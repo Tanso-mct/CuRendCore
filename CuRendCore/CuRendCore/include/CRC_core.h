@@ -29,7 +29,6 @@ public:
     virtual void Initialize();
     virtual int Shutdown();
 
-    virtual HRESULT SetSceneToWindow(std::unique_ptr<ICRCContainable>& windowAttr,int idScene, int idSceneContainer);
     virtual HRESULT AddPhaseMethodToWindow(HWND hWnd, std::unique_ptr<ICRCPhaseMethod> phaseMethod);
 
     virtual void HandleWindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
