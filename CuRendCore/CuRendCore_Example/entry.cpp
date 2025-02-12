@@ -97,6 +97,12 @@ int main()
     // Set phase method to window.
     /**************************************************************************************************************** */
 
+    /**
+     * Adding the Phase Method to the pm caller will cause the phase method to be called 
+     * when processing the window's message.
+     * Also, the order in which PhaseMethods are called is the order in which they are added to pmCaller.
+     */
+
     CRC::Core()->pmCaller_->Add
     (
         std::move(mainWindowPM), // Phase method.
