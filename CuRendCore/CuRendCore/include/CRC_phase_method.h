@@ -23,8 +23,8 @@ template <typename KEY>
 class CRC_API CRCPhaseMethodCaller
 {
 private:
-    std::unordered_map<KEY, std::vector<std::unique_ptr<ICRCPhaseMethod>>> pms;
-    std::unordered_map<KEY, std::vector<ICRCContainable*>> attrs;
+    std::unordered_map<KEY, std::vector<std::unique_ptr<ICRCPhaseMethod>>> pms_;
+    std::unordered_map<KEY, std::vector<ICRCContainable*>> attrs_;
 
 public:
     CRCPhaseMethodCaller() = default;
@@ -36,25 +36,25 @@ public:
 
     void Add(std::unique_ptr<ICRCPhaseMethod> phaseMethod, ICRCContainable* attr, KEY key)
     {
-        pms[key].emplace_back(std::move(phaseMethod));
-        attrs[key].emplace_back(attr);
+        pms_[key].emplace_back(std::move(phaseMethod));
+        attrs_[key].emplace_back(attr);
     }
 
     HRESULT Clear(KEY key)
     {
-        if (pms.find(key) == pms.end()) return E_FAIL;
+        if (pms_.find(key) == pms_.end()) return E_FAIL;
 
-        pms[key].clear();
-        attrs[key].clear();
+        pms_[key].clear();
+        attrs_[key].clear();
 
-        pms.erase(key);
-        attrs.erase(key);
+        pms_.erase(key);
+        attrs_.erase(key);
 
         return S_OK;
     }
 
-    void CallUpdate(KEY key){ for (int i = 0; i < pms[key].size(); ++i){ pms[key][i]->Update(attrs[key][i]); } }
-    void CallHide(KEY key){ for (int i = 0; i < pms[key].size(); ++i){ pms[key][i]->Hide(attrs[key][i]); } }
-    void CallRestored(KEY key){ for (int i = 0; i < pms[key].size(); ++i){ pms[key][i]->Restored(attrs[key][i]); } }
-    void CallEnd(KEY key){ for (int i = 0; i < pms[key].size(); ++i){ pms[key][i]->End(attrs[key][i]); } }
+    void CallUpdate(KEY key){ for (int i = 0; i < pms_[key].size(); ++i){ pms_[key][i]->Update(attrs_[key][i]); } }
+    void CallHide(KEY key){ for (int i = 0; i < pms_[key].size(); ++i){ pms_[key][i]->Hide(attrs_[key][i]); } }
+    void CallRestored(KEY key){ for (int i = 0; i < pms_[key].size(); ++i){ pms_[key][i]->Restored(attrs_[key][i]); } }
+    void CallEnd(KEY key){ for (int i = 0; i < pms_[key].size(); ++i){ pms_[key][i]->End(attrs_[key][i]); } }
 };
