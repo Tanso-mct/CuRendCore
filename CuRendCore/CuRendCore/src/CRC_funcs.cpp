@@ -11,7 +11,7 @@ CRC_API std::unique_ptr<CRCCore>& CRC::Core()
     return core;
 }
 
-CRC_API std::unique_ptr<ICRCContainable> CRC::CreateWindowData(std::unique_ptr<CRCWindowSrc> attr)
+CRC_API std::unique_ptr<ICRCContainable> CRC::CreateWindowAttr(std::unique_ptr<CRCWindowSrc> attr)
 {
     std::unique_ptr<CRCWindowAttr> windowData = std::make_unique<CRCWindowAttr>();
 
@@ -19,7 +19,7 @@ CRC_API std::unique_ptr<ICRCContainable> CRC::CreateWindowData(std::unique_ptr<C
     return windowData;
 }
 
-CRC_API std::unique_ptr<ICRCContainable> CRC::CreateSceneData(std::unique_ptr<CRCSceneSrc> attr)
+CRC_API std::unique_ptr<ICRCContainable> CRC::CreateSceneAttr(std::unique_ptr<CRCSceneSrc> attr)
 {
     std::unique_ptr<CRCSceneAttr> sceneData = std::make_unique<CRCSceneAttr>();
 

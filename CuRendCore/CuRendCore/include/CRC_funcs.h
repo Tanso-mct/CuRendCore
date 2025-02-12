@@ -33,8 +33,8 @@ std::unique_ptr<T> UniqueAs(std::unique_ptr<S>& source)
 
 CRC_API std::unique_ptr<CRCCore>& Core();
 
-CRC_API std::unique_ptr<ICRCContainable> CreateWindowData(std::unique_ptr<CRCWindowSrc> attr);
-CRC_API std::unique_ptr<ICRCContainable> CreateSceneData(std::unique_ptr<CRCSceneSrc> attr);
+CRC_API std::unique_ptr<ICRCContainable> CreateWindowAttr(std::unique_ptr<CRCWindowSrc> attr);
+CRC_API std::unique_ptr<ICRCContainable> CreateSceneAttr(std::unique_ptr<CRCSceneSrc> attr);
 
 CRC_API HRESULT CreateWindowCRC(std::unique_ptr<ICRCContainable>& windowAttr);
 CRC_API HRESULT ShowWindowCRC(std::unique_ptr<ICRCContainable>& windowAttr);

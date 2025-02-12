@@ -31,7 +31,7 @@ int main()
         windowAttr->wcex_.lpfnWndProc = WindowProc;
         windowAttr->name_ = L"Main Window";
         windowAttr->hInstance =  GetModuleHandle(NULL);
-        std::unique_ptr<ICRCContainable> windowData = CRC::CreateWindowData(std::move(windowAttr));
+        std::unique_ptr<ICRCContainable> windowData = CRC::CreateWindowAttr(std::move(windowAttr));
 
         // Add window to window container.
         idMainWindow = container->Add(std::move(windowData));
@@ -57,7 +57,7 @@ int main()
         // Create scene by scene attributes.
         std::unique_ptr<CRCSceneSrc> sceneAttr = std::make_unique<CRCSceneSrc>();
         sceneAttr->name_ = "MainScene";
-        std::unique_ptr<ICRCContainable> sceneData = CRC::CreateSceneData(std::move(sceneAttr));
+        std::unique_ptr<ICRCContainable> sceneData = CRC::CreateSceneAttr(std::move(sceneAttr));
 
         // Add scene to scene container.
         idMainScene = container->Add(std::move(sceneData));
@@ -111,7 +111,7 @@ int main()
     /**************************************************************************************************************** */
     // Main loop.
     /**************************************************************************************************************** */
-    
+
     // Show window.
     hr = CRC::ShowWindowCRC(mainWindowAttr);
     if (FAILED(hr)) return CRC::ERROR_SHOW_WINDOW;
