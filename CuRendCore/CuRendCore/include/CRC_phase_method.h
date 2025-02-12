@@ -13,10 +13,10 @@ class CRC_API ICRCPhaseMethod : public ICRCContainable
 public:
     virtual ~ICRCPhaseMethod() = default;
 
-    virtual void Update() = 0;
-    virtual void Hide() = 0;
-    virtual void Restored() = 0;
-    virtual void End() = 0;
+    virtual void Update(ICRCContainable* attr) = 0;
+    virtual void Hide(ICRCContainable* attr) = 0;
+    virtual void Restored(ICRCContainable* attr) = 0;
+    virtual void End(ICRCContainable* attr) = 0;
 };
 
 template <typename KEY>
@@ -24,7 +24,7 @@ class CRC_API CRCPhaseMethodCaller
 {
 private:
     std::unordered_map<KEY, std::vector<std::unique_ptr<ICRCPhaseMethod>>> pms;
-    std::unordered_map<KEY, ICRCContainable*> attrs;
+    std::unordered_map<KEY, std::vector<ICRCContainable*>> attrs;
 
 public:
     CRCPhaseMethodCaller() = default;
@@ -34,17 +34,18 @@ public:
     CRCPhaseMethodCaller(const CRCPhaseMethodCaller&) = delete;
     CRCPhaseMethodCaller& operator=(const CRCPhaseMethodCaller&) = delete;
 
-    void AddPhaseMethod(std::unique_ptr<ICRCPhaseMethod> phaseMethod, ICRCContainable* attr, KEY key)
+    void Add(std::unique_ptr<ICRCPhaseMethod> phaseMethod, ICRCContainable* attr, KEY key)
     {
         pms[key].emplace_back(std::move(phaseMethod));
-        attrs[key] = attr;
+        attrs[key].emplace_back(attr);
     }
 
-    HRESULT ClearPhaseMethod(KEY key)
+    HRESULT Clear(KEY key)
     {
         if (pms.find(key) == pms.end()) return E_FAIL;
 
         pms[key].clear();
+        attrs[key].clear();
 
         pms.erase(key);
         attrs.erase(key);
@@ -52,8 +53,8 @@ public:
         return S_OK;
     }
 
-    void CallUpdate(KEY key) { for (auto& pm : pms[key]) pm->Update(); }
-    void CallHide(KEY key) { for (auto& pm : pms[key]) pm->Hide(); }
-    void CallRestored(KEY key) { for (auto& pm : pms[key]) pm->Restored(); }
-    void CallEnd(KEY key) { for (auto& pm : pms[key]) pm->End(); }
+    void CallUpdate(KEY key){ for (int i = 0; i < pms[key].size(); ++i){ pms[key][i]->Update(attrs[key][i]); } }
+    void CallHide(KEY key){ for (int i = 0; i < pms[key].size(); ++i){ pms[key][i]->Hide(attrs[key][i]); } }
+    void CallRestored(KEY key){ for (int i = 0; i < pms[key].size(); ++i){ pms[key][i]->Restored(attrs[key][i]); } }
+    void CallEnd(KEY key){ for (int i = 0; i < pms[key].size(); ++i){ pms[key][i]->End(attrs[key][i]); } }
 };

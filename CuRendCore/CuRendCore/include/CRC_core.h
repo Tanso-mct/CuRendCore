@@ -25,6 +25,5 @@ public:
 
     virtual void Initialize();
     virtual int Shutdown();
-
     virtual void HandleWindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 };

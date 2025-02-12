@@ -97,19 +97,19 @@ int main()
     // Set phase method to window.
     /**************************************************************************************************************** */
 
-    CRC::Core()->pmCaller_->AddPhaseMethod
+    CRC::Core()->pmCaller_->Add
     (
-        std::move(mainWindowPM), 
-        CRC::PtrAs<CRCWindowAttr>(mainWindowAttr.get()), 
-        CRC::PtrAs<CRCWindowAttr>(mainWindowAttr.get())->hWnd_
+        std::move(mainWindowPM), // Phase method.
+        CRC::PtrAs<CRCWindowAttr>(mainWindowAttr.get()), // Attribute.
+        CRC::PtrAs<CRCWindowAttr>(mainWindowAttr.get())->hWnd_ // Key.
     );
     if (FAILED(hr)) return CRC::ERROR_ADD_PM_TO_WINDOW;
 
-    CRC::Core()->pmCaller_->AddPhaseMethod
+    CRC::Core()->pmCaller_->Add
     (
-        std::move(mainScenePM), 
-        CRC::PtrAs<CRCSceneAttr>(mainSceneAttr.get()), 
-        CRC::PtrAs<CRCWindowAttr>(mainWindowAttr.get())->hWnd_
+        std::move(mainScenePM), // Phase method.
+        CRC::PtrAs<CRCSceneAttr>(mainSceneAttr.get()), // Attribute.
+        CRC::PtrAs<CRCWindowAttr>(mainWindowAttr.get())->hWnd_ // Key.
     );
     if (FAILED(hr)) return CRC::ERROR_ADD_PM_TO_WINDOW;
 
