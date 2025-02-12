@@ -13,9 +13,6 @@
 class CRC_API CRCCore
 {
 private:
-    std::vector<std::unique_ptr<ICRCContainer>> containers_;
-    std::unique_ptr<ICRCContainer> emptyContainer_ = nullptr;
-
     std::unordered_map<HWND, std::vector<std::unique_ptr<ICRCPhaseMethod>>> hWndPMs;
     std::unique_ptr<ICRCPhaseMethod> emptyPhaseMethod_ = nullptr;
 
@@ -27,14 +24,10 @@ public:
     CRCCore(const CRCCore&) = delete;
     CRCCore& operator=(const CRCCore&) = delete;
 
+    std::unique_ptr<CRCContainerSet> containers_;
+
     virtual void Initialize();
     virtual int Shutdown();
-
-    virtual int AddContainer(std::unique_ptr<ICRCContainer> container);
-    virtual std::unique_ptr<ICRCContainer>& GetContainer(int id);
-
-    virtual std::unique_ptr<ICRCContainer> TakeContainer(int id);
-    virtual HRESULT PutContainer(int id, std::unique_ptr<ICRCContainer> container);
 
     virtual HRESULT SetSceneToWindow(std::unique_ptr<ICRCContainable>& windowAttr,int idScene, int idSceneContainer);
     virtual HRESULT AddPhaseMethodToWindow(HWND hWnd, std::unique_ptr<ICRCPhaseMethod> phaseMethod);

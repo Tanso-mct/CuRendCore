@@ -29,6 +29,31 @@ public:
     HRESULT Put(int id, std::unique_ptr<ICRCContainable> data) override;
     
     int GetSize();
+    void Clear();
+};
 
+class CRC_API CRCContainerSet
+{
+private:
+    std::vector<std::unique_ptr<ICRCContainer>> containers_;
+    std::unique_ptr<ICRCContainer> emptyContainer_ = nullptr;
+
+public:
+    CRCContainerSet() = default;
+    virtual ~CRCContainerSet() = default;
+
+    // Delete copy constructor and operator=.
+    CRCContainerSet(const CRCContainerSet&) = delete;
+    CRCContainerSet& operator=(const CRCContainerSet&) = delete;
+
+    int Add(std::unique_ptr<ICRCContainer> data);
+    HRESULT Remove(int id);
+
+    std::unique_ptr<ICRCContainer>& Get(int id);
+
+    std::unique_ptr<ICRCContainer> Take(int id);
+    HRESULT Put(int id, std::unique_ptr<ICRCContainer> data);
+    
+    int GetSize();
     void Clear();
 };

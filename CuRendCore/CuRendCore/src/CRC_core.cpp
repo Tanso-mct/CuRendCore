@@ -16,6 +16,7 @@ CRCCore::~CRCCore()
 
 void CRCCore::Initialize()
 {
+    containers_ = std::make_unique<CRCContainerSet>();
 }
 
 int CRCCore::Shutdown()
@@ -24,36 +25,12 @@ int CRCCore::Shutdown()
     return 0;
 }
 
-int CRCCore::AddContainer(std::unique_ptr<ICRCContainer> container)
-{
-    containers_.emplace_back(std::move(container));
-    return containers_.size() - 1;
-}
-
-std::unique_ptr<ICRCContainer> &CRCCore::GetContainer(int id)
-{
-    if (id < 0 || id >= containers_.size()) return emptyContainer_;
-    return containers_[id];
-}
-
-std::unique_ptr<ICRCContainer> CRCCore::TakeContainer(int id)
-{
-    if (id < 0 || id >= containers_.size()) return nullptr;
-    return std::move(containers_[id]);
-}
-
-HRESULT CRCCore::PutContainer(int id, std::unique_ptr<ICRCContainer> container)
-{
-    if (id < 0 || id >= containers_.size()) return E_FAIL;
-    containers_[id] = std::move(container);
-}
-
 HRESULT CRCCore::SetSceneToWindow(std::unique_ptr<ICRCContainable>& windowAttr, int idScene, int idSceneContainer)
 {
-    if(idSceneContainer < 0 || idSceneContainer >= containers_.size())
-    {
-        if (idScene < 0 || idScene >= containers_[idSceneContainer]->GetSize()) return E_FAIL;
-    }
+    if(idSceneContainer < 0 || idSceneContainer >= containers_->GetSize()) return E_FAIL;
+    std::unique_ptr<ICRCContainer>& container = containers_->Get(idSceneContainer);
+
+    if (idScene < 0 || idScene >= container->GetSize()) return E_FAIL;
 
     // Set scene id to window.
     CRCWindowAttr* attr = CRC::PtrAs<CRCWindowAttr>(windowAttr.get());

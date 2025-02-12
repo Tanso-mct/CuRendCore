@@ -37,12 +37,12 @@ int main()
         idMainWindow = container->Add(std::move(windowData));
 
         // Move window container to core.
-        idWindowContainer = CRC::Core()->AddContainer(std::move(container));
+        idWindowContainer = CRC::Core()->containers_->Add(std::move(container));
     }
     if (idMainWindow == CRC::ID_INVALID) return CRC::ERROR_CREATE_WINDOW;
     if (idWindowContainer == CRC::ID_INVALID) return CRC::ERROR_CREATE_CONTAINER;
 
-    std::unique_ptr<ICRCContainer>& mainWindowContainer = CRC::Core()->GetContainer(idWindowContainer);
+    std::unique_ptr<ICRCContainer>& mainWindowContainer = CRC::Core()->containers_->Get(idWindowContainer);
     std::unique_ptr<ICRCContainable>& mainWindowAttr = mainWindowContainer->Get(idMainWindow);
 
     /**************************************************************************************************************** */
@@ -63,12 +63,12 @@ int main()
         idMainScene = container->Add(std::move(sceneData));
 
         // Move scene container to core.
-        idSceneContainer = CRC::Core()->AddContainer(std::move(container));
+        idSceneContainer = CRC::Core()->containers_->Add(std::move(container));
     }
     if (idMainScene == CRC::ID_INVALID) return CRC::ERROR_CREATE_CONTAINER;
     if (idSceneContainer == CRC::ID_INVALID) return CRC::ERROR_CREATE_CONTAINER;
 
-    std::unique_ptr<ICRCContainer>& mainSceneContainer = CRC::Core()->GetContainer(idSceneContainer);
+    std::unique_ptr<ICRCContainer>& mainSceneContainer = CRC::Core()->containers_->Get(idSceneContainer);
     std::unique_ptr<ICRCContainable>& mainSceneAttr = mainSceneContainer->Get(idMainScene);
 
     /**************************************************************************************************************** */
