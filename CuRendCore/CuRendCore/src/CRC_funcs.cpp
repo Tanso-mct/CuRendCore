@@ -5,6 +5,9 @@
 #include "CRC_window.h"
 #include "CRC_scene.h"
 
+#include "CRC_container.h"
+#include "CRC_phase_method.h"
+
 CRC_API std::unique_ptr<CRCCore>& CRC::Core()
 {
     static std::unique_ptr<CRCCore> core = std::make_unique<CRCCore>();

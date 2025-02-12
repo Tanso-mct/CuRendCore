@@ -1,13 +1,14 @@
 ﻿#pragma once
 
 #include "CRC_config.h"
-#include "CRC_interface.h"
 
 #include <memory>
+#include <Windows.h>
 
 class CRCCore;
 struct CRCWindowSrc; 
 struct CRCSceneSrc;
+class ICRCContainable;
 
 namespace CRC
 {

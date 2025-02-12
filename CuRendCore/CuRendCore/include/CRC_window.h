@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include "CRC_config.h"
-#include "CRC_interface.h"
+#include "CRC_container.h"
 
 #include <Windows.h>
 #include <memory>

@@ -1,14 +1,14 @@
 ﻿#pragma once
 
+#include "CRC_config.h"
+
 #include <memory>
 #include <vector>
 #include <Windows.h>
 #include <unordered_map>
 
-
-#include "CRC_config.h"
-#include "CRC_interface.h"
-#include "CRC_container.h"
+class ICRCPhaseMethod;
+class CRCContainerSet;
 
 class CRC_API CRCCore
 {

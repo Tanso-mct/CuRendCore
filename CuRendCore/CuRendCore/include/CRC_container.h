@@ -1,10 +1,33 @@
 ﻿#pragma once
 
 #include "CRC_config.h"
-#include "CRC_interface.h"
 
 #include <memory>
 #include <vector>
+
+class CRC_API ICRCContainable
+{
+public:
+    virtual ~ICRCContainable() = default;
+};
+
+class CRC_API ICRCContainer
+{
+public:
+    virtual ~ICRCContainer() = default;
+
+    virtual int Add(std::unique_ptr<ICRCContainable> data) = 0;
+    virtual HRESULT Remove(int id) = 0;
+
+    virtual std::unique_ptr<ICRCContainable>& Get(int id) = 0;
+
+    virtual std::unique_ptr<ICRCContainable> Take(int id) = 0;
+    virtual HRESULT Put(int id, std::unique_ptr<ICRCContainable> data) = 0;
+
+    virtual int GetSize() = 0;
+
+    virtual void Clear() = 0;
+};
 
 class CRC_API CRCContainer : public ICRCContainer
 {
