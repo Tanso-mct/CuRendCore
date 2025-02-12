@@ -25,10 +25,7 @@ std::unique_ptr<T> UniqueAs(std::unique_ptr<S>& source)
 {
     T* target = dynamic_cast<T*>(source.get());
 
-    if (target)
-    {
-        return std::unique_ptr<T>(static_cast<T*>(source.release()));
-    }
+    if (target) return std::unique_ptr<T>(static_cast<T*>(source.release()));
     else return nullptr;
 }
 
