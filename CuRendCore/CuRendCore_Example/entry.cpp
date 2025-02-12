@@ -103,7 +103,7 @@ int main()
         CRC::PtrAs<CRCWindowAttr>(mainWindowAttr.get()), // Attribute.
         CRC::PtrAs<CRCWindowAttr>(mainWindowAttr.get())->hWnd_ // Key.
     );
-    if (FAILED(hr)) return CRC::ERROR_ADD_PM_TO_WINDOW;
+    if (FAILED(hr)) return CRC::ERROR_ADD_PM;
 
     CRC::Core()->pmCaller_->Add
     (
@@ -111,7 +111,7 @@ int main()
         CRC::PtrAs<CRCSceneAttr>(mainSceneAttr.get()), // Attribute.
         CRC::PtrAs<CRCWindowAttr>(mainWindowAttr.get())->hWnd_ // Key.
     );
-    if (FAILED(hr)) return CRC::ERROR_ADD_PM_TO_WINDOW;
+    if (FAILED(hr)) return CRC::ERROR_ADD_PM;
 
     /**************************************************************************************************************** */
     // Main loop.
