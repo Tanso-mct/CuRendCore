@@ -75,10 +75,10 @@ int main()
     // Phase method creation.
     /**************************************************************************************************************** */
     // Create window phase method by client's window phase method class.
-    std::unique_ptr<ICRCPhaseMethod> mainWindowPM = std::make_unique<MainWindowPhaseMethod>();
+    std::unique_ptr<ICRCWinMsgListener> mainWindowL = std::make_unique<MainWindowListener>();
 
     // Create scene phase method by client's scene phase method class.
-    std::unique_ptr<ICRCPhaseMethod> mainScenePM = std::make_unique<MainScenePhaseMethod>();
+    std::unique_ptr<ICRCWinMsgListener> mainSceneL = std::make_unique<MainSceneListener>();
 
     /**************************************************************************************************************** */
     // Create window, show window, create scene, set scene to window.
@@ -98,26 +98,25 @@ int main()
     /**************************************************************************************************************** */
 
     /**
-     * Adding the Phase Method to the pm caller will cause the phase method to be called 
      * when processing the window's message.
-     * Also, the order in which PhaseMethods are called is the order in which they are added to pmCaller.
+     * Also, the order in which Listener are called is the order in which they are added to winMsgCaller_.
      */
 
-    CRC::Core()->pmCaller_->Add
+    CRC::Core()->winMsgCaller_->Add // Window Listener.
     (
-        std::move(mainWindowPM), // Phase method.
-        CRC::PtrAs<CRCWindowAttr>(mainWindowAttr.get()), // Attribute.
-        CRC::PtrAs<CRCWindowAttr>(mainWindowAttr.get())->hWnd_ // Key.
+        CRC::PtrAs<CRCWindowAttr>(mainWindowAttr.get())->hWnd_, // Key.
+        std::move(mainWindowL), // Listener.
+        CRC::PtrAs<CRCWindowAttr>(mainWindowAttr.get()) // Attribute.
     );
-    if (FAILED(hr)) return CRC::ERROR_ADD_PM;
+    if (FAILED(hr)) return CRC::ERROR_ADD_LISTENER;
 
-    CRC::Core()->pmCaller_->Add
+    CRC::Core()->winMsgCaller_->Add // Scene Listener.
     (
-        std::move(mainScenePM), // Phase method.
-        CRC::PtrAs<CRCSceneAttr>(mainSceneAttr.get()), // Attribute.
-        CRC::PtrAs<CRCWindowAttr>(mainWindowAttr.get())->hWnd_ // Key.
+        CRC::PtrAs<CRCWindowAttr>(mainWindowAttr.get())->hWnd_, // Key.
+        std::move(mainSceneL), // Listener.
+        CRC::PtrAs<CRCWindowAttr>(mainWindowAttr.get()) // Attribute.
     );
-    if (FAILED(hr)) return CRC::ERROR_ADD_PM;
+    if (FAILED(hr)) return CRC::ERROR_ADD_LISTENER;
 
     /**************************************************************************************************************** */
     // Main loop.
@@ -150,12 +149,8 @@ static LRESULT CALLBACK WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lP
 
     switch (msg)
     {
-    case WM_DESTROY:
-        PostQuitMessage(0);
-        break;
-
     case WM_PAINT:
-        // WM_PAINT is always processed. If it is not processed, the frame update method of CRC is not called.
+        CRC::Core()->FrameUpdate(hWnd, msg, wParam, lParam);
         break;
 
     default:

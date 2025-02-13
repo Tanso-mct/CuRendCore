@@ -18,6 +18,6 @@ constexpr int ERROR_CREATE_WINDOW = 0x0001;
 constexpr int ERROR_SHOW_WINDOW = 0x0002;
 constexpr int ERROR_CREATE_SCENE = 0x0003;
 constexpr int ERROR_CREATE_CONTAINER = 0x0004;
-constexpr int ERROR_ADD_PM = 0x0005;
+constexpr int ERROR_ADD_LISTENER = 0x0005;
 
 }

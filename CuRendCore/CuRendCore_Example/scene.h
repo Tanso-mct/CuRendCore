@@ -2,14 +2,12 @@
 
 #include "CuRendCore.h"
 
-class MainScenePhaseMethod : public ICRCPhaseMethod
+class MainSceneListener : public ICRCWinMsgListener
 {
 public:
-    MainScenePhaseMethod() = default;
-    ~MainScenePhaseMethod() override = default;
+    MainSceneListener() = default;
+    ~MainSceneListener() override = default;
 
-    void Update(ICRCContainable* attr) override;
-    void Hide(ICRCContainable* attr) override;
-    void Restored(ICRCContainable* attr) override;
-    void End(ICRCContainable* attr) override;
+    void OnUpdate(ICRCContainable* attr, UINT msg, WPARAM wParam, LPARAM lParam) override;
+    void OnDestroy(ICRCContainable* attr, UINT msg, WPARAM wParam, LPARAM lParam) override;
 };

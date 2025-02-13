@@ -11,6 +11,7 @@
         "GRESULT",
         "GSUCCEEDED",
         "HRESULT",
+        "ICRC",
         "ifdef",
         "Inited",
         "nullptr",

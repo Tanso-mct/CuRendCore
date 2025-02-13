@@ -2,22 +2,28 @@
 
 #include <iostream>
 
-void MainWindowPhaseMethod::Update(ICRCContainable* attr)
+void MainWindowListener::OnUpdate(ICRCContainable *attr, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-    std::cout << "Main Window Update" << std::endl;
+    // std::cout << "Main Window Update" << std::endl;
 }
 
-void MainWindowPhaseMethod::Hide(ICRCContainable* attr)
+void MainWindowListener::OnMinimize(ICRCContainable *attr, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-    std::cout << "Main Window Hide" << std::endl;
+    std::cout << "Main Window Minimize" << std::endl;
 }
 
-void MainWindowPhaseMethod::Restored(ICRCContainable* attr)
+void MainWindowListener::OnMaximize(ICRCContainable *attr, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+    std::cout << "Main Window Maximize" << std::endl;
+}
+
+void MainWindowListener::OnRestored(ICRCContainable *attr, UINT msg, WPARAM wParam, LPARAM lParam)
 {
     std::cout << "Main Window Restored" << std::endl;
 }
 
-void MainWindowPhaseMethod::End(ICRCContainable* attr)
+void MainWindowListener::OnDestroy(ICRCContainable *attr, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-    std::cout << "Main Window End" << std::endl;
+    std::cout << "Main Window Destroy" << std::endl;
+    PostQuitMessage(0);
 }

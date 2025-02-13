@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="src\CRC_container.cpp" />
     <ClCompile Include="src\CRC_core.cpp" />
+    <ClCompile Include="src\CRC_event_caller.cpp" />
     <ClCompile Include="src\CRC_funcs.cpp" />
     <ClCompile Include="src\CRC_pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -32,7 +33,7 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CRC_pch.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CRC_pch.h</PrecompiledHeaderFile>
     </ClCompile>
-    <ClCompile Include="src\CRC_phase_method.cpp" />
+    <ClCompile Include="src\CRC_event_listener.cpp" />
     <ClCompile Include="src\CRC_scene.cpp" />
     <ClCompile Include="src\CRC_user_input.cpp" />
     <ClCompile Include="src\CRC_window.cpp" />
@@ -40,10 +41,11 @@
   <ItemGroup>
     <ClInclude Include="include\CRC_config.h" />
     <ClInclude Include="include\CRC_core.h" />
+    <ClInclude Include="include\CRC_event_caller.h" />
     <ClInclude Include="include\CRC_funcs.h" />
     <ClInclude Include="include\CRC_pch.h" />
     <ClInclude Include="include\CRC_container.h" />
-    <ClInclude Include="include\CRC_phase_method.h" />
+    <ClInclude Include="include\CRC_event_listener.h" />
     <ClInclude Include="include\CRC_scene.h" />
     <ClInclude Include="include\CRC_user_input.h" />
     <ClInclude Include="include\CRC_window.h" />

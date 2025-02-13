@@ -6,6 +6,7 @@
 #include "CRC_window.h"
 #include "CRC_scene.h"
 #include "CRC_container.h"
+#include "CRC_event_listener.h"
 
 CRCCore::CRCCore()
 {
@@ -18,7 +19,7 @@ CRCCore::~CRCCore()
 void CRCCore::Initialize()
 {
     containerSet_ = std::make_unique<CRCContainerSet>();
-    pmCaller_ = std::make_unique<CRCPhaseMethodCaller<HWND>>();
+    winMsgCaller_ = std::make_unique<CRCEventCaller<HWND, ICRCWinMsgListener, UINT, WPARAM, LPARAM>>();
 }
 
 int CRCCore::Shutdown()
@@ -32,20 +33,31 @@ void CRCCore::HandleWindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam
     switch (msg)
     {
     case WM_DESTROY:
-        pmCaller_->CallEnd(hWnd);
-        PostQuitMessage(0);
+        winMsgCaller_->Call(hWnd, &ICRCWinMsgListener::OnDestroy, msg, wParam, lParam);
         return;
 
     case WM_SIZE:
-        if (wParam == SIZE_MINIMIZED) pmCaller_->CallHide(hWnd);
-        else if (wParam == SIZE_RESTORED) pmCaller_->CallRestored(hWnd);
-        return;
+        if (wParam == SIZE_MINIMIZED)
+        {
+            winMsgCaller_->Call(hWnd, &ICRCWinMsgListener::OnMinimize, msg, wParam, lParam);
+        }
+        else if (wParam == SIZE_MAXIMIZED)
+        {
+            winMsgCaller_->Call(hWnd, &ICRCWinMsgListener::OnMaximize, msg, wParam, lParam);
+        }
+        else if (wParam == SIZE_RESTORED)
+        {
+            winMsgCaller_->Call(hWnd, &ICRCWinMsgListener::OnRestored, msg, wParam, lParam);
+        }
 
-    case WM_PAINT:
-        pmCaller_->CallUpdate(hWnd);
         return;
 
     default:
         return;
     }
+}
+
+void CRCCore::FrameUpdate(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+    winMsgCaller_->Call(hWnd, &ICRCWinMsgListener::OnUpdate, WM_PAINT, 0, 0);
 }
