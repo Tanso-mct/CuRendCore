@@ -4,8 +4,11 @@
 
 class MainSceneListener : public ICRCWinMsgListener
 {
+private:
+    std::unique_ptr<ICRCContainable>& input;
+
 public:
-    MainSceneListener() = default;
+    MainSceneListener(std::unique_ptr<ICRCContainable>& input) : input(input) {}
     ~MainSceneListener() override = default;
 
     void OnUpdate(ICRCContainable* attr, UINT msg, WPARAM wParam, LPARAM lParam) override;

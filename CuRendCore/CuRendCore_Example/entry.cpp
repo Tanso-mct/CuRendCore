@@ -17,7 +17,7 @@ int main()
     CRC::Core()->Initialize();
 
     /**************************************************************************************************************** */
-    // Window data creation.
+    // Window attributes creation.
     /**************************************************************************************************************** */
     int idMainWindow = CRC::ID_INVALID;
     int idWindowContainer = CRC::ID_INVALID;
@@ -46,7 +46,7 @@ int main()
     std::unique_ptr<ICRCContainable>& mainWindowAttr = mainWindowContainer->Get(idMainWindow);
 
     /**************************************************************************************************************** */
-    // Scene data creation.
+    // Scene attributes creation.
     /**************************************************************************************************************** */
     int idMainScene = CRC::ID_INVALID;
     int idSceneContainer = CRC::ID_INVALID;
@@ -72,13 +72,40 @@ int main()
     std::unique_ptr<ICRCContainable>& mainSceneAttr = mainSceneContainer->Get(idMainScene);
 
     /**************************************************************************************************************** */
-    // Phase method creation.
+    // User Input attributes creation.
     /**************************************************************************************************************** */
-    // Create window phase method by client's window phase method class.
+    int idUserInput = CRC::ID_INVALID;
+    int idUserInputContainer = CRC::ID_INVALID;
+    {
+        // Create user input container.
+        std::unique_ptr<ICRCContainer> container = std::make_unique<CRCContainer>();
+
+        // Create user input by user input attributes.
+        std::unique_ptr<ICRCContainable> userInputAttr = std::make_unique<CRCUserInputAttr>();
+
+        // Add user input to user input container.
+        idUserInput = container->Add(std::move(userInputAttr));
+
+        // Move user input container to core.
+        idUserInputContainer = CRC::Core()->containerSet_->Add(std::move(container));
+    }
+    if (idUserInput == CRC::ID_INVALID) return CRC::ERROR_CREATE_CONTAINER;
+    if (idUserInputContainer == CRC::ID_INVALID) return CRC::ERROR_CREATE_CONTAINER;
+
+    std::unique_ptr<ICRCContainer>& userInputContainer = CRC::Core()->containerSet_->Get(idUserInputContainer);
+    std::unique_ptr<ICRCContainable>& userInputAttr = userInputContainer->Get(idUserInput);
+
+    /**************************************************************************************************************** */
+    // Listener creation.
+    /**************************************************************************************************************** */
+    // Create window listener by client's window listener class.
     std::unique_ptr<ICRCWinMsgListener> mainWindowL = std::make_unique<MainWindowListener>();
 
-    // Create scene phase method by client's scene phase method class.
-    std::unique_ptr<ICRCWinMsgListener> mainSceneL = std::make_unique<MainSceneListener>();
+    // Create scene listener by client's scene listener class.
+    std::unique_ptr<ICRCWinMsgListener> mainSceneL = std::make_unique<MainSceneListener>(userInputAttr);
+
+    // Create user input listener.
+    std::unique_ptr<ICRCWinMsgListener> userInputL = std::make_unique<CRCUserInputListener>();
 
     /**************************************************************************************************************** */
     // Create window, show window, create scene, set scene to window.
@@ -101,6 +128,13 @@ int main()
      * when processing the window's message.
      * Also, the order in which Listener are called is the order in which they are added to winMsgCaller_.
      */
+
+    CRC::Core()->winMsgCaller_->Add // User Input Listener.
+    (
+        CRC::PtrAs<CRCWindowAttr>(mainWindowAttr.get())->hWnd_, // Key.
+        std::move(userInputL), // Listener.
+        CRC::PtrAs<CRCWindowAttr>(userInputAttr.get()) // Attribute.
+    );
 
     CRC::Core()->winMsgCaller_->Add // Window Listener.
     (

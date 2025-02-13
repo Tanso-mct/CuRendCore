@@ -1,6 +1,8 @@
 ﻿#pragma once
 
 #include "CRC_config.h"
+#include "CRC_event_listener.h"
+#include "CRC_container.h"
 
 #include <array>
 
@@ -9,42 +11,6 @@ struct CRC_API CRCInputState
     bool isPressed = false;
     bool isReleased = false;
     bool isHeld = false;
-};
-
-template <std::size_t N>
-class CRC_API CRCInputStateSet
-{
-private:
-    CRCInputState states_[N];
-
-public:
-    CRCInputStateSet()
-    {
-        for (std::size_t i = 0; i < N; ++i)
-        {
-            states_[i] = CRCInputState();
-        }
-    }
-
-    ~CRCInputStateSet() = default;
-
-    // Delete copy constructor and operator=.
-    CRCInputStateSet(const CRCInputStateSet&) = delete;
-    CRCInputStateSet& operator=(const CRCInputStateSet&) = delete;
-
-    // Delete move constructor and operator=.
-    CRCInputStateSet(CRCInputStateSet&&) = delete;
-    CRCInputStateSet& operator=(CRCInputStateSet&&) = delete;
-
-    CRCInputState& operator[](std::size_t index)
-    {
-        return states_[index];
-    }
-
-    const CRCInputState& operator[](std::size_t index) const
-    {
-        return states_[index];
-    }
 };
 
 enum class CRC_API CRC_KEY : std::size_t
@@ -64,4 +30,32 @@ enum class CRC_API CRC_KEY : std::size_t
 enum class CRC_API CRC_MOUSE_BTN : std::size_t
 {
     LEFT = 0, RIGHT, MIDDLE, X1, X2, COUNT
+};
+
+class CRC_API CRCUserInputAttr : public ICRCContainable
+{
+private:
+    CRCInputState keyState_[static_cast<std::size_t>(CRC_KEY::COUNT)];
+    CRCInputState mouseState_[static_cast<std::size_t>(CRC_MOUSE_BTN::COUNT)];
+
+public:
+    CRCUserInputAttr();
+    ~CRCUserInputAttr() override = default;
+
+    CRCInputState GetKeyState(CRC_KEY key) const { return keyState_[static_cast<std::size_t>(key)]; };
+    CRCInputState GetMouseState(CRC_MOUSE_BTN btn) const { return mouseState_[static_cast<std::size_t>(btn)]; };
+
+    friend class CRCUserInputListener;
+};
+
+class CRC_API CRCUserInputListener : public ICRCWinMsgListener
+{
+public:
+    CRCUserInputListener() = default;
+    ~CRCUserInputListener() override = default;
+
+    virtual void OnUpdate(ICRCContainable* attr, UINT msg, WPARAM wParam, LPARAM lParam) override;
+    virtual void OnKeyDown(ICRCContainable* attr, UINT msg, WPARAM wParam, LPARAM lParam) override;
+    virtual void OnKeyUp(ICRCContainable* attr, UINT msg, WPARAM wParam, LPARAM lParam) override;
+    virtual void OnMouse(ICRCContainable* attr, UINT msg, WPARAM wParam, LPARAM lParam) override;
 };
