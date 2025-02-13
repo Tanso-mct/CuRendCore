@@ -42,6 +42,8 @@ CRC_API HRESULT ShowWindowCRC(std::unique_ptr<ICRCContainable>& windowAttr);
 
 CRC_API HRESULT CreateScene(std::unique_ptr<ICRCContainable>& sceneAttr);
 
+CRC_API HRESULT CreateSwapChain(std::unique_ptr<ICRCContainable>& windowAttr);
+
 struct PairHash 
 {
     template <typename T1, typename T2>

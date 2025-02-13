@@ -17,6 +17,7 @@
         "nullptr",
         "OBJECTATTR",
         "OVERLAPPEDWINDOW",
+        "Subresource",
         "Thrd",
         "UIATTR",
         "utattr",

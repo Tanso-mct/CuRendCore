@@ -7,6 +7,9 @@
 #include <memory>
 #include <vector>
 
+#include <d3d11.h>
+#include <wrl/client.h>
+
 struct CRC_API CRCWindowSrc
 {
 public:
@@ -43,4 +46,7 @@ public:
     std::unique_ptr<CRCWindowSrc> src_ = nullptr;
 
     HWND hWnd_ = nullptr;
+
+    Microsoft::WRL::ComPtr<ID3D11Device> device_ = nullptr;
+    Microsoft::WRL::ComPtr<IDXGISwapChain> swapChain_ = nullptr;
 };
