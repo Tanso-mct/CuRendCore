@@ -10,6 +10,8 @@ struct CRCWindowSrc;
 struct CRCSceneSrc;
 class ICRCContainable;
 
+class ICRCWinMsgListener;
+
 namespace CRC
 {
 

@@ -12,9 +12,7 @@ public:
 
     virtual void OnSetFocus(ICRCContainable* attr, UINT msg, WPARAM wParam, LPARAM lParam){};
     virtual void OnKillFocus(ICRCContainable* attr, UINT msg, WPARAM wParam, LPARAM lParam){};
-    virtual void OnMinimize(ICRCContainable* attr, UINT msg, WPARAM wParam, LPARAM lParam){};
-    virtual void OnMaximize(ICRCContainable* attr, UINT msg, WPARAM wParam, LPARAM lParam){};
-    virtual void OnRestored(ICRCContainable* attr, UINT msg, WPARAM wParam, LPARAM lParam){};
+    virtual void OnSize(ICRCContainable* attr, UINT msg, WPARAM wParam, LPARAM lParam){};
     virtual void OnUpdate(ICRCContainable* attr, UINT msg, WPARAM wParam, LPARAM lParam){};
     virtual void OnMove(ICRCContainable* attr, UINT msg, WPARAM wParam, LPARAM lParam){};
     virtual void OnDestroy(ICRCContainable* attr, UINT msg, WPARAM wParam, LPARAM lParam){};

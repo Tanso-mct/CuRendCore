@@ -13,6 +13,9 @@ class ICRCWinMsgListener;
 
 class CRC_API CRCCore
 {
+private:
+    std::unordered_map<UINT, void (ICRCWinMsgListener::*)(ICRCContainable*, UINT, WPARAM, LPARAM)> handledMsgMap_;
+    
 public:
     CRCCore();
     virtual ~CRCCore();
@@ -22,6 +25,7 @@ public:
     CRCCore& operator=(const CRCCore&) = delete;
 
     std::unique_ptr<CRCContainerSet> containerSet_;
+    
     std::unique_ptr<CRCEventCaller<HWND, ICRCWinMsgListener, UINT, WPARAM, LPARAM>> winMsgCaller_;
 
     virtual void Initialize();
