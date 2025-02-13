@@ -129,28 +129,26 @@ int main()
      * Also, the order in which Listener are called is the order in which they are added to winMsgCaller_.
      */
 
-    CRC::Core()->winMsgCaller_->Add // User Input Listener.
-    (
-        CRC::PtrAs<CRCWindowAttr>(mainWindowAttr.get())->hWnd_, // Key.
-        std::move(userInputL), // Listener.
-        CRC::PtrAs<CRCWindowAttr>(userInputAttr.get()) // Attribute.
-    );
-
     CRC::Core()->winMsgCaller_->Add // Window Listener.
     (
         CRC::PtrAs<CRCWindowAttr>(mainWindowAttr.get())->hWnd_, // Key.
         std::move(mainWindowL), // Listener.
         CRC::PtrAs<CRCWindowAttr>(mainWindowAttr.get()) // Attribute.
     );
-    if (FAILED(hr)) return CRC::ERROR_ADD_LISTENER;
 
     CRC::Core()->winMsgCaller_->Add // Scene Listener.
     (
         CRC::PtrAs<CRCWindowAttr>(mainWindowAttr.get())->hWnd_, // Key.
         std::move(mainSceneL), // Listener.
-        CRC::PtrAs<CRCWindowAttr>(mainWindowAttr.get()) // Attribute.
+        CRC::PtrAs<CRCSceneAttr>(mainSceneAttr.get()) // Attribute.
     );
-    if (FAILED(hr)) return CRC::ERROR_ADD_LISTENER;
+
+    CRC::Core()->winMsgCaller_->Add // User Input Listener.
+    (
+        CRC::PtrAs<CRCWindowAttr>(mainWindowAttr.get())->hWnd_, // Key.
+        std::move(userInputL), // Listener.
+        CRC::PtrAs<CRCUserInputAttr>(userInputAttr.get()) // Attribute.
+    );
 
     /**************************************************************************************************************** */
     // Main loop.

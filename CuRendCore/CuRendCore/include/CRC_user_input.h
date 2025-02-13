@@ -1,16 +1,21 @@
 ﻿#pragma once
 
 #include "CRC_config.h"
+#include "CRC_funcs.h"
 #include "CRC_event_listener.h"
 #include "CRC_container.h"
 
-#include <array>
+#include <unordered_map>
+#include <utility>
+#include <chrono>
+#include <ctime>
 
 struct CRC_API CRCInputState
 {
     bool isPressed = false;
     bool isReleased = false;
     bool isHeld = false;
+    bool isDBL = false;
 };
 
 enum class CRC_API CRC_KEY : std::size_t
@@ -27,31 +32,53 @@ enum class CRC_API CRC_KEY : std::size_t
     COUNT
 };
 
-enum class CRC_API CRC_MOUSE_BTN : std::size_t
+enum class CRC_API CRC_MOUSE : std::size_t
 {
-    LEFT = 0, RIGHT, MIDDLE, X1, X2, COUNT
+    LEFT = 0, RIGHT, MIDDLE, WHEEL, MOVE, COUNT
 };
+
 
 class CRC_API CRCUserInputAttr : public ICRCContainable
 {
 private:
+    double dblTapTime_ = 300.0;
+
     CRCInputState keyState_[static_cast<std::size_t>(CRC_KEY::COUNT)];
-    CRCInputState mouseState_[static_cast<std::size_t>(CRC_MOUSE_BTN::COUNT)];
+    CRC_KEY previousKey_ = CRC_KEY::COUNT;
+    std::chrono::high_resolution_clock::time_point keyTime_ = std::chrono::high_resolution_clock::now();
+
+    CRCInputState mouseState_[static_cast<std::size_t>(CRC_MOUSE::COUNT)];
+    CRC_MOUSE previousMouse_ = CRC_MOUSE::COUNT;
+    std::chrono::high_resolution_clock::time_point mouseTime_ = std::chrono::high_resolution_clock::now();
+
+    int mouseWheelDelta_ = 0;
+    float mousePosX_ = 0.0f;
+    float mousePosY_ = 0.0f;
 
 public:
     CRCUserInputAttr();
     ~CRCUserInputAttr() override = default;
 
-    CRCInputState GetKeyState(CRC_KEY key) const { return keyState_[static_cast<std::size_t>(key)]; };
-    CRCInputState GetMouseState(CRC_MOUSE_BTN btn) const { return mouseState_[static_cast<std::size_t>(btn)]; };
+    void SetDBLTapTime(double time) { dblTapTime_ = time; };
+
+    const CRCInputState& GetKeyState(CRC_KEY key) const { return keyState_[static_cast<std::size_t>(key)]; };
+    const CRCInputState& GetMouseState(CRC_MOUSE btn) const { return mouseState_[static_cast<std::size_t>(btn)]; };
+
+    const int& GetMouseWheelDelta() const { return mouseWheelDelta_; };
+    const float& GetMousePosX() const { return mousePosX_; };
+    const float& GetMousePosY() const { return mousePosY_; };
 
     friend class CRCUserInputListener;
 };
 
 class CRC_API CRCUserInputListener : public ICRCWinMsgListener
 {
+private:
+    std::unordered_map<std::pair<WPARAM, bool>, CRC_KEY, CRC::PairHash, CRC::PairEqual> keyMap_;
+    std::unordered_map<WPARAM, std::pair<CRC_MOUSE, CRCInputState>> mouseMap_;
+
 public:
-    CRCUserInputListener() = default;
+    CRCUserInputListener();
     ~CRCUserInputListener() override = default;
 
     virtual void OnUpdate(ICRCContainable* attr, UINT msg, WPARAM wParam, LPARAM lParam) override;

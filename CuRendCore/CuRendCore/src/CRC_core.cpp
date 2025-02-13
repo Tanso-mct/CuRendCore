@@ -35,17 +35,11 @@ void CRCCore::Initialize()
 
     handledMsgMap_[WM_LBUTTONDOWN] = &ICRCWinMsgListener::OnMouse;
     handledMsgMap_[WM_LBUTTONUP] = &ICRCWinMsgListener::OnMouse;
-    handledMsgMap_[WM_LBUTTONDBLCLK] = &ICRCWinMsgListener::OnMouse;
-
     handledMsgMap_[WM_RBUTTONDOWN] = &ICRCWinMsgListener::OnMouse;
     handledMsgMap_[WM_RBUTTONUP] = &ICRCWinMsgListener::OnMouse;
-    handledMsgMap_[WM_RBUTTONDBLCLK] = &ICRCWinMsgListener::OnMouse;
-
     handledMsgMap_[WM_MBUTTONDOWN] = &ICRCWinMsgListener::OnMouse;
     handledMsgMap_[WM_MBUTTONUP] = &ICRCWinMsgListener::OnMouse;
-    handledMsgMap_[WM_MBUTTONDBLCLK] = &ICRCWinMsgListener::OnMouse;
     handledMsgMap_[WM_MOUSEWHEEL] = &ICRCWinMsgListener::OnMouse;
-
     handledMsgMap_[WM_MOUSEMOVE] = &ICRCWinMsgListener::OnMouse;
 
     // Initialize window message caller.
