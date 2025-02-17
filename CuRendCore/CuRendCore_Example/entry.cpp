@@ -25,15 +25,15 @@ int main()
         std::unique_ptr<ICRCContainer> container = std::make_unique<CRCContainer>();
 
         // Create window by window attributes.
-        std::unique_ptr<CRCWindowSrc> windowAttr = std::make_unique<CRCWindowSrc>();
-        windowAttr->wcex_.lpszClassName = L"Main Window";
-        windowAttr->wcex_.lpfnWndProc = WindowProc;
-        windowAttr->name_ = L"Main Window";
-        windowAttr->hInstance =  GetModuleHandle(NULL);
-        std::unique_ptr<ICRCContainable> windowData = CRC::CreateWindowAttr(std::move(windowAttr));
+        std::unique_ptr<CRCWindowSrc> src = std::make_unique<CRCWindowSrc>();
+        src->wcex_.lpszClassName = L"Main Window";
+        src->wcex_.lpfnWndProc = WindowProc;
+        src->name_ = L"Main Window";
+        src->hInstance =  GetModuleHandle(NULL);
+        std::unique_ptr<ICRCContainable> windowAttr = CRC::CreateWindowAttr(std::move(src));
 
         // Add window to window container.
-        SlotID::MAIN_WINDOW = container->Add(std::move(windowData));
+        SlotID::MAIN_WINDOW = container->Add(std::move(windowAttr));
 
         // Move window container to core.
         SlotID::MAIN_WINDOW_CONTAINER = CRC::Core()->containerSet_->Add(std::move(container));
@@ -50,12 +50,12 @@ int main()
         std::unique_ptr<ICRCContainer> container = std::make_unique<CRCContainer>();
 
         // Create scene by scene attributes.
-        std::unique_ptr<CRCSceneSrc> sceneAttr = std::make_unique<CRCSceneSrc>();
-        sceneAttr->name_ = "MainScene";
-        std::unique_ptr<ICRCContainable> sceneData = CRC::CreateSceneAttr(std::move(sceneAttr));
+        std::unique_ptr<CRCSceneSrc> src = std::make_unique<CRCSceneSrc>();
+        src->name_ = "MainScene";
+        std::unique_ptr<ICRCContainable> sceneAttr = CRC::CreateSceneAttr(std::move(src));
 
         // Add scene to scene container.
-        SlotID::MAIN_SCENE = container->Add(std::move(sceneData));
+        SlotID::MAIN_SCENE = container->Add(std::move(sceneAttr));
 
         // Move scene container to core.
         SlotID::MAIN_SCENE_CONTAINER = CRC::Core()->containerSet_->Add(std::move(container));
