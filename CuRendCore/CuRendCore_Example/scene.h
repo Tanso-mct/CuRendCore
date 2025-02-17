@@ -2,18 +2,15 @@
 
 #include "CuRendCore.h"
 
-class MainSceneListener : public ICRCWinMsgListener
+class MainSceneListener : public ICRCWinMsgEvent
 {
-private:
-    std::unique_ptr<ICRCContainable>& input;
-
 public:
-    MainSceneListener(std::unique_ptr<ICRCContainable>& input) : input(input) {}
+    MainSceneListener() = default;
     ~MainSceneListener() override = default;
 
     void InputHandleExample();
 
-    void OnUpdate(ICRCContainable* attr, UINT msg, WPARAM wParam, LPARAM lParam) override;
-    void OnSize(ICRCContainable* attr, UINT msg, WPARAM wParam, LPARAM lParam) override;
-    void OnDestroy(ICRCContainable* attr, UINT msg, WPARAM wParam, LPARAM lParam) override;
+    void OnUpdate(UINT msg, WPARAM wParam, LPARAM lParam) override;
+    void OnSize(UINT msg, WPARAM wParam, LPARAM lParam) override;
+    void OnDestroy(UINT msg, WPARAM wParam, LPARAM lParam) override;
 };

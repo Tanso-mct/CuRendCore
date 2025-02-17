@@ -6,7 +6,7 @@
 #include "CRC_window.h"
 #include "CRC_scene.h"
 #include "CRC_container.h"
-#include "CRC_event_listener.h"
+#include "CRC_event.h"
 
 CRCCore::CRCCore()
 {
@@ -22,28 +22,28 @@ void CRCCore::Initialize()
     containerSet_ = std::make_unique<CRCContainerSet>();
 
     // Initialize window message functions. Register a function that corresponds to the Window message.
-    handledMsgMap_[WM_SETFOCUS] = &ICRCWinMsgListener::OnSetFocus;
-    handledMsgMap_[WM_KILLFOCUS] = &ICRCWinMsgListener::OnKillFocus;
-    handledMsgMap_[WM_SIZE] = &ICRCWinMsgListener::OnSize;
-    handledMsgMap_[WM_MOVE] = &ICRCWinMsgListener::OnMove;
-    handledMsgMap_[WM_DESTROY] = &ICRCWinMsgListener::OnDestroy;
+    handledMsgMap_[WM_SETFOCUS] = &ICRCWinMsgEvent::OnSetFocus;
+    handledMsgMap_[WM_KILLFOCUS] = &ICRCWinMsgEvent::OnKillFocus;
+    handledMsgMap_[WM_SIZE] = &ICRCWinMsgEvent::OnSize;
+    handledMsgMap_[WM_MOVE] = &ICRCWinMsgEvent::OnMove;
+    handledMsgMap_[WM_DESTROY] = &ICRCWinMsgEvent::OnDestroy;
 
-    handledMsgMap_[WM_KEYDOWN] = &ICRCWinMsgListener::OnKeyDown;
-    handledMsgMap_[WM_SYSKEYDOWN] = &ICRCWinMsgListener::OnKeyDown;
-    handledMsgMap_[WM_KEYUP] = &ICRCWinMsgListener::OnKeyUp;
-    handledMsgMap_[WM_SYSKEYUP] = &ICRCWinMsgListener::OnKeyUp;
+    handledMsgMap_[WM_KEYDOWN] = &ICRCWinMsgEvent::OnKeyDown;
+    handledMsgMap_[WM_SYSKEYDOWN] = &ICRCWinMsgEvent::OnKeyDown;
+    handledMsgMap_[WM_KEYUP] = &ICRCWinMsgEvent::OnKeyUp;
+    handledMsgMap_[WM_SYSKEYUP] = &ICRCWinMsgEvent::OnKeyUp;
 
-    handledMsgMap_[WM_LBUTTONDOWN] = &ICRCWinMsgListener::OnMouse;
-    handledMsgMap_[WM_LBUTTONUP] = &ICRCWinMsgListener::OnMouse;
-    handledMsgMap_[WM_RBUTTONDOWN] = &ICRCWinMsgListener::OnMouse;
-    handledMsgMap_[WM_RBUTTONUP] = &ICRCWinMsgListener::OnMouse;
-    handledMsgMap_[WM_MBUTTONDOWN] = &ICRCWinMsgListener::OnMouse;
-    handledMsgMap_[WM_MBUTTONUP] = &ICRCWinMsgListener::OnMouse;
-    handledMsgMap_[WM_MOUSEWHEEL] = &ICRCWinMsgListener::OnMouse;
-    handledMsgMap_[WM_MOUSEMOVE] = &ICRCWinMsgListener::OnMouse;
+    handledMsgMap_[WM_LBUTTONDOWN] = &ICRCWinMsgEvent::OnMouse;
+    handledMsgMap_[WM_LBUTTONUP] = &ICRCWinMsgEvent::OnMouse;
+    handledMsgMap_[WM_RBUTTONDOWN] = &ICRCWinMsgEvent::OnMouse;
+    handledMsgMap_[WM_RBUTTONUP] = &ICRCWinMsgEvent::OnMouse;
+    handledMsgMap_[WM_MBUTTONDOWN] = &ICRCWinMsgEvent::OnMouse;
+    handledMsgMap_[WM_MBUTTONUP] = &ICRCWinMsgEvent::OnMouse;
+    handledMsgMap_[WM_MOUSEWHEEL] = &ICRCWinMsgEvent::OnMouse;
+    handledMsgMap_[WM_MOUSEMOVE] = &ICRCWinMsgEvent::OnMouse;
 
     // Initialize window message caller.
-    winMsgCaller_ = std::make_unique<CRCEventCaller<HWND, ICRCWinMsgListener, UINT, WPARAM, LPARAM>>();
+    winMsgCaller_ = std::make_unique<CRCEventCaller<HWND, ICRCWinMsgEvent, UINT, WPARAM, LPARAM>>();
 }
 
 int CRCCore::Shutdown()
@@ -60,5 +60,5 @@ void CRCCore::HandleWindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam
 
 void CRCCore::FrameUpdate(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-    winMsgCaller_->Call(hWnd, &ICRCWinMsgListener::OnUpdate, msg, 0, 0);
+    winMsgCaller_->Call(hWnd, &ICRCWinMsgEvent::OnUpdate, msg, 0, 0);
 }

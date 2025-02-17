@@ -136,6 +136,7 @@
   <ItemGroup>
     <ClCompile Include="entry.cpp" />
     <ClCompile Include="scene.cpp" />
+    <ClCompile Include="slot_id.cpp" />
     <ClCompile Include="window.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -145,6 +146,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="scene.h" />
+    <ClInclude Include="slot_id.h" />
     <ClInclude Include="window.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

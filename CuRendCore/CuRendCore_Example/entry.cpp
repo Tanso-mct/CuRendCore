@@ -6,6 +6,7 @@
 
 #include "window.h"
 #include "scene.h"
+#include "slot_id.h"
 
 static LRESULT CALLBACK WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -19,8 +20,6 @@ int main()
     /**************************************************************************************************************** */
     // Window attributes creation.
     /**************************************************************************************************************** */
-    int idMainWindow = CRC::ID_INVALID;
-    int idWindowContainer = CRC::ID_INVALID;
     {
         // Create window container.
         std::unique_ptr<ICRCContainer> container = std::make_unique<CRCContainer>();
@@ -34,22 +33,18 @@ int main()
         std::unique_ptr<ICRCContainable> windowData = CRC::CreateWindowAttr(std::move(windowAttr));
 
         // Add window to window container.
-        idMainWindow = container->Add(std::move(windowData));
+        SlotID::MAIN_WINDOW = container->Add(std::move(windowData));
 
         // Move window container to core.
-        idWindowContainer = CRC::Core()->containerSet_->Add(std::move(container));
+        SlotID::MAIN_WINDOW_CONTAINER = CRC::Core()->containerSet_->Add(std::move(container));
     }
-    if (idMainWindow == CRC::ID_INVALID) return CRC::ERROR_CREATE_WINDOW;
-    if (idWindowContainer == CRC::ID_INVALID) return CRC::ERROR_CREATE_CONTAINER;
+    if (SlotID::MAIN_WINDOW == CRC::ID_INVALID) return CRC::ERROR_CREATE_WINDOW;
+    if (SlotID::MAIN_WINDOW_CONTAINER == CRC::ID_INVALID) return CRC::ERROR_CREATE_CONTAINER;
 
-    std::unique_ptr<ICRCContainer>& mainWindowContainer = CRC::Core()->containerSet_->Get(idWindowContainer);
-    std::unique_ptr<ICRCContainable>& mainWindowAttr = mainWindowContainer->Get(idMainWindow);
 
     /**************************************************************************************************************** */
     // Scene attributes creation.
     /**************************************************************************************************************** */
-    int idMainScene = CRC::ID_INVALID;
-    int idSceneContainer = CRC::ID_INVALID;
     {
         // Create scene container.
         std::unique_ptr<ICRCContainer> container = std::make_unique<CRCContainer>();
@@ -60,22 +55,17 @@ int main()
         std::unique_ptr<ICRCContainable> sceneData = CRC::CreateSceneAttr(std::move(sceneAttr));
 
         // Add scene to scene container.
-        idMainScene = container->Add(std::move(sceneData));
+        SlotID::MAIN_SCENE = container->Add(std::move(sceneData));
 
         // Move scene container to core.
-        idSceneContainer = CRC::Core()->containerSet_->Add(std::move(container));
+        SlotID::MAIN_SCENE_CONTAINER = CRC::Core()->containerSet_->Add(std::move(container));
     }
-    if (idMainScene == CRC::ID_INVALID) return CRC::ERROR_CREATE_CONTAINER;
-    if (idSceneContainer == CRC::ID_INVALID) return CRC::ERROR_CREATE_CONTAINER;
-
-    std::unique_ptr<ICRCContainer>& mainSceneContainer = CRC::Core()->containerSet_->Get(idSceneContainer);
-    std::unique_ptr<ICRCContainable>& mainSceneAttr = mainSceneContainer->Get(idMainScene);
+    if (SlotID::MAIN_SCENE == CRC::ID_INVALID) return CRC::ERROR_CREATE_CONTAINER;
+    if (SlotID::MAIN_SCENE_CONTAINER == CRC::ID_INVALID) return CRC::ERROR_CREATE_CONTAINER;
 
     /**************************************************************************************************************** */
     // User Input attributes creation.
     /**************************************************************************************************************** */
-    int idUserInput = CRC::ID_INVALID;
-    int idUserInputContainer = CRC::ID_INVALID;
     {
         // Create user input container.
         std::unique_ptr<ICRCContainer> container = std::make_unique<CRCContainer>();
@@ -84,28 +74,13 @@ int main()
         std::unique_ptr<ICRCContainable> userInputAttr = std::make_unique<CRCUserInputAttr>();
 
         // Add user input to user input container.
-        idUserInput = container->Add(std::move(userInputAttr));
+        SlotID::USER_INPUT = container->Add(std::move(userInputAttr));
 
         // Move user input container to core.
-        idUserInputContainer = CRC::Core()->containerSet_->Add(std::move(container));
+        SlotID::USER_INPUT_CONTAINER = CRC::Core()->containerSet_->Add(std::move(container));
     }
-    if (idUserInput == CRC::ID_INVALID) return CRC::ERROR_CREATE_CONTAINER;
-    if (idUserInputContainer == CRC::ID_INVALID) return CRC::ERROR_CREATE_CONTAINER;
-
-    std::unique_ptr<ICRCContainer>& userInputContainer = CRC::Core()->containerSet_->Get(idUserInputContainer);
-    std::unique_ptr<ICRCContainable>& userInputAttr = userInputContainer->Get(idUserInput);
-
-    /**************************************************************************************************************** */
-    // Listener creation.
-    /**************************************************************************************************************** */
-    // Create window listener by client's window listener class.
-    std::unique_ptr<ICRCWinMsgListener> mainWindowL = std::make_unique<MainWindowListener>();
-
-    // Create scene listener by client's scene listener class.
-    std::unique_ptr<ICRCWinMsgListener> mainSceneL = std::make_unique<MainSceneListener>(userInputAttr);
-
-    // Create user input listener.
-    std::unique_ptr<ICRCWinMsgListener> userInputL = std::make_unique<CRCUserInputListener>();
+    if (SlotID::USER_INPUT == CRC::ID_INVALID) return CRC::ERROR_CREATE_CONTAINER;
+    if (SlotID::USER_INPUT_CONTAINER == CRC::ID_INVALID) return CRC::ERROR_CREATE_CONTAINER;
 
     /**************************************************************************************************************** */
     // Create window, show window, create scene, set scene to window.
@@ -113,49 +88,53 @@ int main()
     HRESULT hr = S_OK;
 
     // Create window.
-    hr = CRC::CreateWindowCRC(mainWindowAttr);
+    hr = CRC::CreateWindowCRC(CRC::GetContainable(SlotID::MAIN_WINDOW_CONTAINER, SlotID::MAIN_WINDOW));
     if (FAILED(hr)) return CRC::ERROR_CREATE_WINDOW;
 
     // Create scene.
-    hr = CRC::CreateScene(mainSceneAttr);
+    hr = CRC::CreateScene(CRC::GetContainable(SlotID::MAIN_SCENE_CONTAINER, SlotID::MAIN_SCENE));
     if (FAILED(hr)) return CRC::ERROR_CREATE_SCENE;
 
     /**************************************************************************************************************** */
-    // Set Windows Message Listener to window.
+    // Set Windows Message Event to window.
     /**************************************************************************************************************** */
 
     /**
      * when processing the window's message.
-     * Also, the order in which Listener are called is the order in which they are added to winMsgCaller_.
+     * Also, the order in which event are called is the order in which they are added to winMsgCaller_.
      */
 
-    CRC::Core()->winMsgCaller_->Add // Window Listener.
-    (
-        CRC::PtrAs<CRCWindowAttr>(mainWindowAttr.get())->hWnd_, // Key.
-        std::move(mainWindowL), // Listener.
-        CRC::PtrAs<CRCWindowAttr>(mainWindowAttr.get()) // Attribute.
-    );
+    {
+        CRCWindowAttr* mainWindowAttr = CRC::GetContainablePtr<CRCWindowAttr>
+        (
+            SlotID::MAIN_WINDOW_CONTAINER, SlotID::MAIN_WINDOW
+        );
 
-    CRC::Core()->winMsgCaller_->Add // Scene Listener.
-    (
-        CRC::PtrAs<CRCWindowAttr>(mainWindowAttr.get())->hWnd_, // Key.
-        std::move(mainSceneL), // Listener.
-        CRC::PtrAs<CRCSceneAttr>(mainSceneAttr.get()) // Attribute.
-    );
+        CRC::Core()->winMsgCaller_->Add // Window Event.
+        (
+            mainWindowAttr->hWnd_, // Key.
+            std::make_unique<MainWindowListener>()
+        );
 
-    CRC::Core()->winMsgCaller_->Add // User Input Listener.
-    (
-        CRC::PtrAs<CRCWindowAttr>(mainWindowAttr.get())->hWnd_, // Key.
-        std::move(userInputL), // Listener.
-        CRC::PtrAs<CRCUserInputAttr>(userInputAttr.get()) // Attribute.
-    );
+        CRC::Core()->winMsgCaller_->Add // Scene Event.
+        (
+            mainWindowAttr->hWnd_, // Key.
+            std::make_unique<MainSceneListener>()
+        );
+
+        CRC::Core()->winMsgCaller_->Add // User Input Event.
+        (
+            mainWindowAttr->hWnd_, // Key.
+            std::make_unique<CRCUserInputListener>(SlotID::USER_INPUT_CONTAINER, SlotID::USER_INPUT)
+        );
+    }
 
     /**************************************************************************************************************** */
     // Main loop.
     /**************************************************************************************************************** */
 
     // Show window.
-    hr = CRC::ShowWindowCRC(mainWindowAttr);
+    hr = CRC::ShowWindowCRC(CRC::GetContainable(SlotID::MAIN_WINDOW_CONTAINER, SlotID::MAIN_WINDOW));
     if (FAILED(hr)) return CRC::ERROR_SHOW_WINDOW;
 
     MSG msg = {};

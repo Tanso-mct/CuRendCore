@@ -20,7 +20,8 @@ CRCUserInputAttr::CRCUserInputAttr()
     }
 }
 
-CRCUserInputListener::CRCUserInputListener()
+CRCUserInputListener::CRCUserInputListener(int idContainer, int idAttr)
+: idContainer_(idContainer), idAttr_(idAttr)
 {
     // Initialize key map.
     keyMap_[{'A', false}] = CRC_KEY::A;
@@ -147,9 +148,9 @@ CRCUserInputListener::CRCUserInputListener()
     mouseMap_[WM_MOUSEMOVE] = std::make_pair(CRC_MOUSE::MOVE, CRCInputState());
 }
 
-void CRCUserInputListener::OnUpdate(ICRCContainable *attr, UINT msg, WPARAM wParam, LPARAM lParam)
+void CRCUserInputListener::OnUpdate(UINT msg, WPARAM wParam, LPARAM lParam)
 {
-    CRCUserInputAttr* input = CRC::PtrAs<CRCUserInputAttr>(attr);
+    CRCUserInputAttr* input = CRC::GetContainablePtr<CRCUserInputAttr>(idContainer_, idAttr_);
     if (!input) return;
 
     for (int i = 0; i < static_cast<int>(CRC_KEY::COUNT); i++)
@@ -225,9 +226,9 @@ void CRCUserInputListener::OnUpdate(ICRCContainable *attr, UINT msg, WPARAM wPar
     input->mouseWheelDelta_ = 0;
 }
 
-void CRCUserInputListener::OnKeyDown(ICRCContainable *attr, UINT msg, WPARAM wParam, LPARAM lParam)
+void CRCUserInputListener::OnKeyDown(UINT msg, WPARAM wParam, LPARAM lParam)
 {
-    CRCUserInputAttr* input = CRC::PtrAs<CRCUserInputAttr>(attr);
+    CRCUserInputAttr* input = CRC::GetContainablePtr<CRCUserInputAttr>(idContainer_, idAttr_);
     if (!input) return;
 
     if (keyMap_.find({wParam, (lParam & (1 << 24)) != 0}) == keyMap_.end()) return;
@@ -236,18 +237,18 @@ void CRCUserInputListener::OnKeyDown(ICRCContainable *attr, UINT msg, WPARAM wPa
     input->keyState_[static_cast<std::size_t>(keyMap_[{wParam, (lParam & (1 << 24)) != 0}])].isPressed = true;
 }
 
-void CRCUserInputListener::OnKeyUp(ICRCContainable *attr, UINT msg, WPARAM wParam, LPARAM lParam)
+void CRCUserInputListener::OnKeyUp(UINT msg, WPARAM wParam, LPARAM lParam)
 {
-    CRCUserInputAttr* input = CRC::PtrAs<CRCUserInputAttr>(attr);
+    CRCUserInputAttr* input = CRC::GetContainablePtr<CRCUserInputAttr>(idContainer_, idAttr_);
     if (!input) return;
 
     if (keyMap_.find({wParam, (lParam & (1 << 24)) != 0}) == keyMap_.end()) return;
     input->keyState_[static_cast<std::size_t>(keyMap_[{wParam, (lParam & (1 << 24)) != 0}])].isReleased = true;
 }
 
-void CRCUserInputListener::OnMouse(ICRCContainable *attr, UINT msg, WPARAM wParam, LPARAM lParam)
+void CRCUserInputListener::OnMouse(UINT msg, WPARAM wParam, LPARAM lParam)
 {
-    CRCUserInputAttr* input = CRC::PtrAs<CRCUserInputAttr>(attr);
+    CRCUserInputAttr* input = CRC::GetContainablePtr<CRCUserInputAttr>(idContainer_, idAttr_);
     if (!input) return;
 
     if (mouseMap_.find(msg) == mouseMap_.end()) return;

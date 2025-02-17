@@ -33,7 +33,7 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CRC_pch.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CRC_pch.h</PrecompiledHeaderFile>
     </ClCompile>
-    <ClCompile Include="src\CRC_event_listener.cpp" />
+    <ClCompile Include="src\CRC_event.cpp" />
     <ClCompile Include="src\CRC_scene.cpp" />
     <ClCompile Include="src\CRC_user_input.cpp" />
     <ClCompile Include="src\CRC_window.cpp" />
@@ -48,7 +48,7 @@
     <ClInclude Include="include\CRC_funcs.h" />
     <ClInclude Include="include\CRC_pch.h" />
     <ClInclude Include="include\CRC_container.h" />
-    <ClInclude Include="include\CRC_event_listener.h" />
+    <ClInclude Include="include\CRC_event.h" />
     <ClInclude Include="include\CRC_resource.cuh" />
     <CudaCompile Include="include\CRC_resource_view.cuh" />
     <ClInclude Include="include\CRC_scene.h" />
