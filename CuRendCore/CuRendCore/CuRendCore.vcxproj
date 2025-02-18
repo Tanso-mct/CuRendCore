@@ -20,7 +20,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\CRC_container.cpp" />
-    <ClCompile Include="src\CRC_core.cpp" />
     <ClCompile Include="src\CRC_event_caller.cpp" />
     <ClCompile Include="src\CRC_funcs.cpp" />
     <ClCompile Include="src\CRC_pch.cpp">
@@ -41,7 +40,6 @@
   <ItemGroup>
     <CudaCompile Include="include\CRC_buffer.cuh" />
     <ClInclude Include="include\CRC_config.h" />
-    <ClInclude Include="include\CRC_core.h" />
     <CudaCompile Include="include\CRC_device_context.cuh" />
     <CudaCompile Include="include\CRC_device.cuh" />
     <ClInclude Include="include\CRC_event_caller.h" />

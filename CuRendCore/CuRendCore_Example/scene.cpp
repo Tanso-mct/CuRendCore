@@ -1,15 +1,19 @@
 ﻿#include "scene.h"
 
-#include "slot_id.h"
-
 #include <iostream>
 
-void MainSceneListener::InputHandleExample()
+MainSceneEvent::MainSceneEvent(int &idMainWindow, int &idMainScene, int &idUserInput)
+: idMainWindow_(idMainWindow), idMainScene_(idMainScene), idUserInput_(idUserInput)
 {
-    CRCUserInputAttr* input = CRC::GetContainablePtr<CRCUserInputAttr>
-    (
-        SlotID::USER_INPUT_CONTAINER, SlotID::USER_INPUT
-    );
+}
+
+MainSceneEvent::~MainSceneEvent()
+{
+}
+
+void MainSceneEvent::InputHandleExample(std::unique_ptr<ICRCContainable>& inputAttr)
+{
+    CRCUserInputAttr* input = CRC::PtrAs<CRCUserInputAttr>(inputAttr.get());
     if (!input) return;
 
     if (input->GetKeyState(CRC_KEY::W).isPressed)
@@ -64,17 +68,17 @@ void MainSceneListener::InputHandleExample()
     }
 }
 
-void MainSceneListener::OnUpdate(UINT msg, WPARAM wParam, LPARAM lParam)
+void MainSceneEvent::OnUpdate(std::unique_ptr<ICRCContainer>& container, UINT msg, WPARAM wParam, LPARAM lParam)
 {   
-    InputHandleExample();
+    InputHandleExample(container->Get(idUserInput_));
 }
 
-void MainSceneListener::OnSize(UINT msg, WPARAM wParam, LPARAM lParam)
+void MainSceneEvent::OnSize(std::unique_ptr<ICRCContainer>& container, UINT msg, WPARAM wParam, LPARAM lParam)
 {
     std::cout << "Main Scene Size" << std::endl;
 }
 
-void MainSceneListener::OnDestroy(UINT msg, WPARAM wParam, LPARAM lParam)
+void MainSceneEvent::OnDestroy(std::unique_ptr<ICRCContainer>& container, UINT msg, WPARAM wParam, LPARAM lParam)
 {
     std::cout << "Main Scene End" << std::endl;
 }

@@ -1,29 +1,11 @@
 ﻿#include "CRC_pch.h"
 #include "CRC_funcs.h"
 
-#include "CRC_core.h"
 #include "CRC_window.h"
 #include "CRC_scene.h"
 
 #include "CRC_container.h"
 #include "CRC_event.h"
-
-CRC_API std::unique_ptr<CRCCore>& CRC::Core()
-{
-    static std::unique_ptr<CRCCore> core = std::make_unique<CRCCore>();
-    return core;
-}
-
-CRC_API std::unique_ptr<ICRCContainer> &CRC::GetContainer(int id)
-{
-    return CRC::Core()->containerSet_->Get(id);
-}
-
-CRC_API std::unique_ptr<ICRCContainable> &CRC::GetContainable(int containerID, int containableID)
-{
-    std::unique_ptr<ICRCContainer> &container = CRC::GetContainer(containerID);
-    return container->Get(containableID);
-}
 
 CRC_API std::unique_ptr<ICRCContainable> CRC::CreateWindowAttr(std::unique_ptr<CRCWindowSrc> attr)
 {

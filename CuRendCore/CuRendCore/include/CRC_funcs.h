@@ -34,23 +34,6 @@ std::unique_ptr<T> UniqueAs(std::unique_ptr<S>& source)
     else return nullptr;
 }
 
-CRC_API std::unique_ptr<CRCCore>& Core();
-
-CRC_API std::unique_ptr<ICRCContainer>& GetContainer(int id);
-CRC_API std::unique_ptr<ICRCContainable>& GetContainable(int containerID, int containableID);
-
-template <typename T>
-CRC_API T* GetContainerPtr(int id)
-{
-    return PtrAs<T>(GetContainer(id).get());
-}
-
-template <typename T>
-CRC_API T* GetContainablePtr(int containerID, int containableID)
-{
-    return PtrAs<T>(GetContainable(containerID, containableID).get());
-}
-
 CRC_API std::unique_ptr<ICRCContainable> CreateWindowAttr(std::unique_ptr<CRCWindowSrc> attr);
 CRC_API std::unique_ptr<ICRCContainable> CreateSceneAttr(std::unique_ptr<CRCSceneSrc> attr);
 

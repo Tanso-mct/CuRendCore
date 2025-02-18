@@ -37,7 +37,6 @@ enum class CRC_API CRC_MOUSE : std::size_t
     LEFT = 0, RIGHT, MIDDLE, WHEEL, MOVE, COUNT
 };
 
-
 class CRC_API CRCUserInputAttr : public ICRCContainable
 {
 private:
@@ -68,24 +67,23 @@ public:
     const float& GetMousePosX() const { return mousePosX_; };
     const float& GetMousePosY() const { return mousePosY_; };
 
-    friend class CRCUserInputListener;
+    friend class CRCUserInputEvent;
 };
 
-class CRC_API CRCUserInputListener : public ICRCWinMsgEvent
+class CRC_API CRCUserInputEvent : public ICRCWinMsgEvent
 {
 private:
-    const int idContainer_ = CRC::ID_INVALID;
     const int idAttr_ = CRC::ID_INVALID;
 
     std::unordered_map<std::pair<WPARAM, bool>, CRC_KEY, CRC::PairHash, CRC::PairEqual> keyMap_;
     std::unordered_map<WPARAM, std::pair<CRC_MOUSE, CRCInputState>> mouseMap_;
 
 public:
-    CRCUserInputListener(int idContainer, int idAttr);
-    ~CRCUserInputListener() override = default;
+    CRCUserInputEvent(int& idAttr);
+    ~CRCUserInputEvent() override = default;
 
-    virtual void OnUpdate(UINT msg, WPARAM wParam, LPARAM lParam) override;
-    virtual void OnKeyDown(UINT msg, WPARAM wParam, LPARAM lParam) override;
-    virtual void OnKeyUp(UINT msg, WPARAM wParam, LPARAM lParam) override;
-    virtual void OnMouse(UINT msg, WPARAM wParam, LPARAM lParam) override;
+    virtual void OnUpdate(std::unique_ptr<ICRCContainer>& container, UINT msg, WPARAM wParam, LPARAM lParam) override;
+    virtual void OnKeyDown(std::unique_ptr<ICRCContainer>& container, UINT msg, WPARAM wParam, LPARAM lParam) override;
+    virtual void OnKeyUp(std::unique_ptr<ICRCContainer>& container, UINT msg, WPARAM wParam, LPARAM lParam) override;
+    virtual void OnMouse(std::unique_ptr<ICRCContainer>& container, UINT msg, WPARAM wParam, LPARAM lParam) override;
 };
