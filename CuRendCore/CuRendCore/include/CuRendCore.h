@@ -1,34 +1,14 @@
 #pragma once
 
-#include <memory>
+#include "CRC_funcs.h"
 
-#include "CRCConfig.h"
+#include "CRC_config.h"
 
-#include "Window.h"
-#include "Scene.h"
-#include "Resource.cuh"
-#include "Binder.h"
+#include "CRC_window.h"
+#include "CRC_scene.h"
 
-namespace CRC 
-{
+#include "CRC_container.h"
+#include "CRC_event.h"
+#include "CRC_event_caller.h"
 
-class CRC_API CuRendCore 
-{
-private:
-    CuRendCore(); // Singleton pattern.
-
-public:
-    ~CuRendCore();
-
-    static CuRendCore* GetInstance();
-    void ReleaseInstance();
-
-    // Various factories. Managed collectively in this class.
-    WindowFactory* windowFc;
-    SceneFactory* sceneFc;
-    ResourceFactory* resourceFc;
-
-    int Run(HINSTANCE hInstance, int nCmdShow);
-};
-
-} // namespace CRC
+#include "CRC_user_input.h"

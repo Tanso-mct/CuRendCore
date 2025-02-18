@@ -15,131 +15,101 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Component.cpp">
+    <ClCompile Include="src\CRC_pch.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="src\Binder.cpp">
+    <ClCompile Include="src\CRC_window.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="src\CuRendCore.cpp">
+    <ClCompile Include="src\CRC_funcs.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="src\Group.cpp">
+    <ClCompile Include="src\CRC_scene.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="src\Input.cpp">
+    <ClCompile Include="src\CRC_container.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="src\Scene.cpp">
+    <ClCompile Include="src\CRC_event.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="src\Sound.cpp">
+    <ClCompile Include="src\CRC_user_input.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="src\Window.cpp">
+    <ClCompile Include="src\CRC_event_caller.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\Binder.h">
+    <ClInclude Include="include\CRC_config.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="include\CRCConfig.h">
+    <ClInclude Include="include\CRC_pch.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CRC_window.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="include\CuRendCore.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="include\Scene.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Window.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Input.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="include\stb_image.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="include\Group.h">
+    <ClInclude Include="include\CRC_funcs.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="include\Sound.h">
+    <ClInclude Include="include\CRC_scene.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="include\Component.h">
+    <ClInclude Include="include\CRC_container.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CRC_event.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CRC_user_input.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CRC_event_caller.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CRC_resource.cuh">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <CudaCompile Include="include\Math.cuh">
-      <Filter>ヘッダー ファイル</Filter>
-    </CudaCompile>
-    <CudaCompile Include="src\Resource.cu">
+    <CudaCompile Include="src\CRC_device_context.cu">
       <Filter>ソース ファイル</Filter>
     </CudaCompile>
-    <CudaCompile Include="include\Resource.cuh">
+    <CudaCompile Include="include\CRC_device_context.cuh">
       <Filter>ヘッダー ファイル</Filter>
     </CudaCompile>
-    <CudaCompile Include="src\Camera.cu">
+    <CudaCompile Include="src\CRC_buffer.cu">
       <Filter>ソース ファイル</Filter>
     </CudaCompile>
-    <CudaCompile Include="src\Canvas.cu">
+    <CudaCompile Include="src\CRC_device.cu">
       <Filter>ソース ファイル</Filter>
     </CudaCompile>
-    <CudaCompile Include="src\FromObj.cu">
+    <CudaCompile Include="src\CRC_resource.cu">
       <Filter>ソース ファイル</Filter>
     </CudaCompile>
-    <CudaCompile Include="src\Image.cu">
+    <CudaCompile Include="src\CRC_resource_view.cu">
       <Filter>ソース ファイル</Filter>
     </CudaCompile>
-    <CudaCompile Include="src\Light.cu">
+    <CudaCompile Include="src\CRC_texture.cu">
       <Filter>ソース ファイル</Filter>
     </CudaCompile>
-    <CudaCompile Include="src\Text.cu">
-      <Filter>ソース ファイル</Filter>
-    </CudaCompile>
-    <CudaCompile Include="src\Object.cu">
-      <Filter>ソース ファイル</Filter>
-    </CudaCompile>
-    <CudaCompile Include="src\UI.cu">
-      <Filter>ソース ファイル</Filter>
-    </CudaCompile>
-    <CudaCompile Include="src\Utility.cu">
-      <Filter>ソース ファイル</Filter>
-    </CudaCompile>
-    <CudaCompile Include="include\Camera.cuh">
+    <CudaCompile Include="include\CRC_buffer.cuh">
       <Filter>ヘッダー ファイル</Filter>
     </CudaCompile>
-    <CudaCompile Include="include\Canvas.cuh">
+    <CudaCompile Include="include\CRC_device.cuh">
       <Filter>ヘッダー ファイル</Filter>
     </CudaCompile>
-    <CudaCompile Include="include\Image.cuh">
+    <CudaCompile Include="include\CRC_resource_view.cuh">
       <Filter>ヘッダー ファイル</Filter>
     </CudaCompile>
-    <CudaCompile Include="include\FromObj.cuh">
-      <Filter>ヘッダー ファイル</Filter>
-    </CudaCompile>
-    <CudaCompile Include="include\Light.cuh">
-      <Filter>ヘッダー ファイル</Filter>
-    </CudaCompile>
-    <CudaCompile Include="include\Object.cuh">
-      <Filter>ヘッダー ファイル</Filter>
-    </CudaCompile>
-    <CudaCompile Include="include\Utility.cuh">
-      <Filter>ヘッダー ファイル</Filter>
-    </CudaCompile>
-    <CudaCompile Include="include\UI.cuh">
-      <Filter>ヘッダー ファイル</Filter>
-    </CudaCompile>
-    <CudaCompile Include="include\Text.cuh">
-      <Filter>ヘッダー ファイル</Filter>
-    </CudaCompile>
-    <CudaCompile Include="src\Files.cu">
-      <Filter>ソース ファイル</Filter>
-    </CudaCompile>
-    <CudaCompile Include="include\Files.cuh">
+    <CudaCompile Include="include\CRC_texture.cuh">
       <Filter>ヘッダー ファイル</Filter>
     </CudaCompile>
   </ItemGroup>

@@ -1,5 +1,5 @@
 {
-    "commentTranslate.hover.enabled": false,
+    "commentTranslate.hover.enabled": true,
     "commentTranslate.targetLanguage": "en",
     "cSpell.words": [
         "Backgroud",
@@ -11,11 +11,14 @@
         "GRESULT",
         "GSUCCEEDED",
         "HRESULT",
+        "ICRC",
         "ifdef",
         "Inited",
         "nullptr",
         "OBJECTATTR",
         "OVERLAPPEDWINDOW",
+        "Subresource",
+        "Thrd",
         "UIATTR",
         "utattr",
         "UTILITYATTR",
@@ -92,6 +95,12 @@
         "xloctime": "cpp",
         "fstream": "cpp",
         "__config": "cpp",
-        "*.rh": "cpp"
+        "*.rh": "cpp",
+        "condition_variable": "cpp",
+        "deque": "cpp",
+        "queue": "cpp",
+        "ranges": "cpp",
+        "span": "cpp",
+        "iostream": "cpp"
     }
 }
