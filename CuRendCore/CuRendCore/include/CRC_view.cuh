@@ -2,6 +2,7 @@
 
 #include "CRC_config.h"
 #include "CRC_container.h"
+#include "CRC_resource.cuh"
 
 #include <d3d11.h>
 #include <wrl/client.h>
@@ -10,10 +11,11 @@
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
 
-class CRC_API ICRCResource
+#include <memory>
+
+class CRC_API ICRCView
 {
 public:
-    virtual ~ICRCResource() = default;
-    virtual void* GetMem() const = 0;
-    virtual std::size_t GetSize() const = 0;
+    virtual ~ICRCView() = default;
+    virtual std::unique_ptr<ICRCResource>& GetResource() = 0;
 };

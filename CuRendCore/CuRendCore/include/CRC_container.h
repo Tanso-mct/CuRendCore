@@ -4,6 +4,7 @@
 
 #include <memory>
 #include <vector>
+#include <Windows.h>
 
 class CRC_API ICRCContainable
 {
