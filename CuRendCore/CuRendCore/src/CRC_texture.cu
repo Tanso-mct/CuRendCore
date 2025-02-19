@@ -3,6 +3,11 @@
 
 #include "CRC_texture.cuh"
 
+std::unique_ptr<ICRCContainable> CRCTextureFactory::Create(IDESC &desc) const
+{
+    return nullptr;
+}
+
 void *CRCTexture2D::GetMem() const
 {
     return nullptr;
