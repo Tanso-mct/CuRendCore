@@ -2,6 +2,7 @@
 
 #include "CRC_config.h"
 #include "CRC_container.h"
+#include "CRC_factory.h"
 
 #include <Windows.h>
 #include <memory>
@@ -10,9 +11,11 @@
 #include <d3d11.h>
 #include <wrl/client.h>
 
-struct CRC_API CRCWindowSrc
+class CRC_API CRC_WINDOW_DESC : public IDESC
 {
 public:
+    ~CRC_WINDOW_DESC() override = default;
+
     WNDCLASSEX wcex_ = 
     {
         sizeof(WNDCLASSEX),
@@ -39,11 +42,17 @@ public:
     HINSTANCE hInstance = nullptr;
 };
 
+class CRC_API CRCWindowFactory : public ICRCFactory
+{
+public:
+    virtual ~CRCWindowFactory() override = default;
+    virtual std::unique_ptr<ICRCContainable> Create(IDESC& desc) const override;
+};
+
 class CRC_API CRCWindowAttr : public ICRCContainable
 {
 public:
     virtual ~CRCWindowAttr() override = default;
-    std::unique_ptr<CRCWindowSrc> src_ = nullptr;
 
     HWND hWnd_ = nullptr;
 

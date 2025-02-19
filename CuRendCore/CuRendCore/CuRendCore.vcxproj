@@ -43,6 +43,7 @@
     <CudaCompile Include="include\CRC_device_context.cuh" />
     <CudaCompile Include="include\CRC_device.cuh" />
     <ClInclude Include="include\CRC_event_caller.h" />
+    <ClInclude Include="include\CRC_factory.h" />
     <ClInclude Include="include\CRC_funcs.h" />
     <ClInclude Include="include\CRC_pch.h" />
     <ClInclude Include="include\CRC_container.h" />

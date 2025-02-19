@@ -150,7 +150,7 @@ CRCUserInputEvent::CRCUserInputEvent(int& idAttr)
 
 void CRCUserInputEvent::OnUpdate(std::unique_ptr<ICRCContainer>& container, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-    CRCUserInputAttr* input = CRC::PtrAs<CRCUserInputAttr>(container->Get(idAttr_).get());
+    CRCUserInputAttr* input = CRC::As<CRCUserInputAttr>(container->Get(idAttr_).get());
     if (!input) return;
 
     for (int i = 0; i < static_cast<int>(CRC_KEY::COUNT); i++)
@@ -228,7 +228,7 @@ void CRCUserInputEvent::OnUpdate(std::unique_ptr<ICRCContainer>& container, UINT
 
 void CRCUserInputEvent::OnKeyDown(std::unique_ptr<ICRCContainer>& container, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-    CRCUserInputAttr* input = CRC::PtrAs<CRCUserInputAttr>(container->Get(idAttr_).get());
+    CRCUserInputAttr* input = CRC::As<CRCUserInputAttr>(container->Get(idAttr_).get());
     if (!input) return;
 
     if (keyMap_.find({wParam, (lParam & (1 << 24)) != 0}) == keyMap_.end()) return;
@@ -239,7 +239,7 @@ void CRCUserInputEvent::OnKeyDown(std::unique_ptr<ICRCContainer>& container, UIN
 
 void CRCUserInputEvent::OnKeyUp(std::unique_ptr<ICRCContainer>& container, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-    CRCUserInputAttr* input = CRC::PtrAs<CRCUserInputAttr>(container->Get(idAttr_).get());
+    CRCUserInputAttr* input = CRC::As<CRCUserInputAttr>(container->Get(idAttr_).get());
     if (!input) return;
 
     if (keyMap_.find({wParam, (lParam & (1 << 24)) != 0}) == keyMap_.end()) return;
@@ -248,7 +248,7 @@ void CRCUserInputEvent::OnKeyUp(std::unique_ptr<ICRCContainer>& container, UINT 
 
 void CRCUserInputEvent::OnMouse(std::unique_ptr<ICRCContainer>& container, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-    CRCUserInputAttr* input = CRC::PtrAs<CRCUserInputAttr>(container->Get(idAttr_).get());
+    CRCUserInputAttr* input = CRC::As<CRCUserInputAttr>(container->Get(idAttr_).get());
     if (!input) return;
 
     if (mouseMap_.find(msg) == mouseMap_.end()) return;
