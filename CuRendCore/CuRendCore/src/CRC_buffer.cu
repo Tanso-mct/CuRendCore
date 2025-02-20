@@ -3,6 +3,43 @@
 
 #include "CRC_buffer.cuh"
 
+CRC_API void CRC::SetAccess
+(
+    D3D11_USAGE usage, UINT cpuAccessFlags, 
+    CRCAccess& gpuRead, CRCAccess& gpuWrite, CRCAccess& cpuRead, CRCAccess& cpuWrite
+){
+    if (usage == D3D11_USAGE_DEFAULT)
+    {
+        gpuRead = CRC::As<CRCAccess>(&CRCAccessEnabled());
+        gpuWrite = CRC::As<CRCAccess>(&CRCAccessEnabled());
+        cpuRead = std::make_unique<CRCMemAccessDisabled>();
+        cpuWrite = std::make_unique<CRCMemAccessDisabled>();
+    }
+    else if (usage == D3D11_USAGE_IMMUTABLE)
+    {
+        gpuRead = CRC::As<CRCAccess>(&CRCAccessEnabled());
+        gpuWrite = std::make_unique<CRCMemAccessDisabled>();
+        cpuRead = std::make_unique<CRCMemAccessDisabled>();
+        cpuWrite = std::make_unique<CRCMemAccessDisabled>();
+    }
+    else if (usage == D3D11_USAGE_DYNAMIC)
+    {
+        gpuRead = CRC::As<CRCAccess>(&CRCAccessEnabled());
+        gpuWrite = std::make_unique<CRCMemAccessDisabled>();
+        cpuRead = std::make_unique<CRCMemAccessDisabled>();
+        cpuWrite = CRC::As<CRCAccess>(&CRCAccessEnabled());
+    }
+    else if (usage == D3D11_USAGE_STAGING)
+    {
+        gpuRead = CRC::As<CRCAccess>(&CRCAccessEnabled());
+        gpuWrite = CRC::As<CRCAccess>(&CRCAccessEnabled());
+        cpuRead = CRC::As<CRCAccess>(&CRCAccessEnabled());
+        cpuWrite = CRC::As<CRCAccess>(&CRCAccessEnabled());
+    }
+
+
+}
+
 std::unique_ptr<ICRCContainable> CRCBufferFactory::Create(IDESC &desc) const
 {
     CRC_BUFFER_DESC* bufferDesc = CRC::As<CRC_BUFFER_DESC>(&desc);
@@ -10,15 +47,15 @@ std::unique_ptr<ICRCContainable> CRCBufferFactory::Create(IDESC &desc) const
 
     std::unique_ptr<CRCBuffer> buffer = std::make_unique<CRCBuffer>();
 
-    CRC::MallocCudaMem(buffer->mem, bufferDesc->Desc().ByteWidth);
-    CRC::SetCudaMem(buffer->mem, bufferDesc->InitialData());
+    CRC::MallocMem(buffer->mem, bufferDesc->Desc().ByteWidth);
+    CRC::SetDeviceMem(buffer->mem, bufferDesc->InitialData());
 
     return buffer;
 }
 
 CRCBuffer::~CRCBuffer()
 {
-    CRC::FreeCudaMem(mem);
+    CRC::FreeDeviceMem(mem);
 }
 
 void *CRCBuffer::GetMem() const

@@ -6,6 +6,7 @@
 #include <Windows.h>
 #include <utility>
 #include <iostream>
+#include <string_view>
 
 #include <d3d11.h>
 #include <wrl/client.h>

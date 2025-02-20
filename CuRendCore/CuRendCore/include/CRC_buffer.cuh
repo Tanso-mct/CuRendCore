@@ -37,6 +37,19 @@ public:
     UINT& SysMemSlicePitch() { return initialData_.SysMemSlicePitch; }
 };
 
+namespace CRC
+{
+
+CRC_API void SetAccess
+(
+    D3D11_USAGE usage, UINT cpuAccessFlags, 
+    CRCAccess& gpuRead, CRCAccess& gpuWrite, CRCAccess& cpuRead, CRCAccess& cpuWrite
+);
+
+    
+} // namespace CRC
+
+
 class CRC_API CRCIBuffer
 {
 public:
@@ -53,7 +66,12 @@ public:
 class CRC_API CRCBuffer : public ICRCContainable, public ICRCResource, public CRCIBuffer
 {
 private:
-    CRC_CUDA_MEMORY mem = {};
+    CRCCudaMem mem = {};
+
+    std::unique_ptr<ICRCMemAccess> gpuRead = nullptr;
+    std::unique_ptr<ICRCMemAccess> gpuWrite = nullptr;
+    std::unique_ptr<ICRCMemAccess> cpuRead = nullptr;
+    std::unique_ptr<ICRCMemAccess> cpuWrite = nullptr;
 
 public:
     ~CRCBuffer() override;

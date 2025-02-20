@@ -101,6 +101,7 @@
         "queue": "cpp",
         "ranges": "cpp",
         "span": "cpp",
-        "iostream": "cpp"
+        "iostream": "cpp",
+        "cassert": "cpp"
     }
 }

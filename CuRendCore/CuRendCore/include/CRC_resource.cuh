@@ -10,23 +10,6 @@
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
 
-struct CRC_CUDA_MEMORY
-{
-    void* ptr_ = nullptr;
-    std::size_t size_ = 0;
-    UINT pitch_ = 0;
-    UINT slicePitch_ = 0;
-};
-
-namespace CRC
-{
-
-CRC_API void MallocCudaMem(CRC_CUDA_MEMORY& mem, const std::size_t& size);
-CRC_API void SetCudaMem(CRC_CUDA_MEMORY& mem, const D3D11_SUBRESOURCE_DATA& initialData);
-CRC_API void FreeCudaMem(CRC_CUDA_MEMORY& mem);
-
-}
-
 class CRC_API ICRCResource
 {
 public:
