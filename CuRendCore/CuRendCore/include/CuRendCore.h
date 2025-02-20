@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CRC_funcs.h"
+#include "CRC_funcs.cuh"
 
 #include "CRC_config.h"
 

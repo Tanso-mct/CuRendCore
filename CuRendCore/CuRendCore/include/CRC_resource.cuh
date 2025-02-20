@@ -10,30 +10,22 @@
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
 
-enum class CRC_API CRC_USAGE : UINT
+struct CRC_CUDA_MEMORY
 {
-    DEFAULT = 0,
-    IMMUTABLE = 1,
-    DYNAMIC = 2,
-    STAGING = 3
+    void* ptr_ = nullptr;
+    std::size_t size_ = 0;
+    UINT pitch_ = 0;
+    UINT slicePitch_ = 0;
 };
 
-enum class CRC_API CRC_FORMAT : UINT
+namespace CRC
 {
-    UNKNOWN = 0,
-    R8G8B8A8_UNORM = 28,
-    D24_UNORM_S8_UINT = 45,
-};
 
-class CRC_API CRC_SUBRESOURCE_DATA
-{
-public:
-    ~CRC_SUBRESOURCE_DATA() = default;
+CRC_API void MallocCudaMem(CRC_CUDA_MEMORY& mem, const std::size_t& size);
+CRC_API void SetCudaMem(CRC_CUDA_MEMORY& mem, const D3D11_SUBRESOURCE_DATA& initialData);
+CRC_API void FreeCudaMem(CRC_CUDA_MEMORY& mem);
 
-    const void* pSysMem_;
-    UINT sysMemPitch_;
-    UINT sysMemSlicePitch_;
-};
+}
 
 class CRC_API ICRCResource
 {

@@ -15,20 +15,26 @@
 
 class CRC_API CRC_TEXTURE_DESC : public IDESC
 {
+private:
+    D3D11_TEXTURE2D_DESC desc_ = {};
+
 public:
     ~CRC_TEXTURE_DESC() override = default;
 
-    UINT width_;
-    UINT height_;
-    UINT mipLevels_;
-    UINT arraySize_;
-    CRC_FORMAT format_;
-    UINT sampleCount_;
-    UINT sampleQuality_;
-    CRC_USAGE usage_;
-    UINT bindFlags_;
-    UINT cpuAccessFlags_;
-    UINT miscFlags_;
+    Microsoft::WRL::ComPtr<ID3D11Device>& device_;
+
+    D3D11_TEXTURE2D_DESC& Desc() { return desc_; }
+
+    UINT& Width() { return desc_.Width; }
+    UINT& Height() { return desc_.Height; }
+    UINT& MipLevels() { return desc_.MipLevels; }
+    UINT& ArraySize() { return desc_.ArraySize; }
+    DXGI_FORMAT& Format() { return desc_.Format; }
+    DXGI_SAMPLE_DESC& SampleDesc() { return desc_.SampleDesc; }
+    D3D11_USAGE& Usage() { return desc_.Usage; }
+    UINT& BindFlags() { return desc_.BindFlags; }
+    UINT& CPUAccessFlags() { return desc_.CPUAccessFlags; }
+    UINT& MiscFlags() { return desc_.MiscFlags; }
 };
 
 class CRC_API CRCTextureFactory : public ICRCFactory

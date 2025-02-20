@@ -5,6 +5,14 @@
 #include <memory>
 #include <Windows.h>
 #include <utility>
+#include <iostream>
+
+#include <d3d11.h>
+#include <wrl/client.h>
+#include <cuda_d3d11_interop.h>
+
+#include "cuda_runtime.h"
+#include "device_launch_parameters.h"
 
 class CRCCore;
 class CRC_WINDOW_DESC; 
@@ -34,7 +42,6 @@ std::unique_ptr<T> UniqueAs(std::unique_ptr<S>& source)
     else return nullptr;
 }
 
-
 CRC_API HRESULT ShowWindowCRC(HWND& hWnd);
 CRC_API HRESULT CreateSwapChain(std::unique_ptr<ICRCContainable>& windowAttr);
 
@@ -55,5 +62,7 @@ struct PairEqual
         return lhs == rhs;
     }
 };
+
+CRC_API void CheckCuda(cudaError_t call);
 
 }

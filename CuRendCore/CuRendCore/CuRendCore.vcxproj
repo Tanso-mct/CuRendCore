@@ -21,7 +21,9 @@
   <ItemGroup>
     <ClCompile Include="src\CRC_container.cpp" />
     <ClCompile Include="src\CRC_event_caller.cpp" />
-    <ClCompile Include="src\CRC_funcs.cpp" />
+    <CudaCompile Include="src\CRC_funcs.cu">
+      <FileType>Document</FileType>
+    </CudaCompile>
     <ClCompile Include="src\CRC_pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -45,7 +47,7 @@
     <CudaCompile Include="include\CRC_dsv.cuh" />
     <ClInclude Include="include\CRC_event_caller.h" />
     <ClInclude Include="include\CRC_factory.h" />
-    <ClInclude Include="include\CRC_funcs.h" />
+    <CudaCompile Include="include\CRC_funcs.cuh" />
     <ClInclude Include="include\CRC_pch.h" />
     <ClInclude Include="include\CRC_container.h" />
     <ClInclude Include="include\CRC_event.h" />
@@ -62,6 +64,7 @@
     <CudaCompile Include="src\CRC_buffer.cu" />
     <CudaCompile Include="src\CRC_device.cu" />
     <CudaCompile Include="src\CRC_dsv.cu" />
+    <CudaCompile Include="src\CRC_resource.cu" />
     <CudaCompile Include="src\CRC_rtv.cu" />
     <CudaCompile Include="src\CRC_srv.cu" />
     <CudaCompile Include="src\CRC_texture.cu" />

@@ -1,5 +1,5 @@
 ﻿#include "CRC_pch.h"
-#include "CRC_funcs.h"
+#include "CRC_funcs.cuh"
 
 #include "CRC_window.h"
 #include "CRC_scene.h"
@@ -60,4 +60,13 @@ HRESULT CRC::CreateSwapChain(std::unique_ptr<ICRCContainable> &windowAttr)
     }
 
     return hr;
+}
+
+CRC_API void CRC::CheckCuda(cudaError_t call)
+{
+    if (call != cudaSuccess)
+    {
+        std::cerr << "Error: " << __FILE__ << ":" << __LINE__ << ", ";
+        std::cerr << "code: " << call << ", reason: " << cudaGetErrorString(call) << std::endl;
+    }
 }
