@@ -7,6 +7,7 @@
 #include <utility>
 #include <iostream>
 #include <string_view>
+#include <initializer_list>
 
 #include <d3d11.h>
 #include <wrl/client.h>
@@ -73,7 +74,28 @@ struct PairEqual
 
 CRC_API void CheckCuda(cudaError_t call);
 
-CRC_API void CoutTag();
-CRC_API void CoutMsg(const char* msg);
+template <typename... Args>
+CRC_API void Cout(Args&... args)
+{
+    std::cout << CRC::C_COLOR_MSG << CRC::C_TAG << CRC::C_COLOR_RESET << " ";
+    (void)std::initializer_list<int>{(std::cout << args << " ", 0)...};
+    std::cout << std::endl << CRC::C_COLOR_MSG << CRC::C_TAG_END << CRC::C_COLOR_RESET << std::endl;
+}
+
+template <typename... Args>
+CRC_API void CoutError(Args&... args)
+{
+    std::cout << CRC::C_COLOR_ERROR << CRC::C_TAG << CRC::C_COLOR_RESET << " ";
+    (void)std::initializer_list<int>{(std::cout << args << " ", 0)...};
+    std::cout << std::endl << CRC::C_COLOR_ERROR << CRC::C_TAG_END << CRC::C_COLOR_RESET << std::endl;
+}
+
+template <typename... Args>
+CRC_API void CoutWarning(Args&... args)
+{
+    std::cout << CRC::C_COLOR_WARNING << CRC::C_TAG << CRC::C_COLOR_RESET << " ";
+    (void)std::initializer_list<int>{(std::cout << args << " ", 0)...};
+    std::cout << std::endl << CRC::C_COLOR_WARNING << CRC::C_TAG_END << CRC::C_COLOR_RESET << std::endl;
+}
 
 }

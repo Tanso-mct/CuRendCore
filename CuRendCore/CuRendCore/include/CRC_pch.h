@@ -18,6 +18,7 @@
 #include <cstddef>
 #include <stdexcept>
 #include <string_view>
+#include <initializer_list>
 
 #include <d3d11.h>
 #include <wrl/client.h>

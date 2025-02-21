@@ -79,17 +79,9 @@ CRC_API void CRC::CheckCuda(cudaError_t call)
     if (call != cudaSuccess)
     {
         std::string err = "[CUDA ERROR] Code: " + std::to_string(call) + ", Reason: " + cudaGetErrorString(call);
+#ifndef NDEBUG
+        CoutError(err);
+#endif
         throw std::runtime_error(err);
     }
-}
-
-CRC_API void CRC::CoutTag()
-{
-    std::cout << CRC::C_TAG_COLOR << CRC::C_TAG << CRC::C_COLOR_RESET << " ";
-}
-
-CRC_API void CRC::CoutMsg(const char *msg)
-{
-    CRC::CoutTag();
-    std::cout << msg << std::endl;
 }

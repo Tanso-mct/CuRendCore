@@ -10,7 +10,13 @@ CRCHostMem::~CRCHostMem()
 
 void CRCHostMem::Malloc(const UINT &byteWidth, const UINT &pitch, const UINT &slicePitch)
 {
-    if (ptr_) throw std::runtime_error("Memory already allocated.");
+    if (ptr_)
+    {
+#ifndef NDEBUG
+        CRC::CoutError("Memory already allocated.");
+#endif
+        throw std::runtime_error("Memory already allocated.");
+    }
 
     byteWidth_ = byteWidth;
     pitch_ = pitch;
@@ -18,12 +24,27 @@ void CRCHostMem::Malloc(const UINT &byteWidth, const UINT &pitch, const UINT &sl
 
     CRC::CheckCuda(cudaMallocHost(&ptr_, byteWidth_));
 
-    CRC::CoutMsg("Host memory allocated.");
+#ifndef NDEBUG
+    CRC::Cout
+    (
+        "\n",
+        "Host memory allocated.", "\n", 
+        "ByteWidth :", byteWidth_, "\n",
+        "Pitch :", pitch_, "\n",
+        "SlicePitch :", slicePitch_
+    );
+#endif
 }
 
 void CRCHostMem::Free()
 {
-    if (!ptr_) throw std::runtime_error("Memory not allocated.");
+    if (!ptr_)
+    {
+#ifndef NDEBUG
+        CRC::CoutError("Memory not allocated.");
+#endif
+        throw std::runtime_error("Memory not allocated.");
+    }
 
     byteWidth_ = 0;
     pitch_ = 0;
@@ -32,7 +53,9 @@ void CRCHostMem::Free()
     CRC::CheckCuda(cudaFreeHost(ptr_));
     ptr_ = nullptr;
 
-    CRC::CoutMsg("Host memory free.");
+#ifndef NDEBUG
+    CRC::Cout("Host memory free.");
+#endif
 }
 
 CRCDeviceMem::~CRCDeviceMem()
@@ -42,7 +65,13 @@ CRCDeviceMem::~CRCDeviceMem()
 
 void CRCDeviceMem::Malloc(const UINT &byteWidth, const UINT &pitch, const UINT &slicePitch)
 {
-    if (ptr_) throw std::runtime_error("Memory already allocated.");
+    if (ptr_)
+    {
+#ifndef NDEBUG
+        CRC::CoutError("Memory already allocated.");
+#endif
+        throw std::runtime_error("Memory already allocated.");
+    }
 
     byteWidth_ = byteWidth;
     pitch_ = pitch;
@@ -50,12 +79,27 @@ void CRCDeviceMem::Malloc(const UINT &byteWidth, const UINT &pitch, const UINT &
 
     CRC::CheckCuda(cudaMalloc(&ptr_, byteWidth_));
 
-    CRC::CoutMsg("Device memory allocated.");
+#ifndef NDEBUG
+    CRC::Cout
+    (
+        "\n",
+        "Device memory allocated.", "\n", 
+        "ByteWidth :", byteWidth_, "\n",
+        "Pitch :", pitch_, "\n",
+        "SlicePitch :", slicePitch_
+    );
+#endif
 }
 
 void CRCDeviceMem::Free()
 {
-    if (!ptr_) throw std::runtime_error("Memory not allocated.");
+    if (!ptr_)
+    {
+#ifndef NDEBUG
+        CRC::CoutError("Memory not allocated.");
+#endif
+        throw std::runtime_error("Memory not allocated.");
+    }
 
     byteWidth_ = 0;
     pitch_ = 0;
@@ -64,5 +108,7 @@ void CRCDeviceMem::Free()
     CRC::CheckCuda(cudaFree(ptr_));
     ptr_ = nullptr;
 
-    CRC::CoutMsg("Device memory free.");
+#ifndef NDEBUG
+    CRC::Cout("Device memory free.");
+#endif
 }
