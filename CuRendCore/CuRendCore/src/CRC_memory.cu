@@ -3,140 +3,58 @@
 
 #include "CRC_memory.cuh"
 
-
-
-// CRC_API HRESULT CRC::MallocMem(CRCCudaMem &mem, const std::size_t &size)
-// {
-//     mem.size_ = size;
-
-//     if (mem.dPtr_)
-//     {
-//         throw std::runtime_error("Device memory already allocated.");
-//         return E_FAIL;
-//     }
-
-//     CRC::CheckCuda(cudaMalloc((void**)&mem.dPtr_, size));
-
-//     if (CRC::As<CRCAccessEnabled>(&mem.hReadAccess) || CRC::As<CRCAccessEnabled>(&mem.hWriteAccess))
-//     {
-//         if (mem.hPtr_)
-//         {
-//             throw std::runtime_error("Host memory already allocated.");
-//             return E_FAIL;
-//         }
-        
-//         CRC::CheckCuda(cudaMallocHost((void**)&mem.hPtr_, size));
-//     }
-// }
-
-// CRC_API HRESULT CRC::SetHostMem(CRCCudaMem &mem, const D3D11_SUBRESOURCE_DATA &initialData)
-// {
-//     if (!mem.hPtr_)
-//     {
-//         throw std::runtime_error("Host memory not allocated.");
-//         return E_FAIL;
-//     }
-
-//     CRC::CheckCuda(cudaMemcpy((void**)&mem.hPtr_, (void**)&initialData.pSysMem, mem.size_, cudaMemcpyHostToHost));
-// }
-
-// CRC_API HRESULT CRC::SetDeviceMem(CRCCudaMem &mem, const D3D11_SUBRESOURCE_DATA &initialData)
-// {
-//     if (!mem.dPtr_)
-//     {
-//         throw std::runtime_error("Device memory not allocated.");
-//         return E_FAIL;
-//     }
-
-//     CRC::CheckCuda(cudaMemcpy((void**)&mem.dPtr_, (void**)&initialData.pSysMem, mem.size_, cudaMemcpyHostToDevice));
-// }
-
-// CRC_API HRESULT CRC::SetMem(CRCCudaMem &mem, const D3D11_SUBRESOURCE_DATA &initialData)
-// {
-//     CRC::SetHostMem(mem, initialData);
-//     CRC::SetDeviceMem(mem, initialData);
-// }
-
-// CRC_API HRESULT CRC::FreeHostMem(CRCCudaMem &mem)
-// {
-//     if (!mem.hPtr_)
-//     {
-//         throw std::runtime_error("Host memory not allocated.");
-//         return E_FAIL;
-//     }
-
-//     CRC::CheckCuda(cudaFreeHost((void**)&mem.hPtr_));
-// }
-
-// CRC_API HRESULT CRC::FreeDeviceMem(CRCCudaMem &mem)
-// {
-//     if (!mem.dPtr_)
-//     {
-//         throw std::runtime_error("Device memory not allocated.");
-//         return E_FAIL;
-//     }
-
-//     CRC::CheckCuda(cudaFree((void**)&mem.dPtr_));
-// }
-
-// CRC_API HRESULT CRC::FreeMem(CRCCudaMem &mem)
-// {
-//     CRC::FreeHostMem(mem);
-//     CRC::FreeDeviceMem(mem);
-// }
-
-CRC_API HRESULT CRC::MallocCudaMem
-(
-    CRCCudaMem &mem, const std::size_t &size, const UINT& pitch, const UINT& slicePitch
-){
-    if (mem.host || mem.device)
-    {
-        throw std::runtime_error("Memory already allocated.");
-        return E_FAIL;
-    }
-
-    CRC::CheckCuda(cudaMallocHost((void**)&mem.host->Mem(), size));
-    CRC::CheckCuda(cudaMalloc((void**)&mem.host->Mem(), size));
-
-    CRC::CheckCuda(cudaMalloc((void**)&mem.device, sizeof(CRCMem)));
-
-    return S_OK;
+CRCHostMem::~CRCHostMem()
+{
+    if (ptr_) Free();
 }
 
-CRC_API HRESULT CRC::SetCudaMem(CRCCudaMem &mem, const void* sysMem)
+void CRCHostMem::Malloc(const UINT &byteWidth, const UINT &pitch, const UINT &slicePitch)
 {
-    if (!mem.host || !mem.device)
-    {
-        throw std::runtime_error("Memory not allocated.");
-        return E_FAIL;
-    }
+    if (ptr_) throw std::runtime_error("Memory already allocated.");
 
-    CRC::CheckCuda(cudaMemcpy
-    (
-        (void*)mem.host->Mem(), sysMem, 
-        mem.host->Size(), cudaMemcpyHostToHost
-    ));
+    byteWidth_ = byteWidth;
+    pitch_ = pitch;
+    slicePitch_ = slicePitch;
 
-    CRC::CheckCuda(cudaMemcpy
-    (
-        (void*)mem.device, mem.host, 
-        sizeof(CRCMem), cudaMemcpyHostToDevice
-    ));
-
-    return S_OK;
+    CRC::CheckCuda(cudaMallocHost(&ptr_, byteWidth_));
 }
 
-CRC_API HRESULT CRC::FreeCudaMem(CRCCudaMem &mem)
+void CRCHostMem::Free()
 {
-    if (!mem.host || !mem.device)
-    {
-        throw std::runtime_error("Memory not allocated.");
-        return E_FAIL;
-    }
+    if (!ptr_) throw std::runtime_error("Memory not allocated.");
 
-    CRC::CheckCuda(cudaFree((void**)&mem.host->Mem()));
-    CRC::CheckCuda(cudaFreeHost((void**)&mem.host));
+    byteWidth_ = 0;
+    pitch_ = 0;
+    slicePitch_ = 0;
 
-    CRC::CheckCuda(cudaFree((void*)mem.device));
-    return S_OK;
+    CRC::CheckCuda(cudaFreeHost(ptr_));
+    ptr_ = nullptr;
+}
+
+CRCDeviceMem::~CRCDeviceMem()
+{
+    if (ptr_) Free();
+}
+
+void CRCDeviceMem::Malloc(const UINT &byteWidth, const UINT &pitch, const UINT &slicePitch)
+{
+    if (ptr_) throw std::runtime_error("Memory already allocated.");
+
+    byteWidth_ = byteWidth;
+    pitch_ = pitch;
+    slicePitch_ = slicePitch;
+
+    CRC::CheckCuda(cudaMalloc(&ptr_, byteWidth_));
+}
+
+void CRCDeviceMem::Free()
+{
+    if (!ptr_) throw std::runtime_error("Memory not allocated.");
+
+    byteWidth_ = 0;
+    pitch_ = 0;
+    slicePitch_ = 0;
+
+    CRC::CheckCuda(cudaFree(ptr_));
+    ptr_ = nullptr;
 }

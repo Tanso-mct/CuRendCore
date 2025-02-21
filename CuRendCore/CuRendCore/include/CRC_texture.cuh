@@ -17,6 +17,7 @@ class CRC_API CRC_TEXTURE_DESC : public IDESC
 {
 private:
     D3D11_TEXTURE2D_DESC desc_ = {};
+    D3D11_SUBRESOURCE_DATA initialData_ = {};
 
 public:
     ~CRC_TEXTURE_DESC() override = default;
@@ -24,6 +25,7 @@ public:
     Microsoft::WRL::ComPtr<ID3D11Device>& device_;
 
     D3D11_TEXTURE2D_DESC& Desc() { return desc_; }
+    D3D11_SUBRESOURCE_DATA& InitialData() { return initialData_; }
 
     UINT& Width() { return desc_.Width; }
     UINT& Height() { return desc_.Height; }
@@ -35,13 +37,10 @@ public:
     UINT& BindFlags() { return desc_.BindFlags; }
     UINT& CPUAccessFlags() { return desc_.CPUAccessFlags; }
     UINT& MiscFlags() { return desc_.MiscFlags; }
-};
 
-class CRC_API CRCTextureFactory : public ICRCFactory
-{
-public:
-    ~CRCTextureFactory() override = default;
-    virtual std::unique_ptr<ICRCContainable> Create(IDESC& desc) const override;
+    const void* SysMem() { return initialData_.pSysMem; }
+    UINT& SysMemPitch() { return initialData_.SysMemPitch; }
+    UINT& SysMemSlicePitch() { return initialData_.SysMemSlicePitch; }
 };
 
 class CRC_API ICRCTexture2D
@@ -50,23 +49,52 @@ public:
     virtual ~ICRCTexture2D() = default;
 };
 
-class CRC_API CRCTexture2D : public ICRCContainable, public ICRCResource, public ICRCTexture2D
+class CRC_API CRCTexture2DFactory : public ICRCFactory
 {
 public:
-    ~CRCTexture2D() override = default;
-
-    virtual void* GetMem() const override;
-    virtual std::size_t GetSize() const override;
+    ~CRCTexture2DFactory() override = default;
+    virtual std::unique_ptr<ICRCContainable> Create(IDESC& desc) const override;
 };
 
-class CRC_API CRCID3D11Texture2D : public ICRCContainable, public ICRCResource, public ICRCTexture2D
+class CRC_API CRCTexture2D : public ICRCContainable, public ICRCCudaResource, public ICRCTexture2D
 {
 private:
+    D3D11_TEXTURE2D_DESC desc_ = {};
+    std::unique_ptr<ICRCMem> dMem = nullptr;
+
+public:
+    CRCTexture2D() = default;
+    ~CRCTexture2D() override = default;
+
+    virtual void* const GetMem() const override { return dMem.get(); }
+    virtual const UINT& GetByteWidth() const override { return dMem->GetByteWidth(); }
+    virtual const UINT& GetPitch() const override { return dMem->GetPitch(); }
+    virtual const UINT& GetSlicePitch() const override { return dMem->GetSlicePitch(); }
+
+    virtual const D3D11_TEXTURE2D_DESC& GetDesc() { return desc_; }
+
+    friend class CRCTexture2DFactory;
+};
+
+class CRC_API CRCID3D11Texture2DFactory : public ICRCFactory
+{
+public:
+    ~CRCID3D11Texture2DFactory() override = default;
+    virtual std::unique_ptr<ICRCContainable> Create(IDESC& desc) const override;
+};
+
+class CRC_API CRCID3D11Texture2D : public ICRCContainable, public ICRCD3D11Resource, public ICRCTexture2D
+{
+private:
+    D3D11_TEXTURE2D_DESC desc_ = {};
     Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11Texture2D;
 
 public:
+    CRCID3D11Texture2D() = default;
     ~CRCID3D11Texture2D() override = default;
 
-    virtual void* GetMem() const override;
-    virtual std::size_t GetSize() const override;
+    virtual Microsoft::WRL::ComPtr<ID3D11Resource>& GetResource() override;
+    virtual const D3D11_TEXTURE2D_DESC& GetDesc();
+
+    friend class CRCID3D11Texture2DFactory;
 };

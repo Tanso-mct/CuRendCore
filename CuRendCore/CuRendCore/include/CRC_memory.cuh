@@ -12,39 +12,61 @@
 #include <Windows.h>
 #include <memory>
 
-struct CRC_API CRCCudaMem
+class CRC_API ICRCMem
 {
-    CRCMem* host = nullptr;
-    CRCMem* device = nullptr;
+public:
+    virtual ~ICRCMem() = default;
+
+    virtual operator void* const() = 0;
+
+    virtual const UINT& GetByteWidth() const = 0;
+    virtual const UINT& GetPitch() const = 0;
+    virtual const UINT& GetSlicePitch() const = 0;
+
+    virtual void Malloc(const UINT& byteWidth, const UINT& pitch, const UINT& slicePitch) = 0;
+    virtual void Free() = 0;
 };
 
-class CRC_API CRCMem
+class CRC_API CRCHostMem : public ICRCMem
 {
 private:
-    const std::size_t size_ = 0;
-    const UINT pitch_ = 0;
-    const UINT slicePitch_ = 0;
     void* ptr_ = nullptr;
+    UINT byteWidth_ = 0;
+    UINT pitch_ = 0;
+    UINT slicePitch_ = 0;
 
 public:
-    CRCMem(const std::size_t& size, const UINT& pitch, const UINT& slicePitch)
-    : size_(size), pitch_(pitch), slicePitch_(slicePitch) {}
+    CRCHostMem() = default;
+    ~CRCHostMem() override;
 
-    ~CRCMem() = default;
+    operator void* const() override { return ptr_; }
 
-    __device__ __host__ const std::size_t& Size() const { return size_; }
-    __device__ __host__ const UINT& Pitch() const { return pitch_; }
-    __device__ __host__ const UINT& SlicePitch() const { return slicePitch_; }
+    const UINT& GetByteWidth() const override { return byteWidth_; }
+    const UINT& GetPitch() const override { return pitch_; }
+    const UINT& GetSlicePitch() const override { return slicePitch_; }
 
-    __device__ __host__ void*& Mem() { return ptr_; }
-    __device__ __host__ const void* Mem() const { return ptr_; }
+    void Malloc(const UINT& byteWidth, const UINT& pitch, const UINT& slicePitch) override;
+    void Free() override;
 };
 
-namespace CRC
+class CRC_API CRCDeviceMem : public ICRCMem
 {
+private:
+    void* ptr_ = nullptr;
+    UINT byteWidth_ = 0;
+    UINT pitch_ = 0;
+    UINT slicePitch_ = 0;
 
-CRC_API HRESULT MallocCudaMem(CRCCudaMem& mem, const std::size_t& size, const UINT& pitch, const UINT& slicePitch);
-CRC_API HRESULT SetCudaMem(CRCCudaMem& mem, const void* initialData);
-CRC_API HRESULT FreeCudaMem(CRCCudaMem& mem);
+public:
+    CRCDeviceMem() = default;
+    ~CRCDeviceMem() override;
 
-}
+    operator void* const() override { return ptr_; }
+
+    const UINT& GetByteWidth() const override { return byteWidth_; }
+    const UINT& GetPitch() const override { return pitch_; }
+    const UINT& GetSlicePitch() const override { return slicePitch_; }
+
+    void Malloc(const UINT& byteWidth, const UINT& pitch, const UINT& slicePitch) override;
+    void Free() override;
+};

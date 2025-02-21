@@ -3,69 +3,27 @@
 
 #include "CRC_buffer.cuh"
 
-CRC_API void CRC::SetAccess
-(
-    D3D11_USAGE usage, UINT cpuAccessFlags, 
-    CRCAccess& gpuRead, CRCAccess& gpuWrite, CRCAccess& cpuRead, CRCAccess& cpuWrite
-){
-    if (usage == D3D11_USAGE_DEFAULT)
-    {
-        gpuRead = CRC::As<CRCAccess>(&CRCAccessEnabled());
-        gpuWrite = CRC::As<CRCAccess>(&CRCAccessEnabled());
-        cpuRead = std::make_unique<CRCMemAccessDisabled>();
-        cpuWrite = std::make_unique<CRCMemAccessDisabled>();
-    }
-    else if (usage == D3D11_USAGE_IMMUTABLE)
-    {
-        gpuRead = CRC::As<CRCAccess>(&CRCAccessEnabled());
-        gpuWrite = std::make_unique<CRCMemAccessDisabled>();
-        cpuRead = std::make_unique<CRCMemAccessDisabled>();
-        cpuWrite = std::make_unique<CRCMemAccessDisabled>();
-    }
-    else if (usage == D3D11_USAGE_DYNAMIC)
-    {
-        gpuRead = CRC::As<CRCAccess>(&CRCAccessEnabled());
-        gpuWrite = std::make_unique<CRCMemAccessDisabled>();
-        cpuRead = std::make_unique<CRCMemAccessDisabled>();
-        cpuWrite = CRC::As<CRCAccess>(&CRCAccessEnabled());
-    }
-    else if (usage == D3D11_USAGE_STAGING)
-    {
-        gpuRead = CRC::As<CRCAccess>(&CRCAccessEnabled());
-        gpuWrite = CRC::As<CRCAccess>(&CRCAccessEnabled());
-        cpuRead = CRC::As<CRCAccess>(&CRCAccessEnabled());
-        cpuWrite = CRC::As<CRCAccess>(&CRCAccessEnabled());
-    }
-
-
-}
-
 std::unique_ptr<ICRCContainable> CRCBufferFactory::Create(IDESC &desc) const
 {
     CRC_BUFFER_DESC* bufferDesc = CRC::As<CRC_BUFFER_DESC>(&desc);
     if (!bufferDesc) return nullptr;
 
     std::unique_ptr<CRCBuffer> buffer = std::make_unique<CRCBuffer>();
+    buffer->dMem = std::make_unique<CRCDeviceMem>();
 
-    CRC::MallocMem(buffer->mem, bufferDesc->Desc().ByteWidth);
-    CRC::SetDeviceMem(buffer->mem, bufferDesc->InitialData());
+    buffer->dMem->Malloc(bufferDesc->ByteWidth(), bufferDesc->SysMemPitch(), bufferDesc->SysMemSlicePitch());
+    
+    if (bufferDesc->SysMem())
+    {
+        CRC::CheckCuda(cudaMemcpy
+        (
+            buffer->dMem.get(), bufferDesc->SysMem(), bufferDesc->ByteWidth(), cudaMemcpyHostToDevice
+        ));
+    }
+
+    buffer->desc_ = bufferDesc->Desc();
 
     return buffer;
-}
-
-CRCBuffer::~CRCBuffer()
-{
-    CRC::FreeDeviceMem(mem);
-}
-
-void *CRCBuffer::GetMem() const
-{
-    return nullptr;
-}
-
-std::size_t CRCBuffer::GetSize() const
-{
-    return 0;
 }
 
 std::unique_ptr<ICRCContainable> CRCID3D11BufferFactory::Create(IDESC &desc) const
@@ -75,21 +33,28 @@ std::unique_ptr<ICRCContainable> CRCID3D11BufferFactory::Create(IDESC &desc) con
 
     std::unique_ptr<CRCID3D11Buffer> buffer = std::make_unique<CRCID3D11Buffer>();
 
+    D3D11_SUBRESOURCE_DATA* initialData = nullptr;
+    if (bufferDesc->SysMem()) initialData = &bufferDesc->InitialData();
+
     HRESULT hr = bufferDesc->device_->CreateBuffer
     (
-        &bufferDesc->Desc(), &bufferDesc->InitialData(), buffer->d3d11Buffer.GetAddressOf()
+        &bufferDesc->Desc(), initialData, buffer->d3d11Buffer.GetAddressOf()
     );
     if (FAILED(hr)) return nullptr;
 
     return buffer;
 }
 
-void *CRCID3D11Buffer::GetMem() const
+Microsoft::WRL::ComPtr<ID3D11Resource> &CRCID3D11Buffer::GetResource()
 {
-    return nullptr;
+    Microsoft::WRL::ComPtr<ID3D11Resource> resource;
+    d3d11Buffer.As(&resource);
+
+    return resource;
 }
 
-std::size_t CRCID3D11Buffer::GetSize() const
+const D3D11_BUFFER_DESC &CRCID3D11Buffer::GetDesc()
 {
-    return 0;
+    d3d11Buffer->GetDesc(&desc_);
+    return desc_;
 }

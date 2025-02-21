@@ -130,5 +130,11 @@
     <CudaCompile Include="src\CRC_resource.cu">
       <Filter>ソース ファイル</Filter>
     </CudaCompile>
+    <CudaCompile Include="src\CRC_memory.cu">
+      <Filter>ソース ファイル</Filter>
+    </CudaCompile>
+    <CudaCompile Include="include\CRC_memory.cuh">
+      <Filter>ヘッダー ファイル</Filter>
+    </CudaCompile>
   </ItemGroup>
 </Project>

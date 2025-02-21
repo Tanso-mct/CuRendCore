@@ -48,6 +48,7 @@
     <ClInclude Include="include\CRC_event_caller.h" />
     <ClInclude Include="include\CRC_factory.h" />
     <CudaCompile Include="include\CRC_funcs.cuh" />
+    <CudaCompile Include="include\CRC_memory.cuh" />
     <ClInclude Include="include\CRC_pch.h" />
     <ClInclude Include="include\CRC_container.h" />
     <ClInclude Include="include\CRC_event.h" />
@@ -64,6 +65,7 @@
     <CudaCompile Include="src\CRC_buffer.cu" />
     <CudaCompile Include="src\CRC_device.cu" />
     <CudaCompile Include="src\CRC_dsv.cu" />
+    <CudaCompile Include="src\CRC_memory.cu" />
     <CudaCompile Include="src\CRC_resource.cu" />
     <CudaCompile Include="src\CRC_rtv.cu" />
     <CudaCompile Include="src\CRC_srv.cu" />

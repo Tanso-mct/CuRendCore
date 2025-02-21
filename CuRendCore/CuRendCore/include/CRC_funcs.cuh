@@ -46,6 +46,8 @@ std::unique_ptr<T> UniqueAs(std::unique_ptr<S>& source)
 CRC_API HRESULT ShowWindowCRC(HWND& hWnd);
 CRC_API HRESULT CreateSwapChain(std::unique_ptr<ICRCContainable>& windowAttr);
 
+UINT GetBytesPerPixel(const DXGI_FORMAT& format);
+
 struct PairHash 
 {
     template <typename T1, typename T2>

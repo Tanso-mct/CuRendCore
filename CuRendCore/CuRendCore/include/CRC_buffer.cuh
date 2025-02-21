@@ -3,6 +3,7 @@
 #include "CRC_config.h"
 #include "CRC_resource.cuh"
 #include "CRC_factory.h"
+#include "CRC_memory.cuh"
 
 #include <d3d11.h>
 #include <wrl/client.h>
@@ -37,23 +38,11 @@ public:
     UINT& SysMemSlicePitch() { return initialData_.SysMemSlicePitch; }
 };
 
-namespace CRC
-{
-
-CRC_API void SetAccess
-(
-    D3D11_USAGE usage, UINT cpuAccessFlags, 
-    CRCAccess& gpuRead, CRCAccess& gpuWrite, CRCAccess& cpuRead, CRCAccess& cpuWrite
-);
-
-    
-} // namespace CRC
-
-
 class CRC_API CRCIBuffer
 {
 public:
     virtual ~CRCIBuffer() = default;
+    virtual const D3D11_BUFFER_DESC& GetDesc() = 0;
 };
 
 class CRC_API CRCBufferFactory : public ICRCFactory
@@ -63,21 +52,22 @@ public:
     virtual std::unique_ptr<ICRCContainable> Create(IDESC& desc) const override;
 };
 
-class CRC_API CRCBuffer : public ICRCContainable, public ICRCResource, public CRCIBuffer
+class CRC_API CRCBuffer : public ICRCContainable, public ICRCCudaResource, public CRCIBuffer
 {
 private:
-    CRCCudaMem mem = {};
-
-    std::unique_ptr<ICRCMemAccess> gpuRead = nullptr;
-    std::unique_ptr<ICRCMemAccess> gpuWrite = nullptr;
-    std::unique_ptr<ICRCMemAccess> cpuRead = nullptr;
-    std::unique_ptr<ICRCMemAccess> cpuWrite = nullptr;
+    D3D11_BUFFER_DESC desc_ = {};
+    std::unique_ptr<ICRCMem> dMem = nullptr;
 
 public:
-    ~CRCBuffer() override;
+    CRCBuffer() = default;
+    virtual ~CRCBuffer() override = default;
 
-    virtual void* GetMem() const override;
-    virtual std::size_t GetSize() const override;
+    virtual void* const GetMem() const override { return dMem.get(); }
+    virtual const UINT& GetByteWidth() const override { return dMem->GetByteWidth(); }
+    virtual const UINT& GetPitch() const override { return dMem->GetPitch(); }
+    virtual const UINT& GetSlicePitch() const override { return dMem->GetSlicePitch(); }
+
+    virtual const D3D11_BUFFER_DESC& GetDesc() override { return desc_; }
 
     friend class CRCBufferFactory;
 };
@@ -89,16 +79,18 @@ public:
     virtual std::unique_ptr<ICRCContainable> Create(IDESC& desc) const override;
 };
 
-class CRC_API CRCID3D11Buffer : public ICRCContainable, public ICRCResource, public CRCIBuffer
+class CRC_API CRCID3D11Buffer : public ICRCContainable, public ICRCD3D11Resource, public CRCIBuffer
 {
 private:
-    Microsoft::WRL::ComPtr<ID3D11Buffer> d3d11Buffer = nullptr;
+    D3D11_BUFFER_DESC desc_ = {};
+    Microsoft::WRL::ComPtr<ID3D11Buffer> d3d11Buffer;
 
 public:
-    ~CRCID3D11Buffer() override = default;
+    CRCID3D11Buffer() = default;
+    virtual ~CRCID3D11Buffer() override = default;
 
-    virtual void* GetMem() const override;
-    virtual std::size_t GetSize() const override;
+    virtual Microsoft::WRL::ComPtr<ID3D11Resource>& GetResource() override;
+    virtual const D3D11_BUFFER_DESC& GetDesc() override;
 
     friend class CRCID3D11BufferFactory;
 };
