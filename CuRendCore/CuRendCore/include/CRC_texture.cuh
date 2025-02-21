@@ -13,14 +13,15 @@
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
 
-class CRC_API CRC_TEXTURE_DESC : public IDESC
+class CRC_API CRC_TEXTURE2D_DESC : public IDESC
 {
 private:
     D3D11_TEXTURE2D_DESC desc_ = {};
     D3D11_SUBRESOURCE_DATA initialData_ = {};
 
 public:
-    ~CRC_TEXTURE_DESC() override = default;
+    CRC_TEXTURE2D_DESC(Microsoft::WRL::ComPtr<ID3D11Device>& device) : device_(device) {}
+    ~CRC_TEXTURE2D_DESC() override = default;
 
     Microsoft::WRL::ComPtr<ID3D11Device>& device_;
 

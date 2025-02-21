@@ -17,6 +17,8 @@ void CRCHostMem::Malloc(const UINT &byteWidth, const UINT &pitch, const UINT &sl
     slicePitch_ = slicePitch;
 
     CRC::CheckCuda(cudaMallocHost(&ptr_, byteWidth_));
+
+    CRC::CoutMsg("Host memory allocated.");
 }
 
 void CRCHostMem::Free()
@@ -29,6 +31,8 @@ void CRCHostMem::Free()
 
     CRC::CheckCuda(cudaFreeHost(ptr_));
     ptr_ = nullptr;
+
+    CRC::CoutMsg("Host memory free.");
 }
 
 CRCDeviceMem::~CRCDeviceMem()
@@ -45,6 +49,8 @@ void CRCDeviceMem::Malloc(const UINT &byteWidth, const UINT &pitch, const UINT &
     slicePitch_ = slicePitch;
 
     CRC::CheckCuda(cudaMalloc(&ptr_, byteWidth_));
+
+    CRC::CoutMsg("Device memory allocated.");
 }
 
 void CRCDeviceMem::Free()
@@ -57,4 +63,6 @@ void CRCDeviceMem::Free()
 
     CRC::CheckCuda(cudaFree(ptr_));
     ptr_ = nullptr;
+
+    CRC::CoutMsg("Device memory free.");
 }

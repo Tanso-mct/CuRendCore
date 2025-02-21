@@ -68,4 +68,7 @@ struct PairEqual
 
 CRC_API void CheckCuda(cudaError_t call);
 
+CRC_API void CoutTag();
+CRC_API void CoutMsg(const char* msg);
+
 }
