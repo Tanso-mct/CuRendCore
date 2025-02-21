@@ -17,12 +17,11 @@ HRESULT CRC::ShowWindowCRC(HWND& hWnd)
     return S_OK;
 }
 
-HRESULT CRC::CreateSwapChain(std::unique_ptr<ICRCContainable> &windowAttr)
-{
-    CRCWindowAttr* attr = CRC::As<CRCWindowAttr>(windowAttr.get());
-    if (!attr) return E_FAIL;
-    if (!attr->hWnd_) return E_FAIL;
-
+CRC_API HRESULT CRC::CreateDeviceAndSwapChain
+(
+    const HWND& hWnd,
+    Microsoft::WRL::ComPtr<ID3D11Device> &device, Microsoft::WRL::ComPtr<IDXGISwapChain> &swapChain
+){
     // Setup swap chain
     DXGI_SWAP_CHAIN_DESC sd;
     ZeroMemory(&sd, sizeof(sd));
@@ -34,7 +33,7 @@ HRESULT CRC::CreateSwapChain(std::unique_ptr<ICRCContainable> &windowAttr)
     sd.BufferDesc.RefreshRate.Denominator = 1;
     sd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
     sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-    sd.OutputWindow = attr->hWnd_;
+    sd.OutputWindow = hWnd;
     sd.SampleDesc.Count = 1;
     sd.SampleDesc.Quality = 0;
     sd.Windowed = TRUE;
@@ -47,7 +46,7 @@ HRESULT CRC::CreateSwapChain(std::unique_ptr<ICRCContainable> &windowAttr)
     HRESULT hr = D3D11CreateDeviceAndSwapChain
     (
         nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, createDeviceFlags, featureLevelArray, 2, 
-        D3D11_SDK_VERSION, &sd, &attr->swapChain_, &attr->device_, &featureLevel, nullptr
+        D3D11_SDK_VERSION, &sd, &swapChain, &device, &featureLevel, nullptr
     );
 
     if (hr == DXGI_ERROR_UNSUPPORTED) // Try high-performance WARP software driver if hardware is not available.
@@ -55,7 +54,7 @@ HRESULT CRC::CreateSwapChain(std::unique_ptr<ICRCContainable> &windowAttr)
         hr = D3D11CreateDeviceAndSwapChain
         (
             nullptr, D3D_DRIVER_TYPE_WARP, nullptr, createDeviceFlags, featureLevelArray, 2, 
-            D3D11_SDK_VERSION, &sd, &attr->swapChain_, &attr->device_, &featureLevel, nullptr
+            D3D11_SDK_VERSION, &sd, &swapChain, &device, &featureLevel, nullptr
         );
     }
 

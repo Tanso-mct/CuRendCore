@@ -44,7 +44,12 @@ std::unique_ptr<T> UniqueAs(std::unique_ptr<S>& source)
 }
 
 CRC_API HRESULT ShowWindowCRC(HWND& hWnd);
-CRC_API HRESULT CreateSwapChain(std::unique_ptr<ICRCContainable>& windowAttr);
+CRC_API HRESULT CreateDeviceAndSwapChain
+(
+    const HWND& hWnd,
+    Microsoft::WRL::ComPtr<ID3D11Device>& device,
+    Microsoft::WRL::ComPtr<IDXGISwapChain>& swapChain
+);
 
 UINT GetBytesPerPixel(const DXGI_FORMAT& format);
 
