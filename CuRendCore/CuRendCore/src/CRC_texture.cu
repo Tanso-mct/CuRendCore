@@ -5,7 +5,7 @@
 
 std::unique_ptr<ICRCContainable> CRCTexture2DFactory::Create(IDESC &desc) const
 {
-    CRC_TEXTURE_DESC* textureDesc = CRC::As<CRC_TEXTURE_DESC>(&desc);
+    CRC_TEXTURE2D_DESC* textureDesc = CRC::As<CRC_TEXTURE2D_DESC>(&desc);
     if (!textureDesc) return nullptr;
 
     std::unique_ptr<CRCTexture2D> texture = std::make_unique<CRCTexture2D>();
@@ -38,13 +38,15 @@ const void CRCTexture2D::GetDesc(D3D11_TEXTURE2D_DESC *dst)
 
 std::unique_ptr<ICRCContainable> CRCID3D11Texture2DFactory::Create(IDESC &desc) const
 {
-    CRC_TEXTURE_DESC* textureDesc = CRC::As<CRC_TEXTURE_DESC>(&desc);
+    CRC_TEXTURE2D_DESC* textureDesc = CRC::As<CRC_TEXTURE2D_DESC>(&desc);
     if (!textureDesc) return nullptr;
 
     std::unique_ptr<CRCID3D11Texture2D> texture = std::make_unique<CRCID3D11Texture2D>();
 
     D3D11_SUBRESOURCE_DATA* initialData = nullptr;
     if (textureDesc->SysMem()) initialData = &textureDesc->InitialData();
+
+    if (!textureDesc->device_) throw std::runtime_error("Device not set.");
 
     HRESULT hr = textureDesc->device_->CreateTexture2D
     (

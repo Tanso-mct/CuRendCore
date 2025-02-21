@@ -19,6 +19,7 @@ private:
     D3D11_SUBRESOURCE_DATA initialData_ = {};
 
 public:
+    CRC_BUFFER_DESC(Microsoft::WRL::ComPtr<ID3D11Device>& device) : device_(device) {}
     ~CRC_BUFFER_DESC() override = default;
 
     Microsoft::WRL::ComPtr<ID3D11Device>& device_;
