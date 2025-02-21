@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include "CRC_config.h"
-#include "CRC_funcs.h"
+#include "CRC_funcs.cuh"
 #include "CRC_event.h"
 #include "CRC_container.h"
 

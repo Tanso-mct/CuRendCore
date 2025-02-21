@@ -5,10 +5,19 @@
 #include <memory>
 #include <Windows.h>
 #include <utility>
+#include <iostream>
+#include <string_view>
+
+#include <d3d11.h>
+#include <wrl/client.h>
+#include <cuda_d3d11_interop.h>
+
+#include "cuda_runtime.h"
+#include "device_launch_parameters.h"
 
 class CRCCore;
-struct CRCWindowSrc; 
-struct CRCSceneSrc;
+class CRC_WINDOW_DESC; 
+struct CRC_SCENE_DESC;
 
 class ICRCContainable;
 class ICRCContainer;
@@ -19,7 +28,7 @@ namespace CRC
 {
 
 template <typename T, typename S>
-T* PtrAs(S* source)
+T* As(S* source)
 {
     T* target = dynamic_cast<T*>(source);
     return target;
@@ -34,15 +43,10 @@ std::unique_ptr<T> UniqueAs(std::unique_ptr<S>& source)
     else return nullptr;
 }
 
-CRC_API std::unique_ptr<ICRCContainable> CreateWindowAttr(std::unique_ptr<CRCWindowSrc> attr);
-CRC_API std::unique_ptr<ICRCContainable> CreateSceneAttr(std::unique_ptr<CRCSceneSrc> attr);
-
-CRC_API HRESULT CreateWindowCRC(std::unique_ptr<ICRCContainable>& windowAttr);
-CRC_API HRESULT ShowWindowCRC(std::unique_ptr<ICRCContainable>& windowAttr);
-
-CRC_API HRESULT CreateScene(std::unique_ptr<ICRCContainable>& sceneAttr);
-
+CRC_API HRESULT ShowWindowCRC(HWND& hWnd);
 CRC_API HRESULT CreateSwapChain(std::unique_ptr<ICRCContainable>& windowAttr);
+
+UINT GetBytesPerPixel(const DXGI_FORMAT& format);
 
 struct PairHash 
 {
@@ -61,5 +65,7 @@ struct PairEqual
         return lhs == rhs;
     }
 };
+
+CRC_API void CheckCuda(cudaError_t call);
 
 }

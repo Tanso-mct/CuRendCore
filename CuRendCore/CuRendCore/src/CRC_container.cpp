@@ -1,5 +1,5 @@
 ﻿#include "CRC_pch.h"
-#include "CRC_funcs.h"
+#include "CRC_funcs.cuh"
 
 #include "CRC_container.h"
 

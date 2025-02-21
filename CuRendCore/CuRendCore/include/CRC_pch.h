@@ -13,6 +13,11 @@
 #include <iostream>
 #include <chrono>
 #include <ctime>
+#include <stdexcept>
+#include <cassert>
+#include <cstddef>
+#include <stdexcept>
+#include <string_view>
 
 #include <d3d11.h>
 #include <wrl/client.h>

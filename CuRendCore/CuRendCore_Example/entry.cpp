@@ -22,13 +22,16 @@ int main()
      *****************************************************************************************************************/
     int idMainWindowAttr = CRC::ID_INVALID;
     {
-        // Create window by window attributes.
-        std::unique_ptr<CRCWindowSrc> src = std::make_unique<CRCWindowSrc>();
-        src->wcex_.lpszClassName = L"Main Window";
-        src->wcex_.lpfnWndProc = WindowProc;
-        src->name_ = L"Main Window";
-        src->hInstance =  GetModuleHandle(NULL);
-        std::unique_ptr<ICRCContainable> windowAttr = CRC::CreateWindowAttr(std::move(src));
+        // Create window factory.
+        CRCWindowFactory windowFactory;
+
+        // Create window attributes.
+        CRC_WINDOW_DESC desc = {};
+        desc.wcex_.lpszClassName = L"Main Window";
+        desc.wcex_.lpfnWndProc = WindowProc;
+        desc.name_ = L"Main Window";
+        desc.hInstance = GetModuleHandle(NULL);
+        std::unique_ptr<ICRCContainable> windowAttr = windowFactory.Create(desc);
 
         // Add window attribute to container.
         idMainWindowAttr = container->Add(std::move(windowAttr));
@@ -40,10 +43,13 @@ int main()
      *****************************************************************************************************************/
     int idMainSceneAttr = CRC::ID_INVALID;
     {
-        // Create scene by scene attributes.
-        std::unique_ptr<CRCSceneSrc> src = std::make_unique<CRCSceneSrc>();
-        src->name_ = "MainScene";
-        std::unique_ptr<ICRCContainable> sceneAttr = CRC::CreateSceneAttr(std::move(src));
+        // Create scene factory.
+        CRCSceneFactory sceneFactory;
+
+        // Create scene attributes.
+        CRC_SCENE_DESC desc = {};
+        desc.name_ = "MainScene";
+        std::unique_ptr<ICRCContainable> sceneAttr = sceneFactory.Create(desc);
 
         // Add scene to scene container.
         idMainSceneAttr = container->Add(std::move(sceneAttr));
@@ -64,22 +70,13 @@ int main()
     if (idUserInputAttr == CRC::ID_INVALID) return CRC::ERROR_CREATE_CONTAINER;
 
     /******************************************************************************************************************
-     * Create window, show window
+     * Show window
      *****************************************************************************************************************/
     HRESULT hr = S_OK;
 
-    hr = CRC::CreateWindowCRC(container->Get(idMainWindowAttr));
-    if (FAILED(hr)) return CRC::ERROR_CREATE_WINDOW;
-
-    hr = CRC::ShowWindowCRC(container->Get(idMainWindowAttr));
+    hr = CRC::ShowWindowCRC(CRC::As<CRCWindowAttr>(container->Get(idMainWindowAttr).get())->hWnd_);
     if (FAILED(hr)) return CRC::ERROR_SHOW_WINDOW;
 
-    /******************************************************************************************************************
-     * Create scene.
-     *****************************************************************************************************************/
-    hr = CRC::CreateScene(container->Get(idMainSceneAttr));
-    if (FAILED(hr)) return CRC::ERROR_CREATE_SCENE;
-    
     /******************************************************************************************************************
      * Create window message event set.
      *****************************************************************************************************************/
@@ -92,7 +89,7 @@ int main()
      *****************************************************************************************************************/
     {
         // Set key to windows message event caller.
-        HWND key = CRC::PtrAs<CRCWindowAttr>(container->Get(idMainWindowAttr).get())->hWnd_;
+        HWND key = CRC::As<CRCWindowAttr>(container->Get(idMainWindowAttr).get())->hWnd_;
         WinMsgEventSet.caller_->AddKey(key);
 
         // Move container to windows message event caller.

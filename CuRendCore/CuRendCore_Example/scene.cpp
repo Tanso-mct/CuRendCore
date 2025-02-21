@@ -13,7 +13,7 @@ MainSceneEvent::~MainSceneEvent()
 
 void MainSceneEvent::InputHandleExample(std::unique_ptr<ICRCContainable>& inputAttr)
 {
-    CRCUserInputAttr* input = CRC::PtrAs<CRCUserInputAttr>(inputAttr.get());
+    CRCUserInputAttr* input = CRC::As<CRCUserInputAttr>(inputAttr.get());
     if (!input) return;
 
     if (input->GetKeyState(CRC_KEY::W).isPressed)
