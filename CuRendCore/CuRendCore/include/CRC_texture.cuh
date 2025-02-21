@@ -39,14 +39,17 @@ public:
     UINT& MiscFlags() { return desc_.MiscFlags; }
 
     const void* SysMem() { return initialData_.pSysMem; }
-    UINT& SysMemPitch() { return initialData_.SysMemPitch; }
-    UINT& SysMemSlicePitch() { return initialData_.SysMemSlicePitch; }
 };
 
 class CRC_API ICRCTexture2D
 {
 public:
     virtual ~ICRCTexture2D() = default;
+
+    virtual const UINT& GetByteWidth() const = 0;
+    virtual const UINT& GetPitch() const = 0;
+    virtual const UINT& GetSlicePitch() const = 0;
+    virtual const void GetDesc(D3D11_TEXTURE2D_DESC* dst) = 0;
 };
 
 class CRC_API CRCTexture2DFactory : public ICRCFactory
@@ -67,11 +70,11 @@ public:
     ~CRCTexture2D() override = default;
 
     virtual void* const GetMem() const override { return dMem.get(); }
+
     virtual const UINT& GetByteWidth() const override { return dMem->GetByteWidth(); }
     virtual const UINT& GetPitch() const override { return dMem->GetPitch(); }
     virtual const UINT& GetSlicePitch() const override { return dMem->GetSlicePitch(); }
-
-    virtual const D3D11_TEXTURE2D_DESC& GetDesc() { return desc_; }
+    virtual const void GetDesc(D3D11_TEXTURE2D_DESC* dst) override;
 
     friend class CRCTexture2DFactory;
 };
@@ -94,7 +97,11 @@ public:
     ~CRCID3D11Texture2D() override = default;
 
     virtual Microsoft::WRL::ComPtr<ID3D11Resource>& GetResource() override;
-    virtual const D3D11_TEXTURE2D_DESC& GetDesc();
+
+    virtual const UINT& GetByteWidth() const override;
+    virtual const UINT& GetPitch() const override;
+    virtual const UINT& GetSlicePitch() const override;
+    virtual const void GetDesc(D3D11_TEXTURE2D_DESC* dst) override;
 
     friend class CRCID3D11Texture2DFactory;
 };

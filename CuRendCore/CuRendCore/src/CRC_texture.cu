@@ -15,7 +15,7 @@ std::unique_ptr<ICRCContainable> CRCTexture2DFactory::Create(IDESC &desc) const
     (
         CRC::GetBytesPerPixel(textureDesc->Format()) * textureDesc->Width() * textureDesc->Height(),
         CRC::GetBytesPerPixel(textureDesc->Format()) * textureDesc->Width(),
-        0
+        CRC::GetBytesPerPixel(textureDesc->Format()) * textureDesc->Width() * textureDesc->Height()
     );
 
     if (textureDesc->SysMem())
@@ -29,6 +29,11 @@ std::unique_ptr<ICRCContainable> CRCTexture2DFactory::Create(IDESC &desc) const
     texture->desc_ = textureDesc->Desc();
 
     return texture;
+}
+
+const void CRCTexture2D::GetDesc(D3D11_TEXTURE2D_DESC *dst)
+{
+    std::memcpy(dst, &desc_, sizeof(D3D11_TEXTURE2D_DESC));
 }
 
 std::unique_ptr<ICRCContainable> CRCID3D11Texture2DFactory::Create(IDESC &desc) const
@@ -58,8 +63,31 @@ Microsoft::WRL::ComPtr<ID3D11Resource> &CRCID3D11Texture2D::GetResource()
     return resource;
 }
 
-const D3D11_TEXTURE2D_DESC &CRCID3D11Texture2D::GetDesc()
+const UINT &CRCID3D11Texture2D::GetByteWidth() const
 {
-    d3d11Texture2D->GetDesc(&desc_);
-    return desc_;
+    D3D11_TEXTURE2D_DESC desc;
+    d3d11Texture2D->GetDesc(&desc);
+
+    return CRC::GetBytesPerPixel(desc.Format) * desc.Width * desc.Height;
+}
+
+const UINT &CRCID3D11Texture2D::GetPitch() const
+{
+    D3D11_TEXTURE2D_DESC desc;
+    d3d11Texture2D->GetDesc(&desc);
+
+    return CRC::GetBytesPerPixel(desc.Format) * desc.Width;
+}
+
+const UINT &CRCID3D11Texture2D::GetSlicePitch() const
+{
+    D3D11_TEXTURE2D_DESC desc;
+    d3d11Texture2D->GetDesc(&desc);
+
+    return CRC::GetBytesPerPixel(desc.Format) * desc.Width * desc.Height;
+}
+
+const void CRCID3D11Texture2D::GetDesc(D3D11_TEXTURE2D_DESC *dst)
+{
+    d3d11Texture2D->GetDesc(dst);
 }

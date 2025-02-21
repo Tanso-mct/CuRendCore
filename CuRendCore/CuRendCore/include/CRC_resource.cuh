@@ -20,11 +20,7 @@ class CRC_API ICRCCudaResource : public ICRCResource
 {
 public:
     virtual ~ICRCCudaResource() = default;
-
     virtual void* const GetMem() const = 0;
-    virtual const UINT& GetByteWidth() const = 0;
-    virtual const UINT& GetPitch() const = 0;
-    virtual const UINT& GetSlicePitch() const = 0;
 };
 
 class CRC_API ICRCD3D11Resource : public ICRCResource

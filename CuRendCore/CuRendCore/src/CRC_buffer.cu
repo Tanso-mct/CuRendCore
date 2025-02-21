@@ -11,7 +11,7 @@ std::unique_ptr<ICRCContainable> CRCBufferFactory::Create(IDESC &desc) const
     std::unique_ptr<CRCBuffer> buffer = std::make_unique<CRCBuffer>();
     buffer->dMem = std::make_unique<CRCDeviceMem>();
 
-    buffer->dMem->Malloc(bufferDesc->ByteWidth(), bufferDesc->SysMemPitch(), bufferDesc->SysMemSlicePitch());
+    buffer->dMem->Malloc(bufferDesc->ByteWidth(), 1, 1);
     
     if (bufferDesc->SysMem())
     {
@@ -25,6 +25,12 @@ std::unique_ptr<ICRCContainable> CRCBufferFactory::Create(IDESC &desc) const
 
     return buffer;
 }
+
+const void CRCBuffer::GetDesc(D3D11_BUFFER_DESC *dst)
+{
+    std::memcpy(dst, &desc_, sizeof(D3D11_BUFFER_DESC));
+}
+
 
 std::unique_ptr<ICRCContainable> CRCID3D11BufferFactory::Create(IDESC &desc) const
 {
@@ -53,8 +59,15 @@ Microsoft::WRL::ComPtr<ID3D11Resource> &CRCID3D11Buffer::GetResource()
     return resource;
 }
 
-const D3D11_BUFFER_DESC &CRCID3D11Buffer::GetDesc()
+const UINT &CRCID3D11Buffer::GetByteWidth() const
 {
-    d3d11Buffer->GetDesc(&desc_);
-    return desc_;
+    D3D11_BUFFER_DESC desc;
+    d3d11Buffer->GetDesc(&desc);
+
+    return desc.ByteWidth;
+}
+
+const void CRCID3D11Buffer::GetDesc(D3D11_BUFFER_DESC *dst)
+{
+    d3d11Buffer->GetDesc(dst);
 }

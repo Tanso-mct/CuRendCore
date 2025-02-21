@@ -34,15 +34,15 @@ public:
     UINT& StructureByteStride() { return desc_.StructureByteStride; }
 
     const void* SysMem() { return initialData_.pSysMem; }
-    UINT& SysMemPitch() { return initialData_.SysMemPitch; }
-    UINT& SysMemSlicePitch() { return initialData_.SysMemSlicePitch; }
 };
 
 class CRC_API CRCIBuffer
 {
 public:
     virtual ~CRCIBuffer() = default;
-    virtual const D3D11_BUFFER_DESC& GetDesc() = 0;
+
+    virtual const UINT& GetByteWidth() const = 0;
+    virtual const void GetDesc(D3D11_BUFFER_DESC* dst) = 0;
 };
 
 class CRC_API CRCBufferFactory : public ICRCFactory
@@ -63,11 +63,9 @@ public:
     virtual ~CRCBuffer() override = default;
 
     virtual void* const GetMem() const override { return dMem.get(); }
-    virtual const UINT& GetByteWidth() const override { return dMem->GetByteWidth(); }
-    virtual const UINT& GetPitch() const override { return dMem->GetPitch(); }
-    virtual const UINT& GetSlicePitch() const override { return dMem->GetSlicePitch(); }
 
-    virtual const D3D11_BUFFER_DESC& GetDesc() override { return desc_; }
+    virtual const UINT& GetByteWidth() const override { return dMem->GetByteWidth(); }
+    virtual const void GetDesc(D3D11_BUFFER_DESC* dst) override;
 
     friend class CRCBufferFactory;
 };
@@ -82,7 +80,6 @@ public:
 class CRC_API CRCID3D11Buffer : public ICRCContainable, public ICRCD3D11Resource, public CRCIBuffer
 {
 private:
-    D3D11_BUFFER_DESC desc_ = {};
     Microsoft::WRL::ComPtr<ID3D11Buffer> d3d11Buffer;
 
 public:
@@ -90,7 +87,9 @@ public:
     virtual ~CRCID3D11Buffer() override = default;
 
     virtual Microsoft::WRL::ComPtr<ID3D11Resource>& GetResource() override;
-    virtual const D3D11_BUFFER_DESC& GetDesc() override;
+
+    virtual const UINT& GetByteWidth() const override;
+    virtual const void GetDesc(D3D11_BUFFER_DESC* dst) override;
 
     friend class CRCID3D11BufferFactory;
 };
