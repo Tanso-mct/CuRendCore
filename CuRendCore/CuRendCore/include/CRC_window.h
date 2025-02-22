@@ -56,6 +56,6 @@ public:
 
     HWND hWnd_ = nullptr;
 
-    Microsoft::WRL::ComPtr<ID3D11Device> device_ = nullptr;
+    Microsoft::WRL::ComPtr<ID3D11Device> d3d11Device_ = nullptr;
     Microsoft::WRL::ComPtr<IDXGISwapChain> swapChain_ = nullptr;
 };

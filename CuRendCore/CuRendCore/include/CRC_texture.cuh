@@ -20,10 +20,10 @@ private:
     D3D11_SUBRESOURCE_DATA initialData_ = {};
 
 public:
-    CRC_TEXTURE2D_DESC(Microsoft::WRL::ComPtr<ID3D11Device>& device) : device_(device) {}
+    CRC_TEXTURE2D_DESC(Microsoft::WRL::ComPtr<ID3D11Device>& device) : d3d11Device_(device) {}
     ~CRC_TEXTURE2D_DESC() override = default;
 
-    Microsoft::WRL::ComPtr<ID3D11Device>& device_;
+    Microsoft::WRL::ComPtr<ID3D11Device>& d3d11Device_;
 
     D3D11_TEXTURE2D_DESC& Desc() { return desc_; }
     D3D11_SUBRESOURCE_DATA& InitialData() { return initialData_; }
@@ -53,10 +53,10 @@ public:
     virtual const void GetDesc(D3D11_TEXTURE2D_DESC* dst) = 0;
 };
 
-class CRC_API CRCTexture2DFactory : public ICRCFactory
+class CRC_API CRCTexture2DFactoryL0_0 : public ICRCFactory
 {
 public:
-    ~CRCTexture2DFactory() override = default;
+    ~CRCTexture2DFactoryL0_0() override = default;
     virtual std::unique_ptr<ICRCContainable> Create(IDESC& desc) const override;
 };
 
@@ -77,13 +77,13 @@ public:
     virtual const UINT& GetSlicePitch() const override { return dMem->GetSlicePitch(); }
     virtual const void GetDesc(D3D11_TEXTURE2D_DESC* dst) override;
 
-    friend class CRCTexture2DFactory;
+    friend class CRCTexture2DFactoryL0_0;
 };
 
-class CRC_API CRCID3D11Texture2DFactory : public ICRCFactory
+class CRC_API CRCID3D11Texture2DFactoryL0_0 : public ICRCFactory
 {
 public:
-    ~CRCID3D11Texture2DFactory() override = default;
+    ~CRCID3D11Texture2DFactoryL0_0() override = default;
     virtual std::unique_ptr<ICRCContainable> Create(IDESC& desc) const override;
 };
 
@@ -104,5 +104,5 @@ public:
     virtual const UINT& GetSlicePitch() const override;
     virtual const void GetDesc(D3D11_TEXTURE2D_DESC* dst) override;
 
-    friend class CRCID3D11Texture2DFactory;
+    friend class CRCID3D11Texture2DFactoryL0_0;
 };

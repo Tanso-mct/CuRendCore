@@ -7,6 +7,9 @@
 #include "CRC_container.h"
 #include "CRC_event.h"
 
+#include "CRC_device.cuh"
+#include "CRC_swap_chain.cuh"
+
 HRESULT CRC::ShowWindowCRC(HWND& hWnd)
 {
     if (!hWnd) return E_FAIL;
@@ -17,7 +20,7 @@ HRESULT CRC::ShowWindowCRC(HWND& hWnd)
     return S_OK;
 }
 
-CRC_API HRESULT CRC::CreateDeviceAndSwapChain
+CRC_API HRESULT CRC::CreateD3D11DeviceAndSwapChain
 (
     const HWND& hWnd,
     Microsoft::WRL::ComPtr<ID3D11Device> &device, Microsoft::WRL::ComPtr<IDXGISwapChain> &swapChain
@@ -59,6 +62,14 @@ CRC_API HRESULT CRC::CreateDeviceAndSwapChain
     }
 
     return hr;
+}
+
+CRC_API HRESULT CRC::CreateCRCDeviceAndSwapChain
+(
+    Microsoft::WRL::ComPtr<ID3D11Device> &d3d11Device, Microsoft::WRL::ComPtr<IDXGISwapChain> &d3d11SwapChain, 
+    std::unique_ptr<ICRCDevice> &crcDevice, std::unique_ptr<ICRCSwapChain> crcSwapChain
+){
+    return E_NOTIMPL;
 }
 
 UINT CRC::GetBytesPerPixel(const DXGI_FORMAT &format)

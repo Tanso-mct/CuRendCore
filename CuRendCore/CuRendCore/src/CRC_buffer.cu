@@ -3,7 +3,7 @@
 
 #include "CRC_buffer.cuh"
 
-std::unique_ptr<ICRCContainable> CRCBufferFactory::Create(IDESC &desc) const
+std::unique_ptr<ICRCContainable> CRCBufferFactoryL0_0::Create(IDESC &desc) const
 {
     CRC_BUFFER_DESC* bufferDesc = CRC::As<CRC_BUFFER_DESC>(&desc);
     if (!bufferDesc) return nullptr;
@@ -31,7 +31,7 @@ const void CRCBuffer::GetDesc(D3D11_BUFFER_DESC *dst)
     std::memcpy(dst, &desc_, sizeof(D3D11_BUFFER_DESC));
 }
 
-std::unique_ptr<ICRCContainable> CRCID3D11BufferFactory::Create(IDESC &desc) const
+std::unique_ptr<ICRCContainable> CRCID3D11BufferFactoryL0_0::Create(IDESC &desc) const
 {
     CRC_BUFFER_DESC* bufferDesc = CRC::As<CRC_BUFFER_DESC>(&desc);
     if (!bufferDesc) return nullptr;
@@ -41,9 +41,9 @@ std::unique_ptr<ICRCContainable> CRCID3D11BufferFactory::Create(IDESC &desc) con
     D3D11_SUBRESOURCE_DATA* initialData = nullptr;
     if (bufferDesc->SysMem()) initialData = &bufferDesc->InitialData();
 
-    if (!bufferDesc->device_) throw std::runtime_error("Device not set.");
+    if (!bufferDesc->d3d11Device_) throw std::runtime_error("Device not set.");
 
-    HRESULT hr = bufferDesc->device_->CreateBuffer
+    HRESULT hr = bufferDesc->d3d11Device_->CreateBuffer
     (
         &bufferDesc->Desc(), initialData, buffer->d3d11Buffer.GetAddressOf()
     );

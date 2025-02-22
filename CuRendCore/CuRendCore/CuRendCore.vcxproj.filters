@@ -136,5 +136,11 @@
     <CudaCompile Include="include\CRC_memory.cuh">
       <Filter>ヘッダー ファイル</Filter>
     </CudaCompile>
+    <CudaCompile Include="src\CRC_swap_chain.cu">
+      <Filter>ソース ファイル</Filter>
+    </CudaCompile>
+    <CudaCompile Include="include\CRC_swap_chain.cuh">
+      <Filter>ヘッダー ファイル</Filter>
+    </CudaCompile>
   </ItemGroup>
 </Project>

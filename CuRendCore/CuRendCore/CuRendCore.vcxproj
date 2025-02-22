@@ -57,6 +57,7 @@
     <ClInclude Include="include\CRC_scene.h" />
     <CudaCompile Include="include\CRC_texture.cuh" />
     <CudaCompile Include="include\CRC_srv.cuh" />
+    <CudaCompile Include="include\CRC_swap_chain.cuh" />
     <ClInclude Include="include\CRC_user_input.h" />
     <CudaCompile Include="include\CRC_view.cuh" />
     <ClInclude Include="include\CRC_window.h" />
@@ -69,6 +70,7 @@
     <CudaCompile Include="src\CRC_resource.cu" />
     <CudaCompile Include="src\CRC_rtv.cu" />
     <CudaCompile Include="src\CRC_srv.cu" />
+    <CudaCompile Include="src\CRC_swap_chain.cu" />
     <CudaCompile Include="src\CRC_texture.cu" />
   </ItemGroup>
   <ItemGroup>

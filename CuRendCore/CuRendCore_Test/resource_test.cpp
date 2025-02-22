@@ -5,7 +5,7 @@ TEST(CuRendCore, CreateBuffer)
 {
     Microsoft::WRL::ComPtr<ID3D11Device> device;
 
-    CRCBufferFactory factory;
+    CRCBufferFactoryL0_0 factory;
     CRC_BUFFER_DESC desc(device);
     desc.ByteWidth() = 1024;
 
@@ -18,7 +18,7 @@ TEST(CuRendCore, CreateTexture2D)
 {
     Microsoft::WRL::ComPtr<ID3D11Device> device;
 
-    CRCTexture2DFactory factory;
+    CRCTexture2DFactoryL0_0 factory;
     CRC_TEXTURE2D_DESC desc(device);
     desc.Width() = 1920;
     desc.Height() = 1080;
