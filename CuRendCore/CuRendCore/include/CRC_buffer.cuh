@@ -37,10 +37,10 @@ public:
     const void* SysMem() { return initialData_.pSysMem; }
 };
 
-class CRC_API CRCIBuffer
+class CRC_API ICRCBuffer
 {
 public:
-    virtual ~CRCIBuffer() = default;
+    virtual ~ICRCBuffer() = default;
 
     virtual const UINT& GetByteWidth() const = 0;
     virtual const void GetDesc(D3D11_BUFFER_DESC* dst) = 0;
@@ -53,7 +53,7 @@ public:
     virtual std::unique_ptr<ICRCContainable> Create(IDESC& desc) const override;
 };
 
-class CRC_API CRCBuffer : public ICRCContainable, public ICRCCudaResource, public CRCIBuffer
+class CRC_API CRCBuffer : public ICRCContainable, public ICRCCudaResource, public ICRCBuffer
 {
 private:
     D3D11_BUFFER_DESC desc_ = {};
@@ -78,7 +78,7 @@ public:
     virtual std::unique_ptr<ICRCContainable> Create(IDESC& desc) const override;
 };
 
-class CRC_API CRCID3D11Buffer : public ICRCContainable, public ICRCD3D11Resource, public CRCIBuffer
+class CRC_API CRCID3D11Buffer : public ICRCContainable, public ICRCD3D11Resource, public ICRCBuffer
 {
 private:
     Microsoft::WRL::ComPtr<ID3D11Buffer> d3d11Buffer;
