@@ -17,7 +17,8 @@ class CRC_API ICRCMem
 public:
     virtual ~ICRCMem() = default;
 
-    virtual operator void* const() = 0;
+    virtual void* Get() = 0;
+    virtual void*& GetPtr() = 0;
 
     virtual const UINT& GetByteWidth() const = 0;
     virtual const UINT& GetPitch() const = 0;
@@ -39,7 +40,8 @@ public:
     CRCHostMem() = default;
     ~CRCHostMem() override;
 
-    operator void* const() override { return ptr_; }
+    virtual void* Get() override { return ptr_; }
+    virtual void*& GetPtr() override { return ptr_; }
 
     const UINT& GetByteWidth() const override { return byteWidth_; }
     const UINT& GetPitch() const override { return pitch_; }
@@ -61,7 +63,8 @@ public:
     CRCDeviceMem() = default;
     ~CRCDeviceMem() override;
 
-    operator void* const() override { return ptr_; }
+    virtual void* Get() override { return ptr_; }
+    virtual void*& GetPtr() override { return ptr_; }
 
     const UINT& GetByteWidth() const override { return byteWidth_; }
     const UINT& GetPitch() const override { return pitch_; }

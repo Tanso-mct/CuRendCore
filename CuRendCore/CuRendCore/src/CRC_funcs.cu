@@ -40,7 +40,7 @@ CRC_API HRESULT CRC::CreateD3D11DeviceAndSwapChain
     sd.SampleDesc.Count = 1;
     sd.SampleDesc.Quality = 0;
     sd.Windowed = TRUE;
-    sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
+    sd.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
 
     UINT createDeviceFlags = 0;
     D3D_FEATURE_LEVEL featureLevel;
@@ -95,4 +95,73 @@ CRC_API void CRC::CheckCuda(cudaError_t call)
 #endif
         throw std::runtime_error(err);
     }
+}
+
+HRESULT CRC::RegisterCudaResource
+(
+    std::vector<cudaGraphicsResource_t>& cudaResources,
+    UINT bufferCount,
+    IDXGISwapChain* d3d11SwapChain
+){
+    cudaResources.resize(bufferCount);
+    std::vector<ID3D11Texture2D*> buffers(bufferCount);
+
+    DXGI_SWAP_CHAIN_DESC desc;
+    d3d11SwapChain->GetDesc(&desc);
+    UINT bufferCountFromDesc = desc.BufferCount;
+
+    for (UINT i = 0; i < bufferCountFromDesc; i++)
+    {
+        HRESULT hr = d3d11SwapChain->GetBuffer(i, __uuidof(ID3D11Texture2D), (void**)&buffers[i]);
+        if (FAILED(hr)) return hr;
+
+        cudaError_t err = cudaGraphicsD3D11RegisterResource
+        (
+            &cudaResources[i], buffers[i], cudaGraphicsRegisterFlagsNone
+        );
+        if (err != cudaSuccess) return E_FAIL;
+    }
+
+    for (int i = 0; i < bufferCountFromDesc; i++)
+    {
+        buffers[i]->Release();
+    }
+
+    return S_OK;
+}
+
+HRESULT CRC::UnregisterCudaResource(std::vector<cudaGraphicsResource_t>& cudaResources)
+{
+    for (int i = 0; i < cudaResources.size(); ++i) 
+    {
+        cudaError_t err = cudaGraphicsUnregisterResource(cudaResources[i]);
+        if (err != cudaSuccess) return E_FAIL;
+    }
+
+    return S_OK;
+}
+
+HRESULT CRC::MapCudaResource(cudaGraphicsResource_t& cudaResource, cudaStream_t stream)
+{
+    cudaError_t err = cudaGraphicsMapResources(1, &cudaResource, stream);
+    if (err != cudaSuccess) return E_FAIL;
+
+    return S_OK;
+}
+
+HRESULT CRC::UnmapCudaResource(cudaGraphicsResource_t& cudaResource, cudaStream_t stream)
+{
+    cudaError_t err = cudaGraphicsUnmapResources(1, &cudaResource, stream);
+    if (err != cudaSuccess) return E_FAIL;
+
+    return S_OK;
+}
+
+cudaArray_t CRC::GetCudaMappedArray(cudaGraphicsResource_t& cudaResource)
+{
+    cudaArray_t cudaArray;
+    cudaError_t err = cudaGraphicsSubResourceGetMappedArray(&cudaArray, cudaResource, 0, 0);
+    if (err != cudaSuccess) return nullptr;
+
+    return cudaArray;
 }

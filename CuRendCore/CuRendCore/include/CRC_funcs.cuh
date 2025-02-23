@@ -8,6 +8,7 @@
 #include <iostream>
 #include <string_view>
 #include <initializer_list>
+#include <vector>
 
 #include <d3d11.h>
 #include <wrl/client.h>
@@ -106,5 +107,15 @@ CRC_API void CoutWarning(Args&... args)
     (void)std::initializer_list<int>{(std::cout << args << " ", 0)...};
     std::cout << std::endl << CRC::C_COLOR_WARNING << CRC::C_TAG_END << CRC::C_COLOR_RESET << std::endl;
 }
+
+HRESULT RegisterCudaResource
+(
+    std::vector<cudaGraphicsResource_t>& cudaResources, UINT bufferCount,IDXGISwapChain* d3d11SwapChain
+);
+HRESULT UnregisterCudaResource(std::vector<cudaGraphicsResource_t>& cudaResources);
+
+HRESULT MapCudaResource(cudaGraphicsResource_t& cudaResource, cudaStream_t stream = 0);
+HRESULT UnmapCudaResource(cudaGraphicsResource_t& cudaResource, cudaStream_t stream = 0);
+cudaArray_t GetCudaMappedArray(cudaGraphicsResource_t& cudaResource);
 
 }

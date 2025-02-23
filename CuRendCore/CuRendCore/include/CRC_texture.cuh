@@ -64,20 +64,20 @@ class CRC_API CRCTexture2D : public ICRCContainable, public ICRCCudaResource, pu
 {
 private:
     D3D11_TEXTURE2D_DESC desc_ = {};
-    std::unique_ptr<ICRCMem> dMem = nullptr;
+    std::unique_ptr<ICRCMem> dMem_ = nullptr;
 
 public:
-    CRCTexture2D() = default;
+    CRCTexture2D();
+    CRCTexture2D(CRC_TEXTURE2D_DESC& desc);
     ~CRCTexture2D() override = default;
 
-    virtual void* const GetMem() const override { return dMem.get(); }
+    virtual void* const Get() const { return dMem_->Get(); }
+    virtual void*& GetPtr() { return dMem_->GetPtr(); }
 
-    virtual const UINT& GetByteWidth() const override { return dMem->GetByteWidth(); }
-    virtual const UINT& GetPitch() const override { return dMem->GetPitch(); }
-    virtual const UINT& GetSlicePitch() const override { return dMem->GetSlicePitch(); }
+    virtual const UINT& GetByteWidth() const override { return dMem_->GetByteWidth(); }
+    virtual const UINT& GetPitch() const override { return dMem_->GetPitch(); }
+    virtual const UINT& GetSlicePitch() const override { return dMem_->GetSlicePitch(); }
     virtual const void GetDesc(D3D11_TEXTURE2D_DESC* dst) override;
-
-    friend class CRCTexture2DFactoryL0_0;
 };
 
 class CRC_API CRCID3D11Texture2DFactoryL0_0 : public ICRCFactory
@@ -91,18 +91,17 @@ class CRC_API CRCID3D11Texture2D : public ICRCContainable, public ICRCD3D11Resou
 {
 private:
     D3D11_TEXTURE2D_DESC desc_ = {};
-    Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11Texture2D;
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11Texture2D_;
 
 public:
     CRCID3D11Texture2D() = default;
     ~CRCID3D11Texture2D() override = default;
 
-    virtual Microsoft::WRL::ComPtr<ID3D11Resource>& GetResource() override;
+    virtual Microsoft::WRL::ComPtr<ID3D11Resource>& GetResource();
+    virtual Microsoft::WRL::ComPtr<ID3D11Texture2D>& Get() { return d3d11Texture2D_; }
 
     virtual const UINT& GetByteWidth() const override;
     virtual const UINT& GetPitch() const override;
     virtual const UINT& GetSlicePitch() const override;
     virtual const void GetDesc(D3D11_TEXTURE2D_DESC* dst) override;
-
-    friend class CRCID3D11Texture2DFactoryL0_0;
 };
