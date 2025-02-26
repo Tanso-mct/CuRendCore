@@ -10,7 +10,7 @@ std::unique_ptr<ICRCContainable> CRCSwapChainFactoryL0_0::Create(IDESC &desc) co
 
     std::unique_ptr<CRCSwapChain> swapChain = std::make_unique<CRCSwapChain>
     (
-        swapChainDesc->GetD3D11SwapChain(), swapChainDesc->GetDxgiDesc()
+        swapChainDesc->d3d11SwapChain_, swapChainDesc->GetDxgiDesc()
     );
 
     return swapChain;
@@ -127,7 +127,7 @@ std::unique_ptr<ICRCContainable> CRCIDXGISwapChainFactoryL0_0::Create(IDESC &des
 
     std::unique_ptr<CRCIDXGISwapChain> swapChain = std::make_unique<CRCIDXGISwapChain>
     (
-        swapChainDesc->GetD3D11SwapChain()
+        swapChainDesc->d3d11SwapChain_
     );
 
     return swapChain;

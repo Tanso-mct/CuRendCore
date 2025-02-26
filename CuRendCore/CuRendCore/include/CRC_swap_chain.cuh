@@ -17,13 +17,12 @@ class CRC_API CRC_SWAP_CHAIN_DESC : public IDESC
 {
 private:
     DXGI_SWAP_CHAIN_DESC desc_ = {};
-    Microsoft::WRL::ComPtr<IDXGISwapChain>& d3d11SwapChain_;
 
 public:
     CRC_SWAP_CHAIN_DESC(Microsoft::WRL::ComPtr<IDXGISwapChain>& d3d11SwapChain) : d3d11SwapChain_(d3d11SwapChain) {}
     ~CRC_SWAP_CHAIN_DESC() override = default;
 
-    Microsoft::WRL::ComPtr<IDXGISwapChain>& GetD3D11SwapChain() { return d3d11SwapChain_; }
+    Microsoft::WRL::ComPtr<IDXGISwapChain>& d3d11SwapChain_;
     DXGI_SWAP_CHAIN_DESC& GetDxgiDesc() { return desc_; }
 };
 
