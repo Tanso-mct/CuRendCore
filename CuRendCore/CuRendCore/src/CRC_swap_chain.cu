@@ -29,31 +29,13 @@ CRCSwapChain::CRCSwapChain
         cudaResources_, cudaGraphicsRegisterFlagsNone,
         bufferCount_, d3d11SwapChain_.Get()
     );
-    if (FAILED(hr))
-    {
-#ifndef NDEBUG
-        CRC::CoutError("Failed to create CRCSwapChain by registering CUDA resources.");
-#endif
-        throw std::runtime_error("Failed to create CRCSwapChain by registering CUDA resources.");
-    }
+    if (FAILED(hr)) throw std::runtime_error("Failed to create CRCSwapChain by registering CUDA resources.");
 
     hr = CRC::MapCudaResource(cudaResources_[frameIndex_]);
-    if (FAILED(hr))
-    {
-#ifndef NDEBUG
-        CRC::CoutError("Failed to create CRCSwapChain by mapping CUDA resources.");
-#endif
-        throw std::runtime_error("Failed to create CRCSwapChain by mapping CUDA resources.");
-    }
+    if (FAILED(hr)) throw std::runtime_error("Failed to create CRCSwapChain by mapping CUDA resources.");
 
     cudaArray_t backBufferArray = CRC::GetCudaMappedArray(cudaResources_[frameIndex_]);
-    if (!backBufferArray)
-    {
-#ifndef NDEBUG
-        CRC::CoutError("Failed to create CRCSwapChain by getting CUDA mapped array.");
-#endif
-        throw std::runtime_error("Failed to create CRCSwapChain by getting CUDA mapped array.");
-    }
+    if (!backBufferArray) throw std::runtime_error("Failed to create CRCSwapChain by getting CUDA mapped array.");
 
     backBuffer_ = std::make_unique<CRCTexture2D>();
     backBuffer_->GetPtr() = (void*)backBufferArray;
@@ -61,8 +43,11 @@ CRCSwapChain::CRCSwapChain
 
 CRCSwapChain::~CRCSwapChain()
 {
-    CRC::UnmapCudaResource(cudaResources_[frameIndex_]);
+    HRESULT hr = CRC::UnmapCudaResource(cudaResources_[frameIndex_]);
+    if (FAILED(hr)) throw std::runtime_error("Failed to destroy CRCSwapChain by unmapping CUDA resources.");
+
     CRC::UnregisterCudaResourcesAtSwapChain(cudaResources_, d3d11SwapChain_, frameIndex_, bufferCount_);
+    if (FAILED(hr)) throw std::runtime_error("Failed to destroy CRCSwapChain by unregistering CUDA resources.");
 
     backBuffer_->GetPtr() = nullptr;
     backBuffer_.reset();

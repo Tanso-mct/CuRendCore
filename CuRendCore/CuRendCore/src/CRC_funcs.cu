@@ -87,19 +87,35 @@ HRESULT CRC::RegisterCudaResources
     for (UINT i = 0; i < bufferCountFromDesc; i++)
     {
         HRESULT hr = d3d11SwapChain->GetBuffer(i, __uuidof(ID3D11Texture2D), (void**)&buffers[i]);
-        if (FAILED(hr)) return hr;
+        if (FAILED(hr))
+        {
+#ifndef NDEBUG
+            CoutError("Failed to get buffers from DXGI swap chain.");
+#endif
+            return E_FAIL;
+        }
 
         cudaError_t err = cudaGraphicsD3D11RegisterResource
         (
             &cudaResources[i], buffers[i], flags
         );
-        if (err != cudaSuccess) return E_FAIL;
+        if (err != cudaSuccess)
+        {
+#ifndef NDEBUG
+            CoutError("Failed to register CUDA resources.");
+#endif
+            return E_FAIL;
+        }
     }
 
     for (int i = 0; i < bufferCountFromDesc; i++)
     {
         buffers[i]->Release();
     }
+
+#ifndef NDEBUG
+    Cout("Registered CUDA resources.");
+#endif
 
     return S_OK;
 }
@@ -110,7 +126,17 @@ HRESULT CRC::RegisterCudaResource
     ID3D11Texture2D *d3d11Texture
 ){
     cudaError_t err = cudaGraphicsD3D11RegisterResource(&cudaResource, d3d11Texture, flags);
-    if (err != cudaSuccess) return E_FAIL;
+    if (err != cudaSuccess)
+    {
+#ifndef NDEBUG
+        CoutError("Failed to register CUDA resource.");
+#endif
+        return E_FAIL;
+    }
+
+#ifndef NDEBUG
+    Cout("Registered CUDA resource.");
+#endif
 
     return S_OK;
 }
@@ -120,8 +146,18 @@ HRESULT CRC::UnregisterCudaResources(std::vector<cudaGraphicsResource_t> &cudaRe
     for (int i = 0; i < cudaResources.size(); ++i) 
     {
         cudaError_t err = cudaGraphicsUnregisterResource(cudaResources[i]);
-        if (err != cudaSuccess) return E_FAIL;
+        if (err != cudaSuccess)
+        {
+#ifndef NDEBUG
+            CoutError("Failed to unregister CUDA resources.");
+#endif
+            return E_FAIL;
+        }
     }
+
+#ifndef NDEBUG
+    Cout("Unregistered CUDA resources.");
+#endif
 
     return S_OK;
 }
@@ -129,7 +165,17 @@ HRESULT CRC::UnregisterCudaResources(std::vector<cudaGraphicsResource_t> &cudaRe
 HRESULT CRC::UnregisterCudaResource(cudaGraphicsResource_t &cudaResource)
 {
     cudaError_t err = cudaGraphicsUnregisterResource(cudaResource);
-    if (err != cudaSuccess) return E_FAIL;
+    if (err != cudaSuccess)
+    {
+#ifndef NDEBUG
+        CoutError("Failed to unregister CUDA resource.");
+#endif
+        return E_FAIL;
+    }
+
+#ifndef NDEBUG
+    Cout("Unregistered CUDA resource.");
+#endif
 
     return S_OK;
 }
@@ -144,14 +190,30 @@ HRESULT CRC::UnregisterCudaResourcesAtSwapChain
         if (i == frameIndex) continue;
 
         cudaError_t err = cudaGraphicsUnregisterResource(cudaResources[i]);
-        if (err != cudaSuccess) return E_FAIL;
+        if (err != cudaSuccess)
+        {
+#ifndef NDEBUG
+            CoutError("Failed to unregister CUDA resources in swap chain.");
+#endif
+            return E_FAIL;
+        }
     }
 
     d3d11SwapChain->Present(0, 0);
     cudaError_t err = cudaGraphicsUnregisterResource(cudaResources[frameIndex]);
-    if (err != cudaSuccess) return E_FAIL;
+    if (err != cudaSuccess)
+    {
+#ifndef NDEBUG
+        CoutError("Failed to unregister CUDA resources in swap chain.");
+#endif
+        return E_FAIL;
+    }
 
     frameIndex = (frameIndex + 1) % bufferCount;
+
+#ifndef NDEBUG
+    Cout("Unregistered CUDA resources in swap chain.");
+#endif
 
     return S_OK;
 }
@@ -159,7 +221,17 @@ HRESULT CRC::UnregisterCudaResourcesAtSwapChain
 HRESULT CRC::MapCudaResource(cudaGraphicsResource_t& cudaResource, cudaStream_t stream)
 {
     cudaError_t err = cudaGraphicsMapResources(1, &cudaResource, stream);
-    if (err != cudaSuccess) return E_FAIL;
+    if (err != cudaSuccess)
+    {
+#ifndef NDEBUG
+        CoutError("Failed to map CUDA resource.");
+#endif
+        return E_FAIL;
+    }
+
+#ifndef NDEBUG
+    Cout("Mapped CUDA resource.");
+#endif
 
     return S_OK;
 }
@@ -167,7 +239,17 @@ HRESULT CRC::MapCudaResource(cudaGraphicsResource_t& cudaResource, cudaStream_t 
 HRESULT CRC::UnmapCudaResource(cudaGraphicsResource_t& cudaResource, cudaStream_t stream)
 {
     cudaError_t err = cudaGraphicsUnmapResources(1, &cudaResource, stream);
-    if (err != cudaSuccess) return E_FAIL;
+    if (err != cudaSuccess)
+    {
+#ifndef NDEBUG
+        CoutError("Failed to unmap CUDA resource.");
+#endif
+        return E_FAIL;
+    }
+
+#ifndef NDEBUG
+    Cout("Unmapped CUDA resource.");
+#endif
 
     return S_OK;
 }
@@ -176,7 +258,13 @@ cudaArray_t CRC::GetCudaMappedArray(cudaGraphicsResource_t& cudaResource)
 {
     cudaArray_t cudaArray;
     cudaError_t err = cudaGraphicsSubResourceGetMappedArray(&cudaArray, cudaResource, 0, 0);
-    if (err != cudaSuccess) return nullptr;
+    if (err != cudaSuccess)
+    {
+#ifndef NDEBUG
+        CoutError("Failed to get CUDA mapped array.");
+#endif
+        return nullptr;
+    }
 
     return cudaArray;
 }
