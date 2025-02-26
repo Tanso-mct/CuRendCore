@@ -88,7 +88,7 @@ TEST(CuRendCor, CreateCRCSwapChain)
         desc.BufferUsage() = DXGI_USAGE_RENDER_TARGET_OUTPUT;
         desc.RefreshRate().Numerator = 60;
         desc.RefreshRate().Denominator = 1;
-        desc.SwapEffect() = DXGI_SWAP_EFFECT_DISCARD;
+        desc.SwapEffect() = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
 
         CRCSwapChainFactoryL0_0 swapChainFactory;
         swapChainAttr = swapChainFactory.Create(desc);
@@ -126,7 +126,7 @@ TEST(CuRendCore, GetSwapChainBuffer)
         desc.BufferUsage() = DXGI_USAGE_RENDER_TARGET_OUTPUT;
         desc.RefreshRate().Numerator = 60;
         desc.RefreshRate().Denominator = 1;
-        desc.SwapEffect() = DXGI_SWAP_EFFECT_DISCARD;
+        desc.SwapEffect() = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
 
         CRCSwapChainFactoryL0_0 swapChainFactory;
         crcSwapChain = swapChainFactory.Create(desc);
@@ -167,7 +167,7 @@ TEST(CuRendCore, PresentSwapChain)
         desc.BufferUsage() = DXGI_USAGE_RENDER_TARGET_OUTPUT;
         desc.RefreshRate().Numerator = 60;
         desc.RefreshRate().Denominator = 1;
-        desc.SwapEffect() = DXGI_SWAP_EFFECT_DISCARD;
+        desc.SwapEffect() = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
 
         CRCSwapChainFactoryL0_0 swapChainFactory;
         crcSwapChain = swapChainFactory.Create(desc);
@@ -177,6 +177,49 @@ TEST(CuRendCore, PresentSwapChain)
     CRC::As<CRCSwapChain>(crcSwapChain.get())->GetBuffer(0, backBuffer);
 
     hr = CRC::As<CRCSwapChain>(crcSwapChain.get())->Present(0, 0);
+
+    EXPECT_EQ(hr, S_OK);
+}
+
+TEST(CuRendCore, ResizeSwapChain)
+{
+    // Create window attributes.
+    std::unique_ptr<ICRCContainable> windowAttr;
+    {
+        CRC_WINDOW_DESC desc = {};
+        desc.wcex_.lpszClassName = L"ResizeSwapChain";
+        desc.wcex_.lpfnWndProc = WindowProc;
+        desc.name_ = L"ResizeSwapChain";
+        desc.hInstance = GetModuleHandle(NULL);
+
+        CRCWindowFactory windowFactory;
+        windowAttr = windowFactory.Create(desc);
+    }
+    // Show window.
+    HRESULT hr = CRC::ShowWindowCRC(CRC::As<CRCWindowAttr>(windowAttr.get())->hWnd_);
+
+    Microsoft::WRL::ComPtr<ID3D11Device> device;
+    Microsoft::WRL::ComPtr<IDXGISwapChain> swapChain;
+    CRC::CreateD3D11DeviceAndSwapChain(CRC::As<CRCWindowAttr>(windowAttr.get())->hWnd_, device, swapChain);
+
+    // Create CRC swap chain.
+    std::unique_ptr<ICRCContainable> crcSwapChain;
+    {
+        CRC_SWAP_CHAIN_DESC desc(swapChain);
+        desc.BufferCount() = 2;
+        desc.BufferUsage() = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+        desc.RefreshRate().Numerator = 60;
+        desc.RefreshRate().Denominator = 1;
+        desc.SwapEffect() = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
+
+        CRCSwapChainFactoryL0_0 swapChainFactory;
+        crcSwapChain = swapChainFactory.Create(desc);
+    }
+
+    ICRCTexture2D* backBuffer = nullptr;
+    CRC::As<CRCSwapChain>(crcSwapChain.get())->GetBuffer(0, backBuffer);
+
+    hr = CRC::As<CRCSwapChain>(crcSwapChain.get())->ResizeBuffers(2, 1920, 1080, DXGI_FORMAT_R8G8B8A8_UNORM, 0);
 
     EXPECT_EQ(hr, S_OK);
 }

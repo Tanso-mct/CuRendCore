@@ -93,6 +93,8 @@ HRESULT CRCSwapChain::ResizeBuffers
     hr = d3d11SwapChain_->ResizeBuffers(bufferCount, width, height, newFormat, swapChainFlags);
     if (FAILED(hr)) return hr;
 
+    frameIndex_ = 0;
+
     hr = CRC::RegisterCudaResources
     (
         cudaResources_, cudaGraphicsRegisterFlagsNone, 
@@ -107,6 +109,8 @@ HRESULT CRCSwapChain::ResizeBuffers
     if (!backBufferArray) return E_FAIL;
 
     backBuffer_->GetPtr() = (void*)backBufferArray;
+
+    return S_OK;
 }
 
 HRESULT CRCSwapChain::Present(UINT syncInterval, UINT flags)
