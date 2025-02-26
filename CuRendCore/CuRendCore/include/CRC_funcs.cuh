@@ -8,6 +8,7 @@
 #include <iostream>
 #include <string_view>
 #include <initializer_list>
+#include <vector>
 
 #include <d3d11.h>
 #include <wrl/client.h>
@@ -24,6 +25,11 @@ class ICRCContainable;
 class ICRCContainer;
 
 class ICRCWinMsgEvent;
+
+class ICRCDevice;
+class ICRCSwapChain;
+
+class CRC_SWAP_CHAIN_DESC;
 
 namespace CRC
 {
@@ -45,11 +51,11 @@ std::unique_ptr<T> UniqueAs(std::unique_ptr<S>& source)
 }
 
 CRC_API HRESULT ShowWindowCRC(HWND& hWnd);
-CRC_API HRESULT CreateDeviceAndSwapChain
+
+CRC_API HRESULT CreateD3D11DeviceAndSwapChain
 (
-    const HWND& hWnd,
-    Microsoft::WRL::ComPtr<ID3D11Device>& device,
-    Microsoft::WRL::ComPtr<IDXGISwapChain>& swapChain
+    CRC_SWAP_CHAIN_DESC& desc,
+    Microsoft::WRL::ComPtr<ID3D11Device>& device, Microsoft::WRL::ComPtr<IDXGISwapChain>& swapChain
 );
 
 UINT GetBytesPerPixel(const DXGI_FORMAT& format);
@@ -97,5 +103,36 @@ CRC_API void CoutWarning(Args&... args)
     (void)std::initializer_list<int>{(std::cout << args << " ", 0)...};
     std::cout << std::endl << CRC::C_COLOR_WARNING << CRC::C_TAG_END << CRC::C_COLOR_RESET << std::endl;
 }
+
+HRESULT RegisterCudaResources
+(
+    std::vector<cudaGraphicsResource_t>& cudaResources, const cudaGraphicsRegisterFlags& flags,
+    const UINT& bufferCount, IDXGISwapChain* d3d11SwapChain
+);
+HRESULT RegisterCudaResource
+(
+    cudaGraphicsResource_t& cudaResource, const cudaGraphicsRegisterFlags& flags,
+    ID3D11Texture2D* d3d11Texture
+);
+
+HRESULT UnregisterCudaResources(std::vector<cudaGraphicsResource_t>& cudaResources);
+HRESULT UnregisterCudaResource(cudaGraphicsResource_t& cudaResource);
+
+/**
+ * @brief Un registers all CUDA resources from the swap chain.
+ * At this time, if SwapChain has been presented at least once, unregistering the buffer 
+ * that will become the next display buffer directly will cause windows to freeze, 
+ * so unregister after presenting and shifting the buffer.
+ * The error is probably due to the fact that it is tied to RenderTarget, etc.
+ */
+HRESULT UnregisterCudaResourcesAtSwapChain
+(
+    std::vector<cudaGraphicsResource_t>& cudaResources, 
+    Microsoft::WRL::ComPtr<IDXGISwapChain>& d3d11SwapChain, UINT& frameIndex, const UINT& bufferCount
+);
+
+HRESULT MapCudaResource(cudaGraphicsResource_t& cudaResource, cudaStream_t stream = 0);
+HRESULT UnmapCudaResource(cudaGraphicsResource_t& cudaResource, cudaStream_t stream = 0);
+cudaArray_t GetCudaMappedArray(cudaGraphicsResource_t& cudaResource);
 
 }

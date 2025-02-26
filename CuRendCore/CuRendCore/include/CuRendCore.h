@@ -18,3 +18,7 @@
 
 #include "CRC_buffer.cuh"
 #include "CRC_texture.cuh"
+
+#include "CRC_device.cuh"
+#include "CRC_device_context.cuh"
+#include "CRC_swap_chain.cuh"

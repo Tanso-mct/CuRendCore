@@ -26,4 +26,22 @@ constexpr const char* C_COLOR_RESET = "\033[0m";
 constexpr const char* C_TAG = "[CuRendCore]";
 constexpr const char* C_TAG_END = "[------ END]";
 
-}
+constexpr int ERROR_CREATE_WINDOW = 0x0001;
+constexpr int ERROR_SHOW_WINDOW = 0x0002;
+constexpr int ERROR_CREATE_SCENE = 0x0003;
+constexpr int ERROR_CREATE_CONTAINER = 0x0004;
+constexpr int ERROR_ADD_TO_CONTAINER = 0x0005;
+
+
+} // namespace CRC
+
+enum class CRC_API CRC_FEATURE_LEVEL : unsigned int
+{
+    L0_0 = 0,
+};
+
+enum class CRC_API CRC_RENDER_MODE : unsigned int
+{
+    CUDA = 0,
+    D3D11 = 1,
+};

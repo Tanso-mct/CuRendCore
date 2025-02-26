@@ -27,7 +27,6 @@ void CRCHostMem::Malloc(const UINT &byteWidth, const UINT &pitch, const UINT &sl
 #ifndef NDEBUG
     CRC::Cout
     (
-        "\n",
         "Host memory allocated.", "\n", 
         "ByteWidth :", byteWidth_, "\n",
         "Pitch :", pitch_, "\n",
@@ -82,7 +81,6 @@ void CRCDeviceMem::Malloc(const UINT &byteWidth, const UINT &pitch, const UINT &
 #ifndef NDEBUG
     CRC::Cout
     (
-        "\n",
         "Device memory allocated.", "\n", 
         "ByteWidth :", byteWidth_, "\n",
         "Pitch :", pitch_, "\n",
