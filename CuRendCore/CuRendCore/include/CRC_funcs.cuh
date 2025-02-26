@@ -108,11 +108,32 @@ CRC_API void CoutWarning(Args&... args)
     std::cout << std::endl << CRC::C_COLOR_WARNING << CRC::C_TAG_END << CRC::C_COLOR_RESET << std::endl;
 }
 
+HRESULT RegisterCudaResources
+(
+    std::vector<cudaGraphicsResource_t>& cudaResources, const cudaGraphicsRegisterFlags& flags,
+    const UINT& bufferCount, IDXGISwapChain* d3d11SwapChain
+);
 HRESULT RegisterCudaResource
 (
-    std::vector<cudaGraphicsResource_t>& cudaResources, UINT bufferCount,IDXGISwapChain* d3d11SwapChain
+    cudaGraphicsResource_t& cudaResource, const cudaGraphicsRegisterFlags& flags,
+    ID3D11Texture2D* d3d11Texture
 );
-HRESULT UnregisterCudaResource(std::vector<cudaGraphicsResource_t>& cudaResources);
+
+HRESULT UnregisterCudaResources(std::vector<cudaGraphicsResource_t>& cudaResources);
+HRESULT UnregisterCudaResource(cudaGraphicsResource_t& cudaResource);
+
+/**
+ * @brief Un registers all CUDA resources from the swap chain.
+ * At this time, if SwapChain has been presented at least once, unregistering the buffer 
+ * that will become the next display buffer directly will cause windows to freeze, 
+ * so unregister after presenting and shifting the buffer.
+ * The error is probably due to the fact that it is tied to RenderTarget, etc.
+ */
+HRESULT UnregisterCudaResourcesAtSwapChain
+(
+    std::vector<cudaGraphicsResource_t>& cudaResources, 
+    Microsoft::WRL::ComPtr<IDXGISwapChain>& d3d11SwapChain, UINT& frameIndex, const UINT& bufferCount
+);
 
 HRESULT MapCudaResource(cudaGraphicsResource_t& cudaResource, cudaStream_t stream = 0);
 HRESULT UnmapCudaResource(cudaGraphicsResource_t& cudaResource, cudaStream_t stream = 0);

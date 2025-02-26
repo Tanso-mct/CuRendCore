@@ -28,7 +28,11 @@ CRCSwapChain::CRCSwapChain
 : d3d11SwapChain_(d3d11SwapChain)
 , bufferCount_(bufferCount), bufferUsage_(bufferUsage), refreshRate_(refreshRate), swapEffect_(swapEffect)
 {
-    HRESULT hr = CRC::RegisterCudaResource(cudaResources_, bufferCount, d3d11SwapChain_.Get());
+    HRESULT hr = CRC::RegisterCudaResources
+    (
+        cudaResources_, cudaGraphicsRegisterFlagsNone,
+        bufferCount, d3d11SwapChain_.Get()
+    );
     if (FAILED(hr))
     {
 #ifndef NDEBUG
@@ -62,7 +66,7 @@ CRCSwapChain::CRCSwapChain
 CRCSwapChain::~CRCSwapChain()
 {
     CRC::UnmapCudaResource(cudaResources_[frameIndex_]);
-    CRC::UnregisterCudaResource(cudaResources_);
+    CRC::UnregisterCudaResourcesAtSwapChain(cudaResources_, d3d11SwapChain_, frameIndex_, bufferCount_);
 
     backBuffer_->GetPtr() = nullptr;
     backBuffer_.reset();
@@ -83,16 +87,17 @@ HRESULT CRCSwapChain::ResizeBuffers
     hr = CRC::UnmapCudaResource(cudaResources_[frameIndex_]);
     if (FAILED(hr)) return hr;
 
-    hr = CRC::UnregisterCudaResource(cudaResources_);
+    hr = CRC::UnregisterCudaResourcesAtSwapChain(cudaResources_, d3d11SwapChain_, frameIndex_, bufferCount_);
     if (FAILED(hr)) return hr;
-
-    frameIndex_ = 0;
-    bufferCount_ = bufferCount;
 
     hr = d3d11SwapChain_->ResizeBuffers(bufferCount, width, height, newFormat, swapChainFlags);
     if (FAILED(hr)) return hr;
 
-    hr = CRC::RegisterCudaResource(cudaResources_, bufferCount, d3d11SwapChain_.Get());
+    hr = CRC::RegisterCudaResources
+    (
+        cudaResources_, cudaGraphicsRegisterFlagsNone, 
+        bufferCount, d3d11SwapChain_.Get()
+    );
     if (FAILED(hr)) return hr;
 
     hr = CRC::MapCudaResource(cudaResources_[frameIndex_]);

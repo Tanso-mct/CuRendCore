@@ -97,11 +97,10 @@ CRC_API void CRC::CheckCuda(cudaError_t call)
     }
 }
 
-HRESULT CRC::RegisterCudaResource
+HRESULT CRC::RegisterCudaResources
 (
-    std::vector<cudaGraphicsResource_t>& cudaResources,
-    UINT bufferCount,
-    IDXGISwapChain* d3d11SwapChain
+    std::vector<cudaGraphicsResource_t> &cudaResources, const cudaGraphicsRegisterFlags &flags, 
+    const UINT &bufferCount, IDXGISwapChain *d3d11SwapChain
 ){
     cudaResources.resize(bufferCount);
     std::vector<ID3D11Texture2D*> buffers(bufferCount);
@@ -117,7 +116,7 @@ HRESULT CRC::RegisterCudaResource
 
         cudaError_t err = cudaGraphicsD3D11RegisterResource
         (
-            &cudaResources[i], buffers[i], cudaGraphicsRegisterFlagsNone
+            &cudaResources[i], buffers[i], flags
         );
         if (err != cudaSuccess) return E_FAIL;
     }
@@ -130,13 +129,54 @@ HRESULT CRC::RegisterCudaResource
     return S_OK;
 }
 
-HRESULT CRC::UnregisterCudaResource(std::vector<cudaGraphicsResource_t>& cudaResources)
+HRESULT CRC::RegisterCudaResource
+(
+    cudaGraphicsResource_t &cudaResource, const cudaGraphicsRegisterFlags &flags, 
+    ID3D11Texture2D *d3d11Texture
+){
+    cudaError_t err = cudaGraphicsD3D11RegisterResource(&cudaResource, d3d11Texture, flags);
+    if (err != cudaSuccess) return E_FAIL;
+
+    return S_OK;
+}
+
+HRESULT CRC::UnregisterCudaResources(std::vector<cudaGraphicsResource_t> &cudaResources)
 {
     for (int i = 0; i < cudaResources.size(); ++i) 
     {
         cudaError_t err = cudaGraphicsUnregisterResource(cudaResources[i]);
         if (err != cudaSuccess) return E_FAIL;
     }
+
+    return S_OK;
+}
+
+HRESULT CRC::UnregisterCudaResource(cudaGraphicsResource_t &cudaResource)
+{
+    cudaError_t err = cudaGraphicsUnregisterResource(cudaResource);
+    if (err != cudaSuccess) return E_FAIL;
+
+    return S_OK;
+}
+
+HRESULT CRC::UnregisterCudaResourcesAtSwapChain
+(
+    std::vector<cudaGraphicsResource_t> &cudaResources, 
+    Microsoft::WRL::ComPtr<IDXGISwapChain> &d3d11SwapChain, UINT &frameIndex, const UINT& bufferCount
+){
+    for (int i = 0; i < cudaResources.size(); ++i) 
+    {
+        if (i == frameIndex) continue;
+
+        cudaError_t err = cudaGraphicsUnregisterResource(cudaResources[i]);
+        if (err != cudaSuccess) return E_FAIL;
+    }
+
+    d3d11SwapChain->Present(0, 0);
+    cudaError_t err = cudaGraphicsUnregisterResource(cudaResources[frameIndex]);
+    if (err != cudaSuccess) return E_FAIL;
+
+    frameIndex = (frameIndex + 1) % bufferCount;
 
     return S_OK;
 }

@@ -53,7 +53,6 @@ TEST(CuRendCore, CreateD3D11DeviceAndSwapChain)
 
     Microsoft::WRL::ComPtr<ID3D11Device> device;
     Microsoft::WRL::ComPtr<IDXGISwapChain> swapChain;
-
     CRC::CreateD3D11DeviceAndSwapChain(CRC::As<CRCWindowAttr>(windowAttr.get())->hWnd_, device, swapChain);
 
     EXPECT_NE(device.Get(), nullptr);
@@ -79,7 +78,6 @@ TEST(CuRendCor, CreateCRCSwapChain)
 
     Microsoft::WRL::ComPtr<ID3D11Device> device;
     Microsoft::WRL::ComPtr<IDXGISwapChain> swapChain;
-
     CRC::CreateD3D11DeviceAndSwapChain(CRC::As<CRCWindowAttr>(windowAttr.get())->hWnd_, device, swapChain);
 
     // Create CRC swap chain.
@@ -118,7 +116,6 @@ TEST(CuRendCore, GetSwapChainBuffer)
 
     Microsoft::WRL::ComPtr<ID3D11Device> device;
     Microsoft::WRL::ComPtr<IDXGISwapChain> swapChain;
-
     CRC::CreateD3D11DeviceAndSwapChain(CRC::As<CRCWindowAttr>(windowAttr.get())->hWnd_, device, swapChain);
 
     // Create CRC swap chain.
@@ -141,46 +138,45 @@ TEST(CuRendCore, GetSwapChainBuffer)
     EXPECT_NE(backBuffer, nullptr);
 }
 
-// TEST(CuRendCore, PresentSwapChain)
-// {
-//     // Create window attributes.
-//     std::unique_ptr<ICRCContainable> windowAttr;
-//     {
-//         CRC_WINDOW_DESC desc = {};
-//         desc.wcex_.lpszClassName = L"PresentSwapChain";
-//         desc.wcex_.lpfnWndProc = WindowProc;
-//         desc.name_ = L"PresentSwapChain";
-//         desc.hInstance = GetModuleHandle(NULL);
+TEST(CuRendCore, PresentSwapChain)
+{
+    // Create window attributes.
+    std::unique_ptr<ICRCContainable> windowAttr;
+    {
+        CRC_WINDOW_DESC desc = {};
+        desc.wcex_.lpszClassName = L"PresentSwapChain";
+        desc.wcex_.lpfnWndProc = WindowProc;
+        desc.name_ = L"PresentSwapChain";
+        desc.hInstance = GetModuleHandle(NULL);
 
-//         CRCWindowFactory windowFactory;
-//         windowAttr = windowFactory.Create(desc);
-//     }
-//     // Show window.
-//     HRESULT hr = CRC::ShowWindowCRC(CRC::As<CRCWindowAttr>(windowAttr.get())->hWnd_);
+        CRCWindowFactory windowFactory;
+        windowAttr = windowFactory.Create(desc);
+    }
+    // Show window.
+    HRESULT hr = CRC::ShowWindowCRC(CRC::As<CRCWindowAttr>(windowAttr.get())->hWnd_);
 
-//     Microsoft::WRL::ComPtr<ID3D11Device> device;
-//     Microsoft::WRL::ComPtr<IDXGISwapChain> swapChain;
+    Microsoft::WRL::ComPtr<ID3D11Device> device;
+    Microsoft::WRL::ComPtr<IDXGISwapChain> swapChain;
+    CRC::CreateD3D11DeviceAndSwapChain(CRC::As<CRCWindowAttr>(windowAttr.get())->hWnd_, device, swapChain);
 
-//     CRC::CreateD3D11DeviceAndSwapChain(CRC::As<CRCWindowAttr>(windowAttr.get())->hWnd_, device, swapChain);
+    // Create CRC swap chain.
+    std::unique_ptr<ICRCContainable> crcSwapChain;
+    {
+        CRC_SWAP_CHAIN_DESC desc(swapChain);
+        desc.BufferCount() = 2;
+        desc.BufferUsage() = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+        desc.RefreshRate().Numerator = 60;
+        desc.RefreshRate().Denominator = 1;
+        desc.SwapEffect() = DXGI_SWAP_EFFECT_DISCARD;
 
-//     // Create CRC swap chain.
-//     std::unique_ptr<ICRCContainable> crcSwapChain;
-//     {
-//         CRC_SWAP_CHAIN_DESC desc(swapChain);
-//         desc.BufferCount() = 2;
-//         desc.BufferUsage() = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-//         desc.RefreshRate().Numerator = 60;
-//         desc.RefreshRate().Denominator = 1;
-//         desc.SwapEffect() = DXGI_SWAP_EFFECT_DISCARD;
+        CRCSwapChainFactoryL0_0 swapChainFactory;
+        crcSwapChain = swapChainFactory.Create(desc);
+    }
 
-//         CRCSwapChainFactoryL0_0 swapChainFactory;
-//         crcSwapChain = swapChainFactory.Create(desc);
-//     }
+    ICRCTexture2D* backBuffer = nullptr;
+    CRC::As<CRCSwapChain>(crcSwapChain.get())->GetBuffer(0, backBuffer);
 
-//     ICRCTexture2D* backBuffer = nullptr;
-//     CRC::As<CRCSwapChain>(crcSwapChain.get())->GetBuffer(0, backBuffer);
+    hr = CRC::As<CRCSwapChain>(crcSwapChain.get())->Present(0, 0);
 
-//     CRC::As<CRCSwapChain>(crcSwapChain.get())->Present(0, 0);
-
-//     EXPECT_NE(backBuffer, nullptr);
-// }
+    EXPECT_EQ(hr, S_OK);
+}
