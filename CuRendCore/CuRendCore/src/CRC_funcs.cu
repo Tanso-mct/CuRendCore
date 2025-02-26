@@ -22,26 +22,9 @@ HRESULT CRC::ShowWindowCRC(HWND& hWnd)
 
 CRC_API HRESULT CRC::CreateD3D11DeviceAndSwapChain
 (
-    const HWND& hWnd,
+    CRC_SWAP_CHAIN_DESC& desc,
     Microsoft::WRL::ComPtr<ID3D11Device> &device, Microsoft::WRL::ComPtr<IDXGISwapChain> &swapChain
 ){
-    // Setup swap chain
-    DXGI_SWAP_CHAIN_DESC sd;
-    ZeroMemory(&sd, sizeof(sd));
-    sd.BufferCount = 2;
-    sd.BufferDesc.Width = 0;
-    sd.BufferDesc.Height = 0;
-    sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-    sd.BufferDesc.RefreshRate.Numerator = 60;
-    sd.BufferDesc.RefreshRate.Denominator = 1;
-    sd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
-    sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-    sd.OutputWindow = hWnd;
-    sd.SampleDesc.Count = 1;
-    sd.SampleDesc.Quality = 0;
-    sd.Windowed = TRUE;
-    sd.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
-
     UINT createDeviceFlags = 0;
     D3D_FEATURE_LEVEL featureLevel;
     const D3D_FEATURE_LEVEL featureLevelArray[2] = { D3D_FEATURE_LEVEL_11_0, D3D_FEATURE_LEVEL_10_0, };
@@ -49,7 +32,7 @@ CRC_API HRESULT CRC::CreateD3D11DeviceAndSwapChain
     HRESULT hr = D3D11CreateDeviceAndSwapChain
     (
         nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, createDeviceFlags, featureLevelArray, 2, 
-        D3D11_SDK_VERSION, &sd, &swapChain, &device, &featureLevel, nullptr
+        D3D11_SDK_VERSION, &desc.GetDxgiDesc(), &swapChain, &device, &featureLevel, nullptr
     );
 
     if (hr == DXGI_ERROR_UNSUPPORTED) // Try high-performance WARP software driver if hardware is not available.
@@ -57,19 +40,11 @@ CRC_API HRESULT CRC::CreateD3D11DeviceAndSwapChain
         hr = D3D11CreateDeviceAndSwapChain
         (
             nullptr, D3D_DRIVER_TYPE_WARP, nullptr, createDeviceFlags, featureLevelArray, 2, 
-            D3D11_SDK_VERSION, &sd, &swapChain, &device, &featureLevel, nullptr
+            D3D11_SDK_VERSION, &desc.GetDxgiDesc(), &swapChain, &device, &featureLevel, nullptr
         );
     }
 
     return hr;
-}
-
-CRC_API HRESULT CRC::CreateCRCDeviceAndSwapChain
-(
-    Microsoft::WRL::ComPtr<ID3D11Device> &d3d11Device, Microsoft::WRL::ComPtr<IDXGISwapChain> &d3d11SwapChain, 
-    std::unique_ptr<ICRCDevice> &crcDevice, std::unique_ptr<ICRCSwapChain> crcSwapChain
-){
-    return E_NOTIMPL;
 }
 
 UINT CRC::GetBytesPerPixel(const DXGI_FORMAT &format)

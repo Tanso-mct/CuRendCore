@@ -10,11 +10,7 @@ std::unique_ptr<ICRCContainable> CRCSwapChainFactoryL0_0::Create(IDESC &desc) co
 
     std::unique_ptr<CRCSwapChain> swapChain = std::make_unique<CRCSwapChain>
     (
-        swapChainDesc->GetD3D11SwapChain(),
-        swapChainDesc->BufferCount(),
-        swapChainDesc->BufferUsage(),
-        swapChainDesc->RefreshRate(),
-        swapChainDesc->SwapEffect()
+        swapChainDesc->GetD3D11SwapChain(), swapChainDesc->GetDxgiDesc()
     );
 
     return swapChain;
@@ -23,15 +19,15 @@ std::unique_ptr<ICRCContainable> CRCSwapChainFactoryL0_0::Create(IDESC &desc) co
 CRCSwapChain::CRCSwapChain
 (
     Microsoft::WRL::ComPtr<IDXGISwapChain> &d3d11SwapChain, 
-    UINT bufferCount, DXGI_USAGE bufferUsage, DXGI_RATIONAL refreshRate, DXGI_SWAP_EFFECT swapEffect
+    const DXGI_SWAP_CHAIN_DESC& desc
 ) 
 : d3d11SwapChain_(d3d11SwapChain)
-, bufferCount_(bufferCount), bufferUsage_(bufferUsage), refreshRate_(refreshRate), swapEffect_(swapEffect)
+, bufferCount_(desc.BufferCount), refreshRate_(desc.BufferDesc.RefreshRate)
 {
     HRESULT hr = CRC::RegisterCudaResources
     (
         cudaResources_, cudaGraphicsRegisterFlagsNone,
-        bufferCount, d3d11SwapChain_.Get()
+        bufferCount_, d3d11SwapChain_.Get()
     );
     if (FAILED(hr))
     {
@@ -134,6 +130,11 @@ HRESULT CRCSwapChain::Present(UINT syncInterval, UINT flags)
     return S_OK;
 }
 
+HRESULT CRCSwapChain::GetDesc(DXGI_SWAP_CHAIN_DESC *pDesc)
+{
+    return d3d11SwapChain_->GetDesc(pDesc);
+}
+
 std::unique_ptr<ICRCContainable> CRCIDXGISwapChainFactoryL0_0::Create(IDESC &desc) const
 {
     CRC_SWAP_CHAIN_DESC* swapChainDesc = CRC::As<CRC_SWAP_CHAIN_DESC>(&desc);
@@ -165,4 +166,9 @@ HRESULT CRCIDXGISwapChain::ResizeBuffers
 HRESULT CRCIDXGISwapChain::Present(UINT syncInterval, UINT flags)
 {
     return d3d11SwapChain_->Present(syncInterval, flags);
+}
+
+HRESULT CRCIDXGISwapChain::GetDesc(DXGI_SWAP_CHAIN_DESC *pDesc)
+{
+    return d3d11SwapChain_->GetDesc(pDesc);
 }

@@ -24,11 +24,7 @@ public:
     ~CRC_SWAP_CHAIN_DESC() override = default;
 
     Microsoft::WRL::ComPtr<IDXGISwapChain>& GetD3D11SwapChain() { return d3d11SwapChain_; }
-
-    UINT& BufferCount() { return desc_.BufferCount; }
-    DXGI_USAGE& BufferUsage() { return desc_.BufferUsage; }
-    DXGI_RATIONAL& RefreshRate() { return desc_.BufferDesc.RefreshRate; }
-    DXGI_SWAP_EFFECT& SwapEffect() { return desc_.SwapEffect; }
+    DXGI_SWAP_CHAIN_DESC& GetDxgiDesc() { return desc_; }
 };
 
 class CRC_API ICRCSwapChain
@@ -44,6 +40,8 @@ public:
     ) = 0;
 
     virtual HRESULT Present(UINT syncInterval, UINT flags) = 0;
+
+    virtual HRESULT GetDesc(DXGI_SWAP_CHAIN_DESC *pDesc) = 0;
 };
 
 class CRC_API CRCSwapChainFactoryL0_0 : public ICRCFactory
@@ -59,9 +57,7 @@ private:
     Microsoft::WRL::ComPtr<IDXGISwapChain>& d3d11SwapChain_;
 
     UINT bufferCount_;
-    const DXGI_USAGE bufferUsage_;
-    const DXGI_RATIONAL refreshRate_;
-    const DXGI_SWAP_EFFECT swapEffect_;
+    DXGI_RATIONAL refreshRate_;
 
     std::vector<cudaGraphicsResource_t> cudaResources_;
     UINT frameIndex_ = 0;
@@ -72,7 +68,7 @@ public:
     CRCSwapChain
     (
         Microsoft::WRL::ComPtr<IDXGISwapChain>& d3d11SwapChain,
-        UINT bufferCount, DXGI_USAGE bufferUsage, DXGI_RATIONAL refreshRate, DXGI_SWAP_EFFECT swapEffect
+        const DXGI_SWAP_CHAIN_DESC& desc
     );
 
     ~CRCSwapChain() override;
@@ -86,6 +82,8 @@ public:
     ) override;
 
     HRESULT Present(UINT syncInterval, UINT flags) override;
+
+    HRESULT GetDesc(DXGI_SWAP_CHAIN_DESC* pDesc) override;
 };
 
 class CRC_API CRCIDXGISwapChainFactoryL0_0 : public ICRCFactory
@@ -113,4 +111,6 @@ public:
     ) override;
 
     HRESULT Present(UINT syncInterval, UINT flags) override;
+
+    HRESULT GetDesc(DXGI_SWAP_CHAIN_DESC* pDesc) override;
 };

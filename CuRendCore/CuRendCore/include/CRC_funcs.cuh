@@ -29,6 +29,8 @@ class ICRCWinMsgEvent;
 class ICRCDevice;
 class ICRCSwapChain;
 
+class CRC_SWAP_CHAIN_DESC;
+
 namespace CRC
 {
 
@@ -52,14 +54,8 @@ CRC_API HRESULT ShowWindowCRC(HWND& hWnd);
 
 CRC_API HRESULT CreateD3D11DeviceAndSwapChain
 (
-    const HWND& hWnd,
+    CRC_SWAP_CHAIN_DESC& desc,
     Microsoft::WRL::ComPtr<ID3D11Device>& device, Microsoft::WRL::ComPtr<IDXGISwapChain>& swapChain
-);
-
-CRC_API HRESULT CreateCRCDeviceAndSwapChain
-(
-    Microsoft::WRL::ComPtr<ID3D11Device>& d3d11Device, Microsoft::WRL::ComPtr<IDXGISwapChain>& d3d11SwapChain,
-    std::unique_ptr<ICRCDevice>& crcDevice, std::unique_ptr<ICRCSwapChain> crcSwapChain
 );
 
 UINT GetBytesPerPixel(const DXGI_FORMAT& format);

@@ -53,7 +53,26 @@ TEST(CuRendCore, CreateD3D11DeviceAndSwapChain)
 
     Microsoft::WRL::ComPtr<ID3D11Device> device;
     Microsoft::WRL::ComPtr<IDXGISwapChain> swapChain;
-    CRC::CreateD3D11DeviceAndSwapChain(CRC::As<CRCWindowAttr>(windowAttr.get())->hWnd_, device, swapChain);
+    CRC_SWAP_CHAIN_DESC swapChainDesc(swapChain);
+    {
+        DXGI_SWAP_CHAIN_DESC& dxgiDesc = swapChainDesc.GetDxgiDesc();
+        ZeroMemory(&dxgiDesc, sizeof(DXGI_SWAP_CHAIN_DESC));
+        dxgiDesc.BufferCount = 2;
+        dxgiDesc.BufferDesc.Width = 0;
+        dxgiDesc.BufferDesc.Height = 0;
+        dxgiDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+        dxgiDesc.BufferDesc.RefreshRate.Numerator = 60;
+        dxgiDesc.BufferDesc.RefreshRate.Denominator = 1;
+        dxgiDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
+        dxgiDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+        dxgiDesc.OutputWindow = CRC::As<CRCWindowAttr>(windowAttr.get())->hWnd_;
+        dxgiDesc.SampleDesc.Count = 1;
+        dxgiDesc.SampleDesc.Quality = 0;
+        dxgiDesc.Windowed = TRUE;
+        dxgiDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
+
+        CRC::CreateD3D11DeviceAndSwapChain(swapChainDesc, device, swapChain);
+    }
 
     EXPECT_NE(device.Get(), nullptr);
     EXPECT_NE(swapChain.Get(), nullptr);
@@ -78,20 +97,32 @@ TEST(CuRendCor, CreateCRCSwapChain)
 
     Microsoft::WRL::ComPtr<ID3D11Device> device;
     Microsoft::WRL::ComPtr<IDXGISwapChain> swapChain;
-    CRC::CreateD3D11DeviceAndSwapChain(CRC::As<CRCWindowAttr>(windowAttr.get())->hWnd_, device, swapChain);
+    CRC_SWAP_CHAIN_DESC swapChainDesc(swapChain);
+    {
+        DXGI_SWAP_CHAIN_DESC& dxgiDesc = swapChainDesc.GetDxgiDesc();
+        ZeroMemory(&dxgiDesc, sizeof(DXGI_SWAP_CHAIN_DESC));
+        dxgiDesc.BufferCount = 2;
+        dxgiDesc.BufferDesc.Width = 0;
+        dxgiDesc.BufferDesc.Height = 0;
+        dxgiDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+        dxgiDesc.BufferDesc.RefreshRate.Numerator = 60;
+        dxgiDesc.BufferDesc.RefreshRate.Denominator = 1;
+        dxgiDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
+        dxgiDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+        dxgiDesc.OutputWindow = CRC::As<CRCWindowAttr>(windowAttr.get())->hWnd_;
+        dxgiDesc.SampleDesc.Count = 1;
+        dxgiDesc.SampleDesc.Quality = 0;
+        dxgiDesc.Windowed = TRUE;
+        dxgiDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
+
+        CRC::CreateD3D11DeviceAndSwapChain(swapChainDesc, device, swapChain);
+    }
 
     // Create CRC swap chain.
     std::unique_ptr<ICRCContainable> swapChainAttr;
     {
-        CRC_SWAP_CHAIN_DESC desc(swapChain);
-        desc.BufferCount() = 2;
-        desc.BufferUsage() = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-        desc.RefreshRate().Numerator = 60;
-        desc.RefreshRate().Denominator = 1;
-        desc.SwapEffect() = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
-
         CRCSwapChainFactoryL0_0 swapChainFactory;
-        swapChainAttr = swapChainFactory.Create(desc);
+        swapChainAttr = swapChainFactory.Create(swapChainDesc);
     }
 
     EXPECT_NE(swapChainAttr.get(), nullptr);
@@ -116,20 +147,32 @@ TEST(CuRendCore, GetSwapChainBuffer)
 
     Microsoft::WRL::ComPtr<ID3D11Device> device;
     Microsoft::WRL::ComPtr<IDXGISwapChain> swapChain;
-    CRC::CreateD3D11DeviceAndSwapChain(CRC::As<CRCWindowAttr>(windowAttr.get())->hWnd_, device, swapChain);
+    CRC_SWAP_CHAIN_DESC swapChainDesc(swapChain);
+    {
+        DXGI_SWAP_CHAIN_DESC& dxgiDesc = swapChainDesc.GetDxgiDesc();
+        ZeroMemory(&dxgiDesc, sizeof(DXGI_SWAP_CHAIN_DESC));
+        dxgiDesc.BufferCount = 2;
+        dxgiDesc.BufferDesc.Width = 0;
+        dxgiDesc.BufferDesc.Height = 0;
+        dxgiDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+        dxgiDesc.BufferDesc.RefreshRate.Numerator = 60;
+        dxgiDesc.BufferDesc.RefreshRate.Denominator = 1;
+        dxgiDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
+        dxgiDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+        dxgiDesc.OutputWindow = CRC::As<CRCWindowAttr>(windowAttr.get())->hWnd_;
+        dxgiDesc.SampleDesc.Count = 1;
+        dxgiDesc.SampleDesc.Quality = 0;
+        dxgiDesc.Windowed = TRUE;
+        dxgiDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
+
+        CRC::CreateD3D11DeviceAndSwapChain(swapChainDesc, device, swapChain);
+    }
 
     // Create CRC swap chain.
     std::unique_ptr<ICRCContainable> crcSwapChain;
     {
-        CRC_SWAP_CHAIN_DESC desc(swapChain);
-        desc.BufferCount() = 2;
-        desc.BufferUsage() = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-        desc.RefreshRate().Numerator = 60;
-        desc.RefreshRate().Denominator = 1;
-        desc.SwapEffect() = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
-
         CRCSwapChainFactoryL0_0 swapChainFactory;
-        crcSwapChain = swapChainFactory.Create(desc);
+        crcSwapChain = swapChainFactory.Create(swapChainDesc);
     }
 
     ICRCTexture2D* backBuffer = nullptr;
@@ -157,20 +200,32 @@ TEST(CuRendCore, PresentSwapChain)
 
     Microsoft::WRL::ComPtr<ID3D11Device> device;
     Microsoft::WRL::ComPtr<IDXGISwapChain> swapChain;
-    CRC::CreateD3D11DeviceAndSwapChain(CRC::As<CRCWindowAttr>(windowAttr.get())->hWnd_, device, swapChain);
+    CRC_SWAP_CHAIN_DESC swapChainDesc(swapChain);
+    {
+        DXGI_SWAP_CHAIN_DESC& dxgiDesc = swapChainDesc.GetDxgiDesc();
+        ZeroMemory(&dxgiDesc, sizeof(DXGI_SWAP_CHAIN_DESC));
+        dxgiDesc.BufferCount = 2;
+        dxgiDesc.BufferDesc.Width = 0;
+        dxgiDesc.BufferDesc.Height = 0;
+        dxgiDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+        dxgiDesc.BufferDesc.RefreshRate.Numerator = 60;
+        dxgiDesc.BufferDesc.RefreshRate.Denominator = 1;
+        dxgiDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
+        dxgiDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+        dxgiDesc.OutputWindow = CRC::As<CRCWindowAttr>(windowAttr.get())->hWnd_;
+        dxgiDesc.SampleDesc.Count = 1;
+        dxgiDesc.SampleDesc.Quality = 0;
+        dxgiDesc.Windowed = TRUE;
+        dxgiDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
+
+        CRC::CreateD3D11DeviceAndSwapChain(swapChainDesc, device, swapChain);
+    }
 
     // Create CRC swap chain.
     std::unique_ptr<ICRCContainable> crcSwapChain;
     {
-        CRC_SWAP_CHAIN_DESC desc(swapChain);
-        desc.BufferCount() = 2;
-        desc.BufferUsage() = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-        desc.RefreshRate().Numerator = 60;
-        desc.RefreshRate().Denominator = 1;
-        desc.SwapEffect() = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
-
         CRCSwapChainFactoryL0_0 swapChainFactory;
-        crcSwapChain = swapChainFactory.Create(desc);
+        crcSwapChain = swapChainFactory.Create(swapChainDesc);
     }
 
     ICRCTexture2D* backBuffer = nullptr;
@@ -200,20 +255,32 @@ TEST(CuRendCore, ResizeSwapChain)
 
     Microsoft::WRL::ComPtr<ID3D11Device> device;
     Microsoft::WRL::ComPtr<IDXGISwapChain> swapChain;
-    CRC::CreateD3D11DeviceAndSwapChain(CRC::As<CRCWindowAttr>(windowAttr.get())->hWnd_, device, swapChain);
+    CRC_SWAP_CHAIN_DESC swapChainDesc(swapChain);
+    {
+        DXGI_SWAP_CHAIN_DESC& dxgiDesc = swapChainDesc.GetDxgiDesc();
+        ZeroMemory(&dxgiDesc, sizeof(DXGI_SWAP_CHAIN_DESC));
+        dxgiDesc.BufferCount = 2;
+        dxgiDesc.BufferDesc.Width = 0;
+        dxgiDesc.BufferDesc.Height = 0;
+        dxgiDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+        dxgiDesc.BufferDesc.RefreshRate.Numerator = 60;
+        dxgiDesc.BufferDesc.RefreshRate.Denominator = 1;
+        dxgiDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
+        dxgiDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+        dxgiDesc.OutputWindow = CRC::As<CRCWindowAttr>(windowAttr.get())->hWnd_;
+        dxgiDesc.SampleDesc.Count = 1;
+        dxgiDesc.SampleDesc.Quality = 0;
+        dxgiDesc.Windowed = TRUE;
+        dxgiDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
+
+        CRC::CreateD3D11DeviceAndSwapChain(swapChainDesc, device, swapChain);
+    }
 
     // Create CRC swap chain.
     std::unique_ptr<ICRCContainable> crcSwapChain;
     {
-        CRC_SWAP_CHAIN_DESC desc(swapChain);
-        desc.BufferCount() = 2;
-        desc.BufferUsage() = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-        desc.RefreshRate().Numerator = 60;
-        desc.RefreshRate().Denominator = 1;
-        desc.SwapEffect() = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
-
         CRCSwapChainFactoryL0_0 swapChainFactory;
-        crcSwapChain = swapChainFactory.Create(desc);
+        crcSwapChain = swapChainFactory.Create(swapChainDesc);
     }
 
     ICRCTexture2D* backBuffer = nullptr;
