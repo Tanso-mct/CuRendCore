@@ -26,9 +26,12 @@ class ICRCContainer;
 
 class ICRCWinMsgEvent;
 
-class ICRCDevice;
-class ICRCSwapChain;
+class ICRCFactory;
 
+class ICRCDevice;
+class CRC_DEVICE_DESC;
+
+class ICRCSwapChain;
 class CRC_SWAP_CHAIN_DESC;
 
 namespace CRC
@@ -58,7 +61,14 @@ CRC_API HRESULT CreateD3D11DeviceAndSwapChain
     Microsoft::WRL::ComPtr<ID3D11Device>& device, Microsoft::WRL::ComPtr<IDXGISwapChain>& swapChain
 );
 
-UINT GetBytesPerPixel(const DXGI_FORMAT& format);
+CRC_API HRESULT CreateCRCDeviceAndSwapChain
+(
+    CRC_DEVICE_DESC& deviceDesc, CRC_SWAP_CHAIN_DESC& swapChainDesc,
+    const ICRCFactory& deviceFactory, const ICRCFactory& swapChainFactory,
+    std::unique_ptr<ICRCContainable>& device, std::unique_ptr<ICRCContainable>& swapChain
+);
+
+CRC_API UINT GetBytesPerPixel(const DXGI_FORMAT& format);
 
 struct PairHash 
 {

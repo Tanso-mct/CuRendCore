@@ -47,6 +47,21 @@ CRC_API HRESULT CRC::CreateD3D11DeviceAndSwapChain
     return hr;
 }
 
+CRC_API HRESULT CRC::CreateCRCDeviceAndSwapChain
+(
+    CRC_DEVICE_DESC &deviceDesc, CRC_SWAP_CHAIN_DESC &swapChainDesc, 
+    const ICRCFactory &deviceFactory, const ICRCFactory &swapChainFactory, 
+    std::unique_ptr<ICRCContainable> &device, std::unique_ptr<ICRCContainable> &swapChain
+){
+    device = deviceFactory.Create(deviceDesc);
+    if (!device) return E_FAIL;
+
+    swapChain = swapChainFactory.Create(swapChainDesc);
+    if (!swapChain) return E_FAIL;
+
+    return S_OK;
+}
+
 UINT CRC::GetBytesPerPixel(const DXGI_FORMAT &format)
 {
     switch (format)

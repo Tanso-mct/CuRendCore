@@ -178,6 +178,63 @@ TEST(CuRendCore, CreateCRCSwapChain)
     EXPECT_NE(swapChainAttr.get(), nullptr);
 }
 
+TEST(CuRendCore, CreateCRCDeviceAndSwapChain)
+{
+    // Create window attributes.
+    std::unique_ptr<ICRCContainable> windowAttr;
+    {
+        CRC_WINDOW_DESC desc = {};
+        desc.wcex_.lpszClassName = L"CreateCRCDeviceAndSwapChain";
+        desc.wcex_.lpfnWndProc = WindowProc;
+        desc.name_ = L"CreateCRCDeviceAndSwapChain";
+        desc.hInstance = GetModuleHandle(NULL);
+
+        CRCWindowFactory windowFactory;
+        windowAttr = windowFactory.Create(desc);
+    }
+    // Show window.
+    HRESULT hr = CRC::ShowWindowCRC(CRC::As<CRCWindowAttr>(windowAttr.get())->hWnd_);
+
+    Microsoft::WRL::ComPtr<ID3D11Device> device;
+    Microsoft::WRL::ComPtr<IDXGISwapChain> swapChain;
+    CRC_SWAP_CHAIN_DESC swapChainDesc(swapChain);
+    {
+        DXGI_SWAP_CHAIN_DESC& dxgiDesc = swapChainDesc.GetDxgiDesc();
+        ZeroMemory(&dxgiDesc, sizeof(DXGI_SWAP_CHAIN_DESC));
+        dxgiDesc.BufferCount = 2;
+        dxgiDesc.BufferDesc.Width = 0;
+        dxgiDesc.BufferDesc.Height = 0;
+        dxgiDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+        dxgiDesc.BufferDesc.RefreshRate.Numerator = 60;
+        dxgiDesc.BufferDesc.RefreshRate.Denominator = 1;
+        dxgiDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
+        dxgiDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+        dxgiDesc.OutputWindow = CRC::As<CRCWindowAttr>(windowAttr.get())->hWnd_;
+        dxgiDesc.SampleDesc.Count = 1;
+        dxgiDesc.SampleDesc.Quality = 0;
+        dxgiDesc.Windowed = TRUE;
+        dxgiDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
+
+        CRC::CreateD3D11DeviceAndSwapChain(swapChainDesc, device, swapChain);
+    }
+
+    // Create CRC device and swap chain.
+    std::unique_ptr<ICRCContainable> crcDevice;
+    std::unique_ptr<ICRCContainable> crcSwapChain;
+    CRC_DEVICE_DESC deviceDesc(device);
+    {
+        CRCDeviceFactoryL0_0 deviceFactory;
+        CRCSwapChainFactoryL0_0 swapChainFactory;
+        CRC::CreateCRCDeviceAndSwapChain
+        (
+            deviceDesc, swapChainDesc, deviceFactory, swapChainFactory, crcDevice, crcSwapChain
+        );
+    }
+
+    EXPECT_NE(crcDevice.get(), nullptr);
+    EXPECT_NE(crcSwapChain.get(), nullptr);
+}
+
 TEST(CuRendCore, GetSwapChainBuffer)
 {
     // Create window attributes.
