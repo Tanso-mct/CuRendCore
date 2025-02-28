@@ -58,6 +58,8 @@ CRC_API HRESULT CRC::CreateCRCDeviceAndSwapChain
     device = deviceFactory.Create(deviceDesc);
     if (!device) return E_FAIL;
 
+    swapChainDesc.d3d11SwapChain_->GetDesc(&swapChainDesc.GetDxgiDesc());
+
     swapChain = swapChainFactory.Create(swapChainDesc);
     if (!swapChain) return E_FAIL;
 
@@ -302,7 +304,7 @@ cudaArray_t CRC::GetCudaMappedArray(cudaGraphicsResource_t& cudaResource)
     return cudaArray;
 }
 
-CRC_API std::unique_ptr<ICRCTexture2D> CRC::CreateCudaSurfaceObjects
+CRC_API std::unique_ptr<ICRCTexture2D> CRC::CreateTexture2DFromCudaResource
 (
     cudaGraphicsResource_t& cudaResource, const UINT& width, const UINT& height, const DXGI_FORMAT& format
 ){
@@ -324,15 +326,19 @@ CRC_API std::unique_ptr<ICRCTexture2D> CRC::CreateCudaSurfaceObjects
         return nullptr;
     }
 
-    std::unique_ptr<ICRCTexture2D> rtTexture = std::make_unique<CRCTextureSurface>
-    (
-        CRC::GetBytesPerPixel(format) * width * height, 
-        CRC::GetBytesPerPixel(format) * width, 
-        CRC::GetBytesPerPixel(format) * width * height
-    );
+    D3D11_TEXTURE2D_DESC desc;
+    desc.Width = width;
+    desc.Height = height;
+    desc.MipLevels = 1;
+    desc.ArraySize = 1;
+    desc.Format = format;
+    desc.SampleDesc.Count = 1;
+    desc.SampleDesc.Quality = 0;
 
-    CRCTextureSurface* backSurface = CRC::As<CRCTextureSurface>(rtTexture.get());
-    if (!backSurface)
+    std::unique_ptr<ICRCTexture2D> rtTexture = std::make_unique<CRCTexutre2DAttached>(desc);
+
+    CRCTexutre2DAttached* backBuffer = CRC::As<CRCTexutre2DAttached>(rtTexture.get());
+    if (!backBuffer)
     {
 #ifndef NDEBUG
         CRC::CoutError("Failed to create surface objects by casting back surface to ICRCMem.");
@@ -340,10 +346,12 @@ CRC_API std::unique_ptr<ICRCTexture2D> CRC::CreateCudaSurfaceObjects
         return nullptr;
     }
 
-    cudaResourceDesc resDesc = {};
-    resDesc.resType = cudaResourceTypeArray;
-    resDesc.res.array.array = backBufferArray;
-    hr = CRC::CreateCudaSurfaceObject(backSurface->GetSurfaceObj(), resDesc);
+    backBuffer->Assign
+    (
+        backBufferArray, 
+        CRC::GetBytesPerPixel(format) * width * height,
+        width * CRC::GetBytesPerPixel(format)
+    );
 
     hr = CRC::UnmapCudaResource(cudaResource);
     if (FAILED(hr))
@@ -355,22 +363,4 @@ CRC_API std::unique_ptr<ICRCTexture2D> CRC::CreateCudaSurfaceObjects
     }
 
     return rtTexture;
-}
-
-HRESULT CRC::CreateCudaSurfaceObject(cudaSurfaceObject_t &surfaceObject, const cudaResourceDesc &desc)
-{
-    cudaError_t err = cudaCreateSurfaceObject(&surfaceObject, &desc);
-    if (err != cudaSuccess)
-    {
-#ifndef NDEBUG
-        CoutError("Failed to create CUDA surface object.");
-#endif
-        return E_FAIL;
-    }
-
-#ifndef NDEBUG
-    Cout("Created CUDA surface object.");
-#endif
-
-    return S_OK;
 }

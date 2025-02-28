@@ -60,7 +60,8 @@ public:
     virtual std::unique_ptr<ICRCContainable> Create(IDESC& desc) const override;
 };
 
-class CRC_API CRCTexture2D : public ICRCContainable, public ICRCCudaResource, public ICRCTexture2D, public ICRCMem
+class CRC_API CRCTexture2D 
+: public ICRCContainable, public ICRCCudaResource, public ICRCTexture2D, public ICRCAllocatedMem
 {
 private:
     D3D11_TEXTURE2D_DESC desc_ = {};
@@ -73,7 +74,7 @@ private:
 public:
     CRCTexture2D() = default;
     CRCTexture2D(CRC_TEXTURE2D_DESC& desc);
-    ~CRCTexture2D() override = default;
+    ~CRCTexture2D() override;
 
     virtual HRESULT GetType(D3D11_RESOURCE_DIMENSION& type) override;
     virtual const void GetDesc(D3D11_TEXTURE2D_DESC* dst) override;
@@ -93,22 +94,21 @@ public:
     virtual void Free() override;
 };
 
-class CRC_API CRCTextureSurface : public ICRCContainable, public ICRCCudaResource, public ICRCTexture2D, public ICRCMem
+class CRC_API CRCTexutre2DAttached 
+: public ICRCContainable, public ICRCCudaResource, public ICRCTexture2D, public ICRCAttachedMem
 {
 private:
     D3D11_TEXTURE2D_DESC desc_ = {};
 
-    cudaSurfaceObject_t cudaSurface_;
+    cudaArray *cudaArray_ = nullptr;
     UINT byteWidth_ = 0;
     UINT pitch_ = 0;
     UINT slicePitch_ = 0;
 
 public:
-    CRCTextureSurface
-    (
-        UINT byteWidth, UINT pitch, UINT slicePitch
-    ) : byteWidth_(byteWidth), pitch_(pitch), slicePitch_(slicePitch) {}
-    ~CRCTextureSurface() override;
+    CRCTexutre2DAttached() = default;
+    CRCTexutre2DAttached(D3D11_TEXTURE2D_DESC& desc);
+    ~CRCTexutre2DAttached() override;
 
     virtual HRESULT GetType(D3D11_RESOURCE_DIMENSION& type) override;
     virtual const void GetDesc(D3D11_TEXTURE2D_DESC* dst) override;
@@ -117,17 +117,11 @@ public:
     virtual const UINT& GetPitch() const override { return pitch_; }
     virtual const UINT& GetSlicePitch() const override { return slicePitch_; }
 
-    virtual void* const GetMem() override { return reinterpret_cast<void*>(cudaSurface_); }
-    virtual void*& GetMemPtr() override { return reinterpret_cast<void*&>(cudaSurface_); }
+    virtual void* const GetMem() override { return reinterpret_cast<void*>(cudaArray_); }
+    virtual void*& GetMemPtr() override { return reinterpret_cast<void*&>(cudaArray_); }
 
-    virtual cudaSurfaceObject_t& GetSurfaceObj() { return cudaSurface_; }
-
-    virtual void Malloc
-    (
-        UINT byteWidth, UINT pitch = 1, UINT slicePitch = 1,
-        DXGI_FORMAT format = DXGI_FORMAT_UNKNOWN
-    ) override;
-    virtual void Free() override;
+    virtual void Assign(void* const mem, UINT byteWidth, UINT pitch = 1, UINT slicePitch = 1) override;
+    virtual void Unassign() override;
 };
 
 class CRC_API CRCID3D11Texture2DFactoryL0_0 : public ICRCFactory

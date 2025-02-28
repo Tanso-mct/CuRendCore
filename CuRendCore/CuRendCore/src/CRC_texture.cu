@@ -18,7 +18,7 @@ CRCTexture2D::CRCTexture2D(CRC_TEXTURE2D_DESC& desc)
     (
         CRC::GetBytesPerPixel(desc.Format()) * desc.Width() * desc.Height(), 
         CRC::GetBytesPerPixel(desc.Format()) * desc.Width(), 
-        CRC::GetBytesPerPixel(desc.Format()) * desc.Width() * desc.Height(),
+        1,
         desc.Format()
     );
 
@@ -33,65 +33,15 @@ CRCTexture2D::CRCTexture2D(CRC_TEXTURE2D_DESC& desc)
     desc_ = desc.Desc();
 }
 
+CRCTexture2D::~CRCTexture2D()
+{
+    if (cudaArray_) Free();
+}
+
 HRESULT CRCTexture2D::GetType(D3D11_RESOURCE_DIMENSION &type)
 {
     type = D3D11_RESOURCE_DIMENSION::D3D11_RESOURCE_DIMENSION_TEXTURE2D;
     return S_OK;
-}
-
-void CRCTexture2D::Malloc(UINT byteWidth, UINT pitch, UINT slicePitch, DXGI_FORMAT format)
-{
-    if (cudaArray_)
-    {
-#ifndef NDEBUG
-        CRC::CoutError("Texture2D device memory already allocated.");
-#endif
-        throw std::runtime_error("Texture2D device memory already allocated.");
-    }
-
-    byteWidth_ = byteWidth;
-    pitch_ = pitch;
-    slicePitch_ = slicePitch;
-
-    UINT width = pitch / CRC::GetBytesPerPixel(format);
-    UINT height = byteWidth / pitch_;
-
-    cudaChannelFormatDesc channelDesc;
-    CRC::CreateCudaChannelDescFromDXGIFormat(channelDesc, format);
-
-    CRC::CheckCuda(cudaMallocArray(&cudaArray_, &channelDesc, width, height));
-    
-#ifndef NDEBUG
-    CRC::Cout
-    (
-        "Texture2D device memory allocated.", "\n", 
-        "ByteWidth :", byteWidth_, "\n",
-        "Pitch :", pitch_, "\n",
-        "SlicePitch :", slicePitch_
-    );
-#endif
-}
-
-void CRCTexture2D::Free()
-{
-    if (!cudaArray_)
-    {
-#ifndef NDEBUG
-        CRC::CoutError("Texture2D device memory not allocated.");
-#endif
-        throw std::runtime_error("Texture2D device memory not allocated.");
-    }
-
-    byteWidth_ = 0;
-    pitch_ = 0;
-    slicePitch_ = 0;
-
-    CRC::CheckCuda(cudaFreeArray(cudaArray_));
-    cudaArray_ = nullptr;
-
-#ifndef NDEBUG
-    CRC::Cout("Texture2D device memory free.");
-#endif
 }
 
 const void CRCTexture2D::GetDesc(D3D11_TEXTURE2D_DESC *dst)
@@ -163,30 +113,122 @@ const UINT &CRCID3D11Texture2D::GetSlicePitch() const
     return desc.Width * desc.Height * CRC::GetBytesPerPixel(desc.Format);
 }
 
-CRCTextureSurface::~CRCTextureSurface()
+void CRCTexture2D::Malloc(UINT byteWidth, UINT pitch, UINT slicePitch, DXGI_FORMAT format)
 {
-    if (cudaSurface_ != 0) Free();
+    if (cudaArray_)
+    {
+#ifndef NDEBUG
+        CRC::CoutError("Texture2D device memory already allocated.");
+#endif
+        throw std::runtime_error("Texture2D device memory already allocated.");
+    }
+
+    byteWidth_ = byteWidth;
+    pitch_ = pitch;
+    slicePitch_ = slicePitch;
+
+    UINT width = pitch / CRC::GetBytesPerPixel(format);
+    UINT height = byteWidth / pitch_;
+
+    cudaChannelFormatDesc channelDesc;
+    CRC::CreateCudaChannelDescFromDXGIFormat(channelDesc, format);
+
+    CRC::CheckCuda(cudaMallocArray(&cudaArray_, &channelDesc, width, height));
+    
+#ifndef NDEBUG
+    CRC::Cout
+    (
+        "Texture2D device memory allocated.", "\n", 
+        "ByteWidth :", byteWidth_, "\n",
+        "Pitch :", pitch_, "\n",
+        "SlicePitch :", slicePitch_
+    );
+#endif
 }
 
-HRESULT CRCTextureSurface::GetType(D3D11_RESOURCE_DIMENSION &type)
+void CRCTexture2D::Free()
 {
-    return E_NOTIMPL;
+    if (!cudaArray_)
+    {
+#ifndef NDEBUG
+        CRC::CoutError("Texture2D device memory not allocated.");
+#endif
+        throw std::runtime_error("Texture2D device memory not allocated.");
+    }
+
+    byteWidth_ = 0;
+    pitch_ = 0;
+    slicePitch_ = 0;
+
+    CRC::CheckCuda(cudaFreeArray(cudaArray_));
+    cudaArray_ = nullptr;
+
+#ifndef NDEBUG
+    CRC::Cout("Texture2D device memory free.");
+#endif
 }
 
-const void CRCTextureSurface::GetDesc(D3D11_TEXTURE2D_DESC *dst)
+CRCTexutre2DAttached::CRCTexutre2DAttached(D3D11_TEXTURE2D_DESC &desc)
+{
+    desc_ = desc;
+}
+
+CRCTexutre2DAttached::~CRCTexutre2DAttached()
+{
+    if (cudaArray_) Unassign();
+}
+
+HRESULT CRCTexutre2DAttached::GetType(D3D11_RESOURCE_DIMENSION &type)
+{
+    type = D3D11_RESOURCE_DIMENSION::D3D11_RESOURCE_DIMENSION_TEXTURE2D;
+    return S_OK;
+}
+
+const void CRCTexutre2DAttached::GetDesc(D3D11_TEXTURE2D_DESC *dst)
 {
     std::memcpy(dst, &desc_, sizeof(D3D11_TEXTURE2D_DESC));
 }
 
-void CRCTextureSurface::Malloc(UINT byteWidth, UINT pitch, UINT slicePitch, DXGI_FORMAT format)
+void CRCTexutre2DAttached::Assign(void *const mem, UINT byteWidth, UINT pitch, UINT slicePitch)
 {
+    if (cudaArray_)
+    {
 #ifndef NDEBUG
-    CRC::CoutError("Surface texture can't allocate by client.");
+        CRC::CoutError("Texture2D device memory already allocated.");
+#endif
+        throw std::runtime_error("Texture2D device memory already allocated.");
+    }
+
+    byteWidth_ = byteWidth;
+    pitch_ = pitch;
+    slicePitch_ = slicePitch;
+
+    cudaArray_ = reinterpret_cast<cudaArray*>(mem);
+
+#ifndef NDEBUG
+    CRC::Cout
+    (
+        "Texture2D device memory assigned.", "\n",
+        "ByteWidth :", byteWidth_, "\n",
+        "Pitch :", pitch_, "\n",
+        "SlicePitch :", slicePitch_
+    );
 #endif
 }
 
-void CRCTextureSurface::Free()
+void CRCTexutre2DAttached::Unassign()
 {
-    CRC::CheckCuda(cudaDestroySurfaceObject(cudaSurface_));
-    cudaSurface_ = 0;
+    if (!cudaArray_)
+    {
+#ifndef NDEBUG
+        CRC::CoutError("Texture2D device memory not allocated.");
+#endif
+        throw std::runtime_error("Texture2D device memory not allocated.");
+    }
+
+    byteWidth_ = 0;
+    pitch_ = 0;
+    slicePitch_ = 0;
+
+    cudaArray_ = nullptr;
 }

@@ -168,6 +168,8 @@ TEST(CuRendCore, CreateCRCSwapChain)
         CRC::CreateD3D11DeviceAndSwapChain(swapChainDesc, device, swapChain);
     }
 
+    swapChain->GetDesc(&swapChainDesc.GetDxgiDesc());
+
     // Create CRC swap chain.
     std::unique_ptr<ICRCContainable> swapChainAttr;
     {
@@ -275,6 +277,8 @@ TEST(CuRendCore, GetSwapChainBuffer)
         CRC::CreateD3D11DeviceAndSwapChain(swapChainDesc, device, swapChain);
     }
 
+    swapChain->GetDesc(&swapChainDesc.GetDxgiDesc());
+
     // Create CRC swap chain.
     std::unique_ptr<ICRCContainable> crcSwapChain;
     {
@@ -327,6 +331,8 @@ TEST(CuRendCore, PresentSwapChain)
 
         CRC::CreateD3D11DeviceAndSwapChain(swapChainDesc, device, swapChain);
     }
+
+    swapChain->GetDesc(&swapChainDesc.GetDxgiDesc());
 
     // Create CRC swap chain.
     std::unique_ptr<ICRCContainable> crcSwapChain;
@@ -382,6 +388,8 @@ TEST(CuRendCore, ResizeSwapChain)
 
         CRC::CreateD3D11DeviceAndSwapChain(swapChainDesc, device, swapChain);
     }
+
+    swapChain->GetDesc(&swapChainDesc.GetDxgiDesc());
 
     // Create CRC swap chain.
     std::unique_ptr<ICRCContainable> crcSwapChain;

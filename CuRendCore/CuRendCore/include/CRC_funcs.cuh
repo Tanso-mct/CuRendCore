@@ -148,10 +148,9 @@ HRESULT MapCudaResource(cudaGraphicsResource_t& cudaResource, cudaStream_t strea
 HRESULT UnmapCudaResource(cudaGraphicsResource_t& cudaResource, cudaStream_t stream = 0);
 cudaArray_t GetCudaMappedArray(cudaGraphicsResource_t& cudaResource);
 
-CRC_API std::unique_ptr<ICRCTexture2D> CreateCudaSurfaceObjects
+CRC_API std::unique_ptr<ICRCTexture2D> CreateTexture2DFromCudaResource
 (
     cudaGraphicsResource_t& cudaResource, const UINT& width, const UINT& height, const DXGI_FORMAT& format
 );
-HRESULT CreateCudaSurfaceObject(cudaSurfaceObject_t& surfaceObject, const cudaResourceDesc& desc);
 
 }

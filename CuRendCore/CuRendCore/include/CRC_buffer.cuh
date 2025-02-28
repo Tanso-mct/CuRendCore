@@ -53,7 +53,8 @@ public:
     virtual std::unique_ptr<ICRCContainable> Create(IDESC& desc) const override;
 };
 
-class CRC_API CRCBuffer : public ICRCContainable, public ICRCCudaResource, public ICRCBuffer, public ICRCMem
+class CRC_API CRCBuffer 
+: public ICRCContainable, public ICRCCudaResource, public ICRCBuffer, public ICRCAllocatedMem
 {
 private:
     D3D11_BUFFER_DESC desc_ = {};

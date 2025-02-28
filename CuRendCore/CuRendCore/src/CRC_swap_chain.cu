@@ -34,7 +34,7 @@ CRCSwapChain::CRCSwapChain
     backSurfaces_.resize(bufferCount_);
     for (int i = 0; i < bufferCount_; i++)
     {
-        backSurfaces_[i] = CRC::CreateCudaSurfaceObjects
+        backSurfaces_[i] = CRC::CreateTexture2DFromCudaResource
         (
             cudaResources_[i], desc.BufferDesc.Width, desc.BufferDesc.Height, desc.BufferDesc.Format
         );
@@ -101,7 +101,7 @@ HRESULT CRCSwapChain::ResizeBuffers
     backSurfaces_.resize(bufferCount);
     for (int i = 0; i < bufferCount; i++)
     {
-        backSurfaces_[i] = CRC::CreateCudaSurfaceObjects
+        backSurfaces_[i] = CRC::CreateTexture2DFromCudaResource
         (
             cudaResources_[i], width, height, newFormat
         );
@@ -111,9 +111,6 @@ HRESULT CRCSwapChain::ResizeBuffers
 
     hr = CRC::MapCudaResource(cudaResources_[frameIndex_]);
     if (FAILED(hr)) return hr;
-
-    cudaArray_t backBufferArray = CRC::GetCudaMappedArray(cudaResources_[frameIndex_]);
-    if (!backBufferArray) return E_FAIL;
 
     backBuffer_ = backSurfaces_[frameIndex_].get();
     return S_OK;
@@ -131,9 +128,6 @@ HRESULT CRCSwapChain::Present(UINT syncInterval, UINT flags)
 
     hr = CRC::MapCudaResource(cudaResources_[frameIndex_]);
     if (FAILED(hr)) return hr;
-
-    cudaArray_t backBufferArray = CRC::GetCudaMappedArray(cudaResources_[frameIndex_]);
-    if (!backBufferArray) return E_FAIL;
 
     backBuffer_ = backSurfaces_[frameIndex_].get();
     return S_OK;
