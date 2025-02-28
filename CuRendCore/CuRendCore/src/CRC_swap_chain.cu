@@ -26,7 +26,7 @@ CRCSwapChain::CRCSwapChain
 {
     HRESULT hr = CRC::RegisterCudaResources
     (
-        cudaResources_, cudaGraphicsRegisterFlagsNone,
+        cudaResources_, cudaGraphicsRegisterFlagsSurfaceLoadStore,
         bufferCount_, d3d11SwapChain_.Get()
     );
     if (FAILED(hr)) throw std::runtime_error("Failed to create CRCSwapChain by registering CUDA resources.");
@@ -78,7 +78,7 @@ HRESULT CRCSwapChain::ResizeBuffers
 
     hr = CRC::RegisterCudaResources
     (
-        cudaResources_, cudaGraphicsRegisterFlagsNone, 
+        cudaResources_, cudaGraphicsRegisterFlagsSurfaceLoadStore, 
         bufferCount, d3d11SwapChain_.Get()
     );
     if (FAILED(hr)) return hr;
