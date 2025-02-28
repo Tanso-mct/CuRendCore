@@ -10,6 +10,8 @@
 #include "CRC_device.cuh"
 #include "CRC_swap_chain.cuh"
 
+#include "CRC_texture.cuh"
+
 HRESULT CRC::ShowWindowCRC(HWND& hWnd)
 {
     if (!hWnd) return E_FAIL;
@@ -72,6 +74,22 @@ UINT CRC::GetBytesPerPixel(const DXGI_FORMAT &format)
 
     default:
         throw std::runtime_error("This DXGI_FORMAT is not supported by CuRendCore.");
+        return 0;
+    }
+}
+
+HRESULT CRC::CreateCudaChannelDescFromDXGIFormat(cudaChannelFormatDesc &channelDesc, const DXGI_FORMAT &format)
+{
+    switch (format)
+    {
+    case DXGI_FORMAT_R8G8B8A8_UNORM:
+    case DXGI_FORMAT_D24_UNORM_S8_UINT:
+        channelDesc = cudaCreateChannelDesc<uchar4>();
+        return S_OK;
+
+    default:
+        throw std::runtime_error("This DXGI_FORMAT is not supported by CuRendCore.");
+        return E_FAIL;
     }
 }
 
@@ -282,4 +300,77 @@ cudaArray_t CRC::GetCudaMappedArray(cudaGraphicsResource_t& cudaResource)
     }
 
     return cudaArray;
+}
+
+CRC_API std::unique_ptr<ICRCTexture2D> CRC::CreateCudaSurfaceObjects
+(
+    cudaGraphicsResource_t& cudaResource, const UINT& width, const UINT& height, const DXGI_FORMAT& format
+){
+    HRESULT hr = CRC::MapCudaResource(cudaResource);
+    if (FAILED(hr))
+    {
+#ifndef NDEBUG
+        CRC::CoutError("Failed to create surface objects by mapping CUDA resources.");
+#endif
+        return nullptr;
+    }
+
+    cudaArray_t backBufferArray = CRC::GetCudaMappedArray(cudaResource);
+    if (!backBufferArray)
+    {
+#ifndef NDEBUG
+        CRC::CoutError("Failed to create surface objects by getting CUDA mapped array.");
+#endif
+        return nullptr;
+    }
+
+    std::unique_ptr<ICRCTexture2D> rtTexture = std::make_unique<CRCTextureSurface>
+    (
+        CRC::GetBytesPerPixel(format) * width * height, 
+        CRC::GetBytesPerPixel(format) * width, 
+        CRC::GetBytesPerPixel(format) * width * height
+    );
+
+    CRCTextureSurface* backSurface = CRC::As<CRCTextureSurface>(rtTexture.get());
+    if (!backSurface)
+    {
+#ifndef NDEBUG
+        CRC::CoutError("Failed to create surface objects by casting back surface to ICRCMem.");
+#endif
+        return nullptr;
+    }
+
+    cudaResourceDesc resDesc = {};
+    resDesc.resType = cudaResourceTypeArray;
+    resDesc.res.array.array = backBufferArray;
+    hr = CRC::CreateCudaSurfaceObject(backSurface->GetSurfaceObj(), resDesc);
+
+    hr = CRC::UnmapCudaResource(cudaResource);
+    if (FAILED(hr))
+    {
+#ifndef NDEBUG
+        CRC::CoutError("Failed to create surface objects by unmapping CUDA resources.");
+#endif
+        return nullptr;
+    }
+
+    return rtTexture;
+}
+
+HRESULT CRC::CreateCudaSurfaceObject(cudaSurfaceObject_t &surfaceObject, const cudaResourceDesc &desc)
+{
+    cudaError_t err = cudaCreateSurfaceObject(&surfaceObject, &desc);
+    if (err != cudaSuccess)
+    {
+#ifndef NDEBUG
+        CoutError("Failed to create CUDA surface object.");
+#endif
+        return E_FAIL;
+    }
+
+#ifndef NDEBUG
+    Cout("Created CUDA surface object.");
+#endif
+
+    return S_OK;
 }

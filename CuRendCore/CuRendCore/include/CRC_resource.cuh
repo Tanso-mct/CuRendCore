@@ -14,13 +14,13 @@ class CRC_API ICRCResource
 {
 public:
     virtual ~ICRCResource() = default;
+    virtual HRESULT GetType(D3D11_RESOURCE_DIMENSION& type) = 0;
 };
 
 class CRC_API ICRCCudaResource : public ICRCResource
 {
 public:
     virtual ~ICRCCudaResource() = default;
-    virtual void* const Get() const = 0;
 };
 
 class CRC_API ICRCD3D11Resource : public ICRCResource

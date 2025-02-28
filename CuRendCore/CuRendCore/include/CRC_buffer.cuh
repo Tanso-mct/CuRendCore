@@ -41,9 +41,9 @@ class CRC_API ICRCBuffer
 {
 public:
     virtual ~ICRCBuffer() = default;
+    virtual const void GetDesc(D3D11_BUFFER_DESC* dst) = 0;
 
     virtual const UINT& GetByteWidth() const = 0;
-    virtual const void GetDesc(D3D11_BUFFER_DESC* dst) = 0;
 };
 
 class CRC_API CRCBufferFactoryL0_0 : public ICRCFactory
@@ -53,22 +53,33 @@ public:
     virtual std::unique_ptr<ICRCContainable> Create(IDESC& desc) const override;
 };
 
-class CRC_API CRCBuffer : public ICRCContainable, public ICRCCudaResource, public ICRCBuffer
+class CRC_API CRCBuffer : public ICRCContainable, public ICRCCudaResource, public ICRCBuffer, public ICRCMem
 {
 private:
     D3D11_BUFFER_DESC desc_ = {};
-    std::unique_ptr<ICRCMem> dMem_ = nullptr;
+
+    void* memPtr_ = nullptr;
+    UINT byteWidth_ = 0;
 
 public:
     CRCBuffer();
     CRCBuffer(CRC_BUFFER_DESC& desc);
     virtual ~CRCBuffer() override = default;
 
-    virtual void* const Get() const { return dMem_->Get();}
-    virtual void*& GetPtr() { return dMem_->GetPtr(); }
-
-    virtual const UINT& GetByteWidth() const override { return dMem_->GetByteWidth(); }
+    virtual HRESULT GetType(D3D11_RESOURCE_DIMENSION& type) override;
     virtual const void GetDesc(D3D11_BUFFER_DESC* dst) override;
+
+    virtual void* const GetMem() override { return reinterpret_cast<void*>(memPtr_); }
+    virtual void*& GetMemPtr() override { return reinterpret_cast<void*&>(memPtr_); }
+
+    virtual const UINT& GetByteWidth() const override { return byteWidth_; }
+
+    virtual void Malloc
+    (
+        UINT byteWidth, UINT pitch = 1, UINT slicePitch = 1,
+        DXGI_FORMAT format = DXGI_FORMAT_UNKNOWN
+    ) override;
+    virtual void Free() override;
 };
 
 class CRC_API CRCID3D11BufferFactoryL0_0 : public ICRCFactory
@@ -89,7 +100,8 @@ public:
 
     virtual Microsoft::WRL::ComPtr<ID3D11Resource>& GetResource();
     virtual Microsoft::WRL::ComPtr<ID3D11Buffer>& Get() { return d3d11Buffer_; }
+    virtual HRESULT GetType(D3D11_RESOURCE_DIMENSION& type) override;
 
-    virtual const UINT& GetByteWidth() const override;
     virtual const void GetDesc(D3D11_BUFFER_DESC* dst) override;
+    virtual const UINT& GetByteWidth() const override;
 };

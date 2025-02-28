@@ -34,6 +34,8 @@ class CRC_DEVICE_DESC;
 class ICRCSwapChain;
 class CRC_SWAP_CHAIN_DESC;
 
+class ICRCTexture2D;
+
 namespace CRC
 {
 
@@ -69,6 +71,7 @@ CRC_API HRESULT CreateCRCDeviceAndSwapChain
 );
 
 CRC_API UINT GetBytesPerPixel(const DXGI_FORMAT& format);
+HRESULT CreateCudaChannelDescFromDXGIFormat(cudaChannelFormatDesc& channelDesc, const DXGI_FORMAT& format);
 
 struct PairHash 
 {
@@ -144,5 +147,11 @@ HRESULT UnregisterCudaResourcesAtSwapChain
 HRESULT MapCudaResource(cudaGraphicsResource_t& cudaResource, cudaStream_t stream = 0);
 HRESULT UnmapCudaResource(cudaGraphicsResource_t& cudaResource, cudaStream_t stream = 0);
 cudaArray_t GetCudaMappedArray(cudaGraphicsResource_t& cudaResource);
+
+CRC_API std::unique_ptr<ICRCTexture2D> CreateCudaSurfaceObjects
+(
+    cudaGraphicsResource_t& cudaResource, const UINT& width, const UINT& height, const DXGI_FORMAT& format
+);
+HRESULT CreateCudaSurfaceObject(cudaSurfaceObject_t& surfaceObject, const cudaResourceDesc& desc);
 
 }

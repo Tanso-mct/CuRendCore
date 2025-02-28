@@ -57,11 +57,12 @@ private:
 
     UINT bufferCount_;
     DXGI_RATIONAL refreshRate_;
-
-    std::vector<cudaGraphicsResource_t> cudaResources_;
     UINT frameIndex_ = 0;
 
-    std::unique_ptr<CRCTexture2D> backBuffer_ = nullptr;
+    std::vector<cudaGraphicsResource_t> cudaResources_;
+    std::vector<std::unique_ptr<ICRCTexture2D>> backSurfaces_;
+
+    ICRCTexture2D* backBuffer_ = nullptr;
 
 public:
     CRCSwapChain
@@ -71,6 +72,10 @@ public:
     );
 
     ~CRCSwapChain() override;
+
+    // Delete copy constructor and copy assignment
+    CRCSwapChain(const CRCSwapChain&) = delete;
+    CRCSwapChain& operator=(const CRCSwapChain&) = delete;
 
     Microsoft::WRL::ComPtr<IDXGISwapChain>& GetD3D11SwapChain() override { return d3d11SwapChain_; }
 
