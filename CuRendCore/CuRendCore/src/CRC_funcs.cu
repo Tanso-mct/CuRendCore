@@ -312,7 +312,7 @@ CRC_API std::unique_ptr<ICRCTexture2D> CRC::CreateTexture2DFromCudaResource
     if (FAILED(hr))
     {
 #ifndef NDEBUG
-        CRC::CoutError("Failed to create surface objects by mapping CUDA resources.");
+        CRC::CoutError("Failed to create texture2d from cuda resource by mapping CUDA resources.");
 #endif
         return nullptr;
     }
@@ -321,7 +321,7 @@ CRC_API std::unique_ptr<ICRCTexture2D> CRC::CreateTexture2DFromCudaResource
     if (!backBufferArray)
     {
 #ifndef NDEBUG
-        CRC::CoutError("Failed to create surface objects by getting CUDA mapped array.");
+        CRC::CoutError("Failed to create texture2d from cuda resource by getting CUDA mapped array.");
 #endif
         return nullptr;
     }
@@ -341,7 +341,7 @@ CRC_API std::unique_ptr<ICRCTexture2D> CRC::CreateTexture2DFromCudaResource
     if (!backBuffer)
     {
 #ifndef NDEBUG
-        CRC::CoutError("Failed to create surface objects by casting back surface to ICRCMem.");
+        CRC::CoutError("Failed to create texture2d from cuda resource by casting back surface to ICRCMem.");
 #endif
         return nullptr;
     }
@@ -357,7 +357,68 @@ CRC_API std::unique_ptr<ICRCTexture2D> CRC::CreateTexture2DFromCudaResource
     if (FAILED(hr))
     {
 #ifndef NDEBUG
-        CRC::CoutError("Failed to create surface objects by unmapping CUDA resources.");
+        CRC::CoutError("Failed to create texture2d from cuda resource by unmapping CUDA resources.");
+#endif
+        return nullptr;
+    }
+
+    return rtTexture;
+}
+
+CRC_API std::unique_ptr<ICRCTexture2D> CRC::CreateSurface2DFromCudaResource
+(
+    cudaGraphicsResource_t &cudaResource, const UINT &width, const UINT &height, const DXGI_FORMAT &format
+){
+    HRESULT hr = CRC::MapCudaResource(cudaResource);
+    if (FAILED(hr))
+    {
+#ifndef NDEBUG
+        CRC::CoutError("Failed to create surface objects from cuda resource by mapping CUDA resources.");
+#endif
+        return nullptr;
+    }
+
+    cudaArray_t backBufferArray = CRC::GetCudaMappedArray(cudaResource);
+    if (!backBufferArray)
+    {
+#ifndef NDEBUG
+        CRC::CoutError("Failed to create surface objects from cuda resource by getting CUDA mapped array.");
+#endif
+        return nullptr;
+    }
+
+    D3D11_TEXTURE2D_DESC desc;
+    desc.Width = width;
+    desc.Height = height;
+    desc.MipLevels = 1;
+    desc.ArraySize = 1;
+    desc.Format = format;
+    desc.SampleDesc.Count = 1;
+    desc.SampleDesc.Quality = 0;
+
+    std::unique_ptr<ICRCTexture2D> rtTexture = std::make_unique<CRCSurface2D>(desc);
+
+    CRCSurface2D* backBuffer = CRC::As<CRCSurface2D>(rtTexture.get());
+    if (!backBuffer)
+    {
+#ifndef NDEBUG
+        CRC::CoutError("Failed to create surface objects from cuda resource by casting back surface to ICRCMem.");
+#endif
+        return nullptr;
+    }
+
+    backBuffer->Assign
+    (
+        backBufferArray, 
+        CRC::GetBytesPerPixel(format) * width * height,
+        width * CRC::GetBytesPerPixel(format)
+    );
+
+    hr = CRC::UnmapCudaResource(cudaResource);
+    if (FAILED(hr))
+    {
+#ifndef NDEBUG
+        CRC::CoutError("Failed to create surface objects from cuda resource by unmapping CUDA resources.");
 #endif
         return nullptr;
     }

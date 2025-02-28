@@ -97,24 +97,30 @@ template <typename... Args>
 CRC_API void Cout(Args&... args)
 {
     std::cout << CRC::C_COLOR_MSG << CRC::C_TAG << CRC::C_COLOR_RESET << " ";
-    (void)std::initializer_list<int>{(std::cout << args << " ", 0)...};
-    std::cout << std::endl << CRC::C_COLOR_MSG << CRC::C_TAG_END << CRC::C_COLOR_RESET << std::endl;
+    std::initializer_list<int> ilist = {(std::cout << args << " ", 0)...};
+
+    if (ilist.size() == 1) std::cout << std::endl;
+    else std::cout << std::endl << CRC::C_COLOR_MSG << CRC::C_TAG_END << CRC::C_COLOR_RESET << std::endl;
 }
 
 template <typename... Args>
 CRC_API void CoutError(Args&... args)
 {
     std::cout << CRC::C_COLOR_ERROR << CRC::C_TAG << CRC::C_COLOR_RESET << " ";
-    (void)std::initializer_list<int>{(std::cout << args << " ", 0)...};
-    std::cout << std::endl << CRC::C_COLOR_ERROR << CRC::C_TAG_END << CRC::C_COLOR_RESET << std::endl;
+    std::initializer_list<int> ilist = {(std::cout << args << " ", 0)...};
+    
+    if (ilist.size() == 1) std::cout << std::endl;
+    else std::cout << std::endl << CRC::C_COLOR_ERROR << CRC::C_TAG_END << CRC::C_COLOR_RESET << std::endl;
 }
 
 template <typename... Args>
 CRC_API void CoutWarning(Args&... args)
 {
     std::cout << CRC::C_COLOR_WARNING << CRC::C_TAG << CRC::C_COLOR_RESET << " ";
-    (void)std::initializer_list<int>{(std::cout << args << " ", 0)...};
-    std::cout << std::endl << CRC::C_COLOR_WARNING << CRC::C_TAG_END << CRC::C_COLOR_RESET << std::endl;
+    std::initializer_list<int> ilist = {(std::cout << args << " ", 0)...};
+    
+    if (ilist.size() == 1) std::cout << std::endl;
+    else std::cout << std::endl << CRC::C_COLOR_WARNING << CRC::C_TAG_END << CRC::C_COLOR_RESET << std::endl;
 }
 
 HRESULT RegisterCudaResources
@@ -149,6 +155,11 @@ HRESULT UnmapCudaResource(cudaGraphicsResource_t& cudaResource, cudaStream_t str
 cudaArray_t GetCudaMappedArray(cudaGraphicsResource_t& cudaResource);
 
 CRC_API std::unique_ptr<ICRCTexture2D> CreateTexture2DFromCudaResource
+(
+    cudaGraphicsResource_t& cudaResource, const UINT& width, const UINT& height, const DXGI_FORMAT& format
+);
+
+CRC_API std::unique_ptr<ICRCTexture2D> CreateSurface2DFromCudaResource
 (
     cudaGraphicsResource_t& cudaResource, const UINT& width, const UINT& height, const DXGI_FORMAT& format
 );

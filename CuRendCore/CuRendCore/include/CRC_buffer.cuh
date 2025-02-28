@@ -65,7 +65,7 @@ private:
 public:
     CRCBuffer();
     CRCBuffer(CRC_BUFFER_DESC& desc);
-    virtual ~CRCBuffer() override = default;
+    virtual ~CRCBuffer() override;
 
     virtual HRESULT GetType(D3D11_RESOURCE_DIMENSION& type) override;
     virtual const void GetDesc(D3D11_BUFFER_DESC* dst) override;

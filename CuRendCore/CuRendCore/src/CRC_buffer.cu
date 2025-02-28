@@ -31,6 +31,11 @@ CRCBuffer::CRCBuffer(CRC_BUFFER_DESC &desc)
     desc_ = desc.Desc();
 }
 
+CRCBuffer::~CRCBuffer()
+{
+    if (memPtr_) Free();
+}
+
 HRESULT CRCBuffer::GetType(D3D11_RESOURCE_DIMENSION &type)
 {
     type = D3D11_RESOURCE_DIMENSION_BUFFER;
@@ -80,6 +85,10 @@ void CRCBuffer::Free()
 
     CRC::CheckCuda(cudaFree(memPtr_));
     memPtr_ = nullptr;
+
+#ifndef NDEBUG
+    CRC::Cout("Buffer device memory free.");
+#endif
 }
 
 std::unique_ptr<ICRCContainable> CRCID3D11BufferFactoryL0_0::Create(IDESC &desc) const
