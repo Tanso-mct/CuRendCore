@@ -44,9 +44,9 @@ CRCTexture2D::~CRCTexture2D()
     if (cudaArray_) Free();
 }
 
-HRESULT CRCTexture2D::GetType(D3D11_RESOURCE_DIMENSION &type)
+HRESULT CRCTexture2D::GetType(UINT &rcType)
 {
-    type = D3D11_RESOURCE_DIMENSION::D3D11_RESOURCE_DIMENSION_TEXTURE2D;
+    rcType = rcType_;
     return S_OK;
 }
 
@@ -102,9 +102,9 @@ Microsoft::WRL::ComPtr<ID3D11Resource> &CRCID3D11Texture2D::GetResource()
     return resource;
 }
 
-HRESULT CRCID3D11Texture2D::GetType(D3D11_RESOURCE_DIMENSION &type)
+HRESULT CRCID3D11Texture2D::GetType(UINT &rcType)
 {
-    d3d11Texture2D_->GetType(&type);
+    rcType = 0;
     return S_OK;
 }
 
@@ -192,19 +192,14 @@ void CRCTexture2D::Free()
 #endif
 }
 
-CRCTexutre2DAttached::CRCTexutre2DAttached(D3D11_TEXTURE2D_DESC &desc)
-{
-    desc_ = desc;
-}
-
 CRCTexutre2DAttached::~CRCTexutre2DAttached()
 {
     if (cudaArray_) Unassign();
 }
 
-HRESULT CRCTexutre2DAttached::GetType(D3D11_RESOURCE_DIMENSION &type)
+HRESULT CRCTexutre2DAttached::GetType(UINT &rcType)
 {
-    type = D3D11_RESOURCE_DIMENSION::D3D11_RESOURCE_DIMENSION_TEXTURE2D;
+    rcType = rcType_;
     return S_OK;
 }
 
@@ -268,19 +263,14 @@ void CRCTexutre2DAttached::Unassign()
 #endif
 }
 
-CRCSurface2D::CRCSurface2D(D3D11_TEXTURE2D_DESC &desc)
-{
-    desc_ = desc;
-}
-
 CRCSurface2D::~CRCSurface2D()
 {
     if (cudaSurface_ != 0) Unassign();
 }
 
-HRESULT CRCSurface2D::GetType(D3D11_RESOURCE_DIMENSION &type)
+HRESULT CRCSurface2D::GetType(UINT &rcType)
 {
-    type = D3D11_RESOURCE_DIMENSION::D3D11_RESOURCE_DIMENSION_TEXTURE2D;
+    rcType = rcType_;
     return S_OK;
 }
 

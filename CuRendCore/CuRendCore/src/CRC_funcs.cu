@@ -122,6 +122,81 @@ void CRC::CreateCudaChannelDescFromDXGIFormat(cudaChannelFormatDesc &channelDesc
     }
 }
 
+CRC_API void CRC::GetCpuGpuRWFlags
+(
+    bool &cpuRead, bool &cpuWrite, bool &gpuRead, bool &gpuWrite, 
+    const D3D11_USAGE &usage, const UINT &cpuAccessFlags
+){
+    switch (usage)
+    {
+    case D3D11_USAGE_DEFAULT:
+        gpuRead = true;
+        gpuWrite = true;
+        break;
+
+    case D3D11_USAGE_IMMUTABLE:
+        gpuRead = true;
+        break;
+
+    case D3D11_USAGE_DYNAMIC:
+        gpuRead = true;
+        cpuWrite = true;
+        break;
+
+    case D3D11_USAGE_STAGING:
+        gpuRead = true;
+        gpuWrite = true;
+        cpuRead = true;
+        cpuWrite = true;
+        break;
+    }
+
+    switch (cpuAccessFlags)
+    {
+    case D3D11_CPU_ACCESS_READ:
+        cpuRead = true;
+        break;
+
+    case D3D11_CPU_ACCESS_WRITE:
+        cpuWrite = true;
+        break;
+    }
+}
+
+CRC_API UINT CRC::GetCRCResourceType(const D3D11_BUFFER_DESC &desc)
+{
+    bool gpuR = false;
+    bool gpuW = false;
+    bool cpuR = false;
+    bool cpuW = false;
+    GetCpuGpuRWFlags(cpuR, cpuW, gpuR, gpuW, desc.Usage, desc.CPUAccessFlags);
+
+    UINT type = 0;
+    type &= cpuR ? (UINT)CRC_RESOURCE_TYPE::BUFFER_CPU_R : 0;
+    type &= cpuW ? (UINT)CRC_RESOURCE_TYPE::BUFFER_CPU_W : 0;
+    type &= gpuR ? (UINT)CRC_RESOURCE_TYPE::BUFFER_GPU_R : 0;
+    type &= gpuW ? (UINT)CRC_RESOURCE_TYPE::BUFFER_GPU_W : 0;
+
+    return type;
+}
+
+UINT CRC::GetCRCResourceType(const D3D11_TEXTURE2D_DESC &desc)
+{
+    bool gpuR = false;
+    bool gpuW = false;
+    bool cpuR = false;
+    bool cpuW = false;
+    GetCpuGpuRWFlags(cpuR, cpuW, gpuR, gpuW, desc.Usage, desc.CPUAccessFlags);
+
+    UINT type = 0;
+    type &= cpuR ? (UINT)CRC_RESOURCE_TYPE::TEXTURE2D_CPU_R : 0;
+    type &= cpuW ? (UINT)CRC_RESOURCE_TYPE::TEXTURE2D_CPU_W : 0;
+    type &= gpuR ? (UINT)CRC_RESOURCE_TYPE::TEXTURE2D_GPU_R : 0;
+    type &= gpuW ? (UINT)CRC_RESOURCE_TYPE::TEXTURE2D_GPU_W : 0;
+
+    return type;
+}
+
 CRC_API void CRC::CheckCuda(cudaError_t call)
 {
     if (call != cudaSuccess)
@@ -277,7 +352,7 @@ CRC_API std::unique_ptr<ICRCTexture2D> CRC::CreateTexture2DFromCudaResource
     desc.SampleDesc.Count = 1;
     desc.SampleDesc.Quality = 0;
 
-    std::unique_ptr<ICRCTexture2D> rtTexture = std::make_unique<CRCTexutre2DAttached>(desc);
+    std::unique_ptr<ICRCTexture2D> rtTexture = std::make_unique<CRCTexutre2DAttached>();
 
     CRCTexutre2DAttached* backBuffer = CRC::As<CRCTexutre2DAttached>(rtTexture.get());
     if (!backBuffer)
@@ -315,7 +390,7 @@ CRC_API std::unique_ptr<ICRCTexture2D> CRC::CreateSurface2DFromCudaResource
     desc.SampleDesc.Count = 1;
     desc.SampleDesc.Quality = 0;
 
-    std::unique_ptr<ICRCTexture2D> rtTexture = std::make_unique<CRCSurface2D>(desc);
+    std::unique_ptr<ICRCTexture2D> rtTexture = std::make_unique<CRCSurface2D>();
 
     CRCSurface2D* backBuffer = CRC::As<CRCSurface2D>(rtTexture.get());
     if (!backBuffer)

@@ -66,17 +66,19 @@ class CRC_API CRCTexture2D
 private:
     D3D11_TEXTURE2D_DESC desc_ = {};
 
+    UINT rcType_ = 0;
     cudaArray *cudaArray_ = nullptr;
     UINT byteWidth_ = 0;
     UINT pitch_ = 0;
     UINT slicePitch_ = 0;
 
 public:
-    CRCTexture2D() = default;
+    CRCTexture2D() = delete;
+    
     CRCTexture2D(CRC_TEXTURE2D_DESC& desc);
     ~CRCTexture2D() override;
 
-    virtual HRESULT GetType(D3D11_RESOURCE_DIMENSION& type) override;
+    virtual HRESULT GetType(UINT& rcType) override;
     virtual const void GetDesc(D3D11_TEXTURE2D_DESC* dst) override;
 
     virtual const UINT& GetByteWidth() const override { return byteWidth_; }
@@ -100,6 +102,7 @@ class CRC_API CRCTexutre2DAttached
 private:
     D3D11_TEXTURE2D_DESC desc_ = {};
 
+    UINT rcType_ = 0;
     cudaArray *cudaArray_ = nullptr;
     UINT byteWidth_ = 0;
     UINT pitch_ = 0;
@@ -107,10 +110,9 @@ private:
 
 public:
     CRCTexutre2DAttached() = default;
-    CRCTexutre2DAttached(D3D11_TEXTURE2D_DESC& desc);
     ~CRCTexutre2DAttached() override;
 
-    virtual HRESULT GetType(D3D11_RESOURCE_DIMENSION& type) override;
+    virtual HRESULT GetType(UINT& rcType) override;
     virtual const void GetDesc(D3D11_TEXTURE2D_DESC* dst) override;
 
     virtual const UINT& GetByteWidth() const override { return byteWidth_; }
@@ -130,6 +132,7 @@ class CRC_API CRCSurface2D
 private:
     D3D11_TEXTURE2D_DESC desc_ = {};
 
+    UINT rcType_ = 0;
     cudaSurfaceObject_t cudaSurface_ = 0;
     UINT byteWidth_ = 0;
     UINT pitch_ = 0;
@@ -137,10 +140,9 @@ private:
 
 public:
     CRCSurface2D() = default;
-    CRCSurface2D(D3D11_TEXTURE2D_DESC& desc);
     ~CRCSurface2D() override;
 
-    virtual HRESULT GetType(D3D11_RESOURCE_DIMENSION& type) override;
+    virtual HRESULT GetType(UINT& rcType) override;
     virtual const void GetDesc(D3D11_TEXTURE2D_DESC* dst) override;
 
     virtual const UINT& GetByteWidth() const override { return byteWidth_; }
@@ -172,7 +174,7 @@ public:
 
     virtual Microsoft::WRL::ComPtr<ID3D11Resource>& GetResource() override;
     virtual Microsoft::WRL::ComPtr<ID3D11Texture2D>& Get() { return d3d11Texture2D_; }
-    virtual HRESULT GetType(D3D11_RESOURCE_DIMENSION& type) override;
+    virtual HRESULT GetType(UINT& rcType) override;
 
     virtual const void GetDesc(D3D11_TEXTURE2D_DESC* dst) override;
     virtual const UINT& GetByteWidth() const override;

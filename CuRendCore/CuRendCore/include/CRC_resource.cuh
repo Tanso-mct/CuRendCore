@@ -10,11 +10,25 @@
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
 
+enum class CRC_API CRC_RESOURCE_TYPE : UINT
+{
+    UNKNOWN = 0,
+    BUFFER_CPU_R,
+    BUFFER_CPU_W,
+    BUFFER_GPU_R,
+    BUFFER_GPU_W,
+
+    TEXTURE2D_CPU_R,
+    TEXTURE2D_CPU_W,
+    TEXTURE2D_GPU_R,
+    TEXTURE2D_GPU_W,
+};
+
 class CRC_API ICRCResource
 {
 public:
     virtual ~ICRCResource() = default;
-    virtual HRESULT GetType(D3D11_RESOURCE_DIMENSION& type) = 0;
+    virtual HRESULT GetType(UINT& rcType) = 0;
 };
 
 class CRC_API ICRCCudaResource : public ICRCResource

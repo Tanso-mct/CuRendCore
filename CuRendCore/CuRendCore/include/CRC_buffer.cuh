@@ -59,6 +59,7 @@ class CRC_API CRCBuffer
 private:
     D3D11_BUFFER_DESC desc_ = {};
 
+    UINT rcType_ = 0;
     void* memPtr_ = nullptr;
     UINT byteWidth_ = 0;
 
@@ -67,7 +68,7 @@ public:
     CRCBuffer(CRC_BUFFER_DESC& desc);
     virtual ~CRCBuffer() override;
 
-    virtual HRESULT GetType(D3D11_RESOURCE_DIMENSION& type) override;
+    virtual HRESULT GetType(UINT& rcType) override;
     virtual const void GetDesc(D3D11_BUFFER_DESC* dst) override;
 
     virtual void* const GetMem() override { return reinterpret_cast<void*>(memPtr_); }
@@ -101,7 +102,7 @@ public:
 
     virtual Microsoft::WRL::ComPtr<ID3D11Resource>& GetResource();
     virtual Microsoft::WRL::ComPtr<ID3D11Buffer>& Get() { return d3d11Buffer_; }
-    virtual HRESULT GetType(D3D11_RESOURCE_DIMENSION& type) override;
+    virtual HRESULT GetType(UINT& rcType) override;
 
     virtual const void GetDesc(D3D11_BUFFER_DESC* dst) override;
     virtual const UINT& GetByteWidth() const override;

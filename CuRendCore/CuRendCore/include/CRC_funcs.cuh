@@ -36,6 +36,8 @@ class CRC_SWAP_CHAIN_DESC;
 
 class ICRCTexture2D;
 
+enum class CRC_RESOURCE_TYPE : UINT;
+
 namespace CRC
 {
 
@@ -71,7 +73,16 @@ CRC_API HRESULT CreateCRCDeviceAndSwapChain
 );
 
 CRC_API UINT GetBytesPerPixel(const DXGI_FORMAT& format);
-void CreateCudaChannelDescFromDXGIFormat(cudaChannelFormatDesc& channelDesc, const DXGI_FORMAT& format);
+CRC_API void CreateCudaChannelDescFromDXGIFormat(cudaChannelFormatDesc& channelDesc, const DXGI_FORMAT& format);
+
+CRC_API void GetCpuGpuRWFlags
+(
+    bool& cpuRead, bool& cpuWrite, bool& gpuRead, bool& gpuWrite, 
+    const D3D11_USAGE& usage, const UINT& cpuAccessFlags
+);
+
+CRC_API UINT GetCRCResourceType(const D3D11_BUFFER_DESC& desc);
+CRC_API UINT GetCRCResourceType(const D3D11_TEXTURE2D_DESC& desc);
 
 struct PairHash 
 {

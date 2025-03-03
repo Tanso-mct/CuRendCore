@@ -42,9 +42,9 @@ CRCBuffer::~CRCBuffer()
     if (memPtr_) Free();
 }
 
-HRESULT CRCBuffer::GetType(D3D11_RESOURCE_DIMENSION &type)
+HRESULT CRCBuffer::GetType(UINT& rcType)
 {
-    type = D3D11_RESOURCE_DIMENSION_BUFFER;
+    rcType = rcType_;
     return S_OK;
 }
 
@@ -144,9 +144,9 @@ Microsoft::WRL::ComPtr<ID3D11Resource> &CRCID3D11Buffer::GetResource()
     return resource;
 }
 
-HRESULT CRCID3D11Buffer::GetType(D3D11_RESOURCE_DIMENSION & type)
+HRESULT CRCID3D11Buffer::GetType(UINT& rcType)
 {
-    d3d11Buffer_->GetType(&type);
+    rcType = 0;
     return S_OK;
 }
 
