@@ -165,7 +165,7 @@ HRESULT CRCIDXGISwapChain::GetBuffer(UINT buffer, ICRCTexture2D*& texture)
         return E_INVALIDARG;
     }
 
-    d3d11SwapChain_->GetBuffer(buffer, __uuidof(ID3D11Texture2D), &backBuffer->Get());
+    return d3d11SwapChain_->GetBuffer(buffer, __uuidof(ID3D11Texture2D), &backBuffer->Get());
 }
 
 HRESULT CRCIDXGISwapChain::ResizeBuffers
