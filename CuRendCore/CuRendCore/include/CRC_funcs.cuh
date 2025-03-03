@@ -71,7 +71,7 @@ CRC_API HRESULT CreateCRCDeviceAndSwapChain
 );
 
 CRC_API UINT GetBytesPerPixel(const DXGI_FORMAT& format);
-HRESULT CreateCudaChannelDescFromDXGIFormat(cudaChannelFormatDesc& channelDesc, const DXGI_FORMAT& format);
+void CreateCudaChannelDescFromDXGIFormat(cudaChannelFormatDesc& channelDesc, const DXGI_FORMAT& format);
 
 struct PairHash 
 {
@@ -123,19 +123,19 @@ CRC_API void CoutWarning(Args&... args)
     else std::cout << std::endl << CRC::C_COLOR_WARNING << CRC::C_TAG_END << CRC::C_COLOR_RESET << std::endl;
 }
 
-HRESULT RegisterCudaResources
+void RegisterCudaResources
 (
     std::vector<cudaGraphicsResource_t>& cudaResources, const cudaGraphicsRegisterFlags& flags,
     const UINT& bufferCount, IDXGISwapChain* d3d11SwapChain
 );
-HRESULT RegisterCudaResource
+void RegisterCudaResource
 (
     cudaGraphicsResource_t& cudaResource, const cudaGraphicsRegisterFlags& flags,
     ID3D11Texture2D* d3d11Texture
 );
 
-HRESULT UnregisterCudaResources(std::vector<cudaGraphicsResource_t>& cudaResources);
-HRESULT UnregisterCudaResource(cudaGraphicsResource_t& cudaResource);
+void UnregisterCudaResources(std::vector<cudaGraphicsResource_t>& cudaResources);
+void UnregisterCudaResource(cudaGraphicsResource_t& cudaResource);
 
 /**
  * @brief Un registers all CUDA resources from the swap chain.
@@ -144,14 +144,14 @@ HRESULT UnregisterCudaResource(cudaGraphicsResource_t& cudaResource);
  * so unregister after presenting and shifting the buffer.
  * The error is probably due to the fact that it is tied to RenderTarget, etc.
  */
-HRESULT UnregisterCudaResourcesAtSwapChain
+void UnregisterCudaResourcesAtSwapChain
 (
     std::vector<cudaGraphicsResource_t>& cudaResources, 
     Microsoft::WRL::ComPtr<IDXGISwapChain>& d3d11SwapChain, UINT& frameIndex, const UINT& bufferCount
 );
 
-HRESULT MapCudaResource(cudaGraphicsResource_t& cudaResource, cudaStream_t stream = 0);
-HRESULT UnmapCudaResource(cudaGraphicsResource_t& cudaResource, cudaStream_t stream = 0);
+void MapCudaResource(cudaGraphicsResource_t& cudaResource, cudaStream_t stream = 0);
+void UnmapCudaResource(cudaGraphicsResource_t& cudaResource, cudaStream_t stream = 0);
 cudaArray_t GetCudaMappedArray(cudaGraphicsResource_t& cudaResource);
 
 CRC_API std::unique_ptr<ICRCTexture2D> CreateTexture2DFromCudaResource

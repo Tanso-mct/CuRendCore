@@ -6,7 +6,13 @@
 std::unique_ptr<ICRCContainable> CRCBufferFactoryL0_0::Create(IDESC &desc) const
 {
     CRC_BUFFER_DESC* bufferDesc = CRC::As<CRC_BUFFER_DESC>(&desc);
-    if (!bufferDesc) return nullptr;
+    if (!bufferDesc)
+    {
+#ifndef NDEBUG
+        CRC::CoutWarning("Failed to create buffer from desc. Desc is not CRC_BUFFER_DESC.");
+#endif
+        return nullptr;
+    }
 
     std::unique_ptr<CRCBuffer> buffer = std::make_unique<CRCBuffer>(*bufferDesc);
     return buffer;
@@ -94,20 +100,38 @@ void CRCBuffer::Free()
 std::unique_ptr<ICRCContainable> CRCID3D11BufferFactoryL0_0::Create(IDESC &desc) const
 {
     CRC_BUFFER_DESC* bufferDesc = CRC::As<CRC_BUFFER_DESC>(&desc);
-    if (!bufferDesc) return nullptr;
+    if (!bufferDesc)
+    {
+#ifndef NDEBUG
+        CRC::CoutWarning("Failed to create buffer from desc. Desc is not CRC_BUFFER_DESC.");
+#endif
+        return nullptr;
+    }
 
     std::unique_ptr<CRCID3D11Buffer> buffer = std::make_unique<CRCID3D11Buffer>();
 
     D3D11_SUBRESOURCE_DATA* initialData = nullptr;
     if (bufferDesc->SysMem()) initialData = &bufferDesc->InitialData();
 
-    if (!bufferDesc->d3d11Device_) throw std::runtime_error("Device not set.");
+    if (!bufferDesc->d3d11Device_)
+    {
+#ifndef NDEBUG
+        CRC::CoutError("Failed to create buffer. D3D11 device is nullptr.");
+#endif
+        return nullptr;
+    }
 
     HRESULT hr = bufferDesc->d3d11Device_->CreateBuffer
     (
         &bufferDesc->Desc(), initialData, buffer->Get().GetAddressOf()
     );
-    if (FAILED(hr)) return nullptr;
+    if (FAILED(hr))
+    {
+#ifndef NDEBUG
+        CRC::CoutError("Failed to create buffer.");
+#endif
+        return nullptr;
+    }
 
     return buffer;
 }

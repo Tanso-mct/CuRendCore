@@ -6,7 +6,13 @@
 std::unique_ptr<ICRCContainable> CRCTexture2DFactoryL0_0::Create(IDESC &desc) const
 {
     CRC_TEXTURE2D_DESC* textureDesc = CRC::As<CRC_TEXTURE2D_DESC>(&desc);
-    if (!textureDesc) return nullptr;
+    if (!textureDesc)
+    {
+#ifndef NDEBUG
+        CRC::CoutWarning("Failed to create texture2d from desc. Desc is not CRC_TEXTURE2D_DESC.");
+#endif
+        return nullptr;
+    }
 
     std::unique_ptr<CRCTexture2D> texture = std::make_unique<CRCTexture2D>(*textureDesc);
     return texture;
@@ -52,20 +58,38 @@ const void CRCTexture2D::GetDesc(D3D11_TEXTURE2D_DESC *dst)
 std::unique_ptr<ICRCContainable> CRCID3D11Texture2DFactoryL0_0::Create(IDESC &desc) const
 {
     CRC_TEXTURE2D_DESC* textureDesc = CRC::As<CRC_TEXTURE2D_DESC>(&desc);
-    if (!textureDesc) return nullptr;
+    if (!textureDesc)
+    {
+#ifndef NDEBUG
+        CRC::CoutWarning("Failed to create texture2d from desc. Desc is not CRC_TEXTURE2D_DESC.");
+#endif
+        return nullptr;
+    }
 
     std::unique_ptr<CRCID3D11Texture2D> texture = std::make_unique<CRCID3D11Texture2D>();
 
     D3D11_SUBRESOURCE_DATA* initialData = nullptr;
     if (textureDesc->SysMem()) initialData = &textureDesc->InitialData();
 
-    if (!textureDesc->d3d11Device_) throw std::runtime_error("Device not set.");
+    if (!textureDesc->d3d11Device_)
+    {
+#ifndef NDEBUG
+        CRC::CoutWarning("Failed to create texture2d from desc. D3D11 device is nullptr.");
+#endif
+        return nullptr;
+    }
 
     HRESULT hr = textureDesc->d3d11Device_->CreateTexture2D
     (
         &textureDesc->Desc(), initialData, texture->Get().GetAddressOf()
     );
-    if (FAILED(hr)) return nullptr;
+    if (FAILED(hr))
+    {
+#ifndef NDEBUG
+        CRC::CoutWarning("Failed to create texture2d from desc. D3D11Device CreateTexture2D failed.");
+#endif
+        return nullptr;
+    }
 
     return texture;
 }
@@ -204,6 +228,13 @@ void CRCTexutre2DAttached::Assign(void *const mem, UINT byteWidth, UINT pitch, U
     slicePitch_ = slicePitch;
 
     cudaArray_ = reinterpret_cast<cudaArray*>(mem);
+    if (!cudaArray_)
+    {
+#ifndef NDEBUG
+        CRC::CoutError("Failed to cast cudaArray.");
+#endif
+        throw std::runtime_error("Failed to cast cudaArray.");
+    }
 
 #ifndef NDEBUG
     CRC::Cout

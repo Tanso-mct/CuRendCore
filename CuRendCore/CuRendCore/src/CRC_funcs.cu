@@ -14,7 +14,13 @@
 
 HRESULT CRC::ShowWindowCRC(HWND& hWnd)
 {
-    if (!hWnd) return E_FAIL;
+    if (!hWnd)
+    {
+#ifndef NDEBUG
+        CoutError("Failed to show window. Window handle is null.");
+#endif
+        throw std::runtime_error("Failed to show window. Window handle is null.");
+    }
 
     ShowWindow(hWnd, SW_SHOW);
     UpdateWindow(hWnd);
@@ -46,6 +52,11 @@ CRC_API HRESULT CRC::CreateD3D11DeviceAndSwapChain
         );
     }
 
+#ifndef NDEBUG
+    if (FAILED(hr)) CoutError("Failed to create D3D11 device and swap chain.");
+    else Cout("Created D3D11 device and swap chain.");
+#endif
+
     return hr;
 }
 
@@ -56,12 +67,24 @@ CRC_API HRESULT CRC::CreateCRCDeviceAndSwapChain
     std::unique_ptr<ICRCContainable> &device, std::unique_ptr<ICRCContainable> &swapChain
 ){
     device = deviceFactory.Create(deviceDesc);
-    if (!device) return E_FAIL;
+    if (!device)
+    {
+#ifndef NDEBUG
+        CoutError("Failed to create CuRendCore device.");
+#endif
+        return E_FAIL;
+    }
 
     swapChainDesc.d3d11SwapChain_->GetDesc(&swapChainDesc.GetDxgiDesc());
 
     swapChain = swapChainFactory.Create(swapChainDesc);
-    if (!swapChain) return E_FAIL;
+    if (!swapChain)
+    {
+#ifndef NDEBUG
+        CoutError("Failed to create CuRendCore swap chain.");
+#endif
+        return E_FAIL;
+    }
 
     return S_OK;
 }
@@ -75,23 +98,27 @@ UINT CRC::GetBytesPerPixel(const DXGI_FORMAT &format)
         return 4;
 
     default:
+#ifndef NDEBUG
+        CoutError("This DXGI_FORMAT is not supported by CuRendCore.");
+#endif
         throw std::runtime_error("This DXGI_FORMAT is not supported by CuRendCore.");
-        return 0;
     }
 }
 
-HRESULT CRC::CreateCudaChannelDescFromDXGIFormat(cudaChannelFormatDesc &channelDesc, const DXGI_FORMAT &format)
+void CRC::CreateCudaChannelDescFromDXGIFormat(cudaChannelFormatDesc &channelDesc, const DXGI_FORMAT &format)
 {
     switch (format)
     {
     case DXGI_FORMAT_R8G8B8A8_UNORM:
     case DXGI_FORMAT_D24_UNORM_S8_UINT:
         channelDesc = cudaCreateChannelDesc<uchar4>();
-        return S_OK;
+        break;
 
     default:
+#ifndef NDEBUG
+        CoutError("This DXGI_FORMAT is not supported by CuRendCore.");
+#endif
         throw std::runtime_error("This DXGI_FORMAT is not supported by CuRendCore.");
-        return E_FAIL;
     }
 }
 
@@ -99,15 +126,16 @@ CRC_API void CRC::CheckCuda(cudaError_t call)
 {
     if (call != cudaSuccess)
     {
-        std::string err = "[CUDA ERROR] Code: " + std::to_string(call) + ", Reason: " + cudaGetErrorString(call);
+        std::string code = std::to_string(call);
+        std::string reason = cudaGetErrorString(call);
 #ifndef NDEBUG
-        CoutError(err);
+        CoutError("CUDA error occurred.", code, reason);
 #endif
-        throw std::runtime_error(err);
+        throw std::runtime_error("CUDA error occurred. " + code + " " + reason);
     }
 }
 
-HRESULT CRC::RegisterCudaResources
+void CRC::RegisterCudaResources
 (
     std::vector<cudaGraphicsResource_t> &cudaResources, const cudaGraphicsRegisterFlags &flags, 
     const UINT &bufferCount, IDXGISwapChain *d3d11SwapChain
@@ -127,20 +155,13 @@ HRESULT CRC::RegisterCudaResources
 #ifndef NDEBUG
             CoutError("Failed to get buffers from DXGI swap chain.");
 #endif
-            return E_FAIL;
+            throw std::runtime_error("Failed to get buffers from DXGI swap chain.");
         }
 
-        cudaError_t err = cudaGraphicsD3D11RegisterResource
+        CRC::CheckCuda(cudaGraphicsD3D11RegisterResource
         (
             &cudaResources[i], buffers[i], flags
-        );
-        if (err != cudaSuccess)
-        {
-#ifndef NDEBUG
-            CoutError("Failed to register CUDA resources.");
-#endif
-            return E_FAIL;
-        }
+        ));
     }
 
     for (int i = 0; i < bufferCountFromDesc; i++)
@@ -151,71 +172,42 @@ HRESULT CRC::RegisterCudaResources
 #ifndef NDEBUG
     Cout("Registered CUDA resources.");
 #endif
-
-    return S_OK;
 }
 
-HRESULT CRC::RegisterCudaResource
+void CRC::RegisterCudaResource
 (
     cudaGraphicsResource_t &cudaResource, const cudaGraphicsRegisterFlags &flags, 
     ID3D11Texture2D *d3d11Texture
 ){
-    cudaError_t err = cudaGraphicsD3D11RegisterResource(&cudaResource, d3d11Texture, flags);
-    if (err != cudaSuccess)
-    {
-#ifndef NDEBUG
-        CoutError("Failed to register CUDA resource.");
-#endif
-        return E_FAIL;
-    }
+    CRC::CheckCuda(cudaGraphicsD3D11RegisterResource(&cudaResource, d3d11Texture, flags));
 
 #ifndef NDEBUG
     Cout("Registered CUDA resource.");
 #endif
-
-    return S_OK;
 }
 
-HRESULT CRC::UnregisterCudaResources(std::vector<cudaGraphicsResource_t> &cudaResources)
+void CRC::UnregisterCudaResources(std::vector<cudaGraphicsResource_t> &cudaResources)
 {
     for (int i = 0; i < cudaResources.size(); ++i) 
     {
-        cudaError_t err = cudaGraphicsUnregisterResource(cudaResources[i]);
-        if (err != cudaSuccess)
-        {
-#ifndef NDEBUG
-            CoutError("Failed to unregister CUDA resources.");
-#endif
-            return E_FAIL;
-        }
+        CRC::CheckCuda(cudaGraphicsUnregisterResource(cudaResources[i]));
     }
 
 #ifndef NDEBUG
     Cout("Unregistered CUDA resources.");
 #endif
-
-    return S_OK;
 }
 
-HRESULT CRC::UnregisterCudaResource(cudaGraphicsResource_t &cudaResource)
+void CRC::UnregisterCudaResource(cudaGraphicsResource_t &cudaResource)
 {
-    cudaError_t err = cudaGraphicsUnregisterResource(cudaResource);
-    if (err != cudaSuccess)
-    {
-#ifndef NDEBUG
-        CoutError("Failed to unregister CUDA resource.");
-#endif
-        return E_FAIL;
-    }
+    CRC::CheckCuda(cudaGraphicsUnregisterResource(cudaResource));
 
 #ifndef NDEBUG
-    Cout("Unregistered CUDA resource.");
+    CRC::Cout("Unregistered CUDA resource.");
 #endif
-
-    return S_OK;
 }
 
-HRESULT CRC::UnregisterCudaResourcesAtSwapChain
+void CRC::UnregisterCudaResourcesAtSwapChain
 (
     std::vector<cudaGraphicsResource_t> &cudaResources, 
     Microsoft::WRL::ComPtr<IDXGISwapChain> &d3d11SwapChain, UINT &frameIndex, const UINT& bufferCount
@@ -223,83 +215,48 @@ HRESULT CRC::UnregisterCudaResourcesAtSwapChain
     for (int i = 0; i < cudaResources.size(); ++i) 
     {
         if (i == frameIndex) continue;
-
-        cudaError_t err = cudaGraphicsUnregisterResource(cudaResources[i]);
-        if (err != cudaSuccess)
-        {
-#ifndef NDEBUG
-            CoutError("Failed to unregister CUDA resources in swap chain.");
-#endif
-            return E_FAIL;
-        }
+        CRC::CheckCuda(cudaGraphicsUnregisterResource(cudaResources[i]));
     }
 
-    d3d11SwapChain->Present(0, 0);
-    cudaError_t err = cudaGraphicsUnregisterResource(cudaResources[frameIndex]);
-    if (err != cudaSuccess)
+    HRESULT hr = d3d11SwapChain->Present(0, 0);
+    if (FAILED(hr))
     {
 #ifndef NDEBUG
-        CoutError("Failed to unregister CUDA resources in swap chain.");
+        CRC::CoutError("Failed to present swap chain.");
 #endif
-        return E_FAIL;
+        throw std::runtime_error("Failed to present swap chain.");
     }
 
+    CRC::CheckCuda(cudaGraphicsUnregisterResource(cudaResources[frameIndex]));
     frameIndex = (frameIndex + 1) % bufferCount;
 
 #ifndef NDEBUG
     Cout("Unregistered CUDA resources in swap chain.");
 #endif
-
-    return S_OK;
 }
 
-HRESULT CRC::MapCudaResource(cudaGraphicsResource_t& cudaResource, cudaStream_t stream)
+void CRC::MapCudaResource(cudaGraphicsResource_t& cudaResource, cudaStream_t stream)
 {
-    cudaError_t err = cudaGraphicsMapResources(1, &cudaResource, stream);
-    if (err != cudaSuccess)
-    {
-#ifndef NDEBUG
-        CoutError("Failed to map CUDA resource.");
-#endif
-        return E_FAIL;
-    }
+    CRC::CheckCuda(cudaGraphicsMapResources(1, &cudaResource, stream));
 
 #ifndef NDEBUG
     Cout("Mapped CUDA resource.");
 #endif
-
-    return S_OK;
 }
 
-HRESULT CRC::UnmapCudaResource(cudaGraphicsResource_t& cudaResource, cudaStream_t stream)
+void CRC::UnmapCudaResource(cudaGraphicsResource_t& cudaResource, cudaStream_t stream)
 {
-    cudaError_t err = cudaGraphicsUnmapResources(1, &cudaResource, stream);
-    if (err != cudaSuccess)
-    {
-#ifndef NDEBUG
-        CoutError("Failed to unmap CUDA resource.");
-#endif
-        return E_FAIL;
-    }
+    CRC::CheckCuda(cudaGraphicsUnmapResources(1, &cudaResource, stream));
 
 #ifndef NDEBUG
     Cout("Unmapped CUDA resource.");
 #endif
-
-    return S_OK;
 }
 
 cudaArray_t CRC::GetCudaMappedArray(cudaGraphicsResource_t& cudaResource)
 {
     cudaArray_t cudaArray;
-    cudaError_t err = cudaGraphicsSubResourceGetMappedArray(&cudaArray, cudaResource, 0, 0);
-    if (err != cudaSuccess)
-    {
-#ifndef NDEBUG
-        CoutError("Failed to get CUDA mapped array.");
-#endif
-        return nullptr;
-    }
+    CRC::CheckCuda(cudaGraphicsSubResourceGetMappedArray(&cudaArray, cudaResource, 0, 0));
 
     return cudaArray;
 }
@@ -308,23 +265,8 @@ CRC_API std::unique_ptr<ICRCTexture2D> CRC::CreateTexture2DFromCudaResource
 (
     cudaGraphicsResource_t& cudaResource, const UINT& width, const UINT& height, const DXGI_FORMAT& format
 ){
-    HRESULT hr = CRC::MapCudaResource(cudaResource);
-    if (FAILED(hr))
-    {
-#ifndef NDEBUG
-        CRC::CoutError("Failed to create texture2d from cuda resource by mapping CUDA resources.");
-#endif
-        return nullptr;
-    }
-
+    CRC::MapCudaResource(cudaResource);
     cudaArray_t backBufferArray = CRC::GetCudaMappedArray(cudaResource);
-    if (!backBufferArray)
-    {
-#ifndef NDEBUG
-        CRC::CoutError("Failed to create texture2d from cuda resource by getting CUDA mapped array.");
-#endif
-        return nullptr;
-    }
 
     D3D11_TEXTURE2D_DESC desc;
     desc.Width = width;
@@ -353,15 +295,7 @@ CRC_API std::unique_ptr<ICRCTexture2D> CRC::CreateTexture2DFromCudaResource
         width * CRC::GetBytesPerPixel(format)
     );
 
-    hr = CRC::UnmapCudaResource(cudaResource);
-    if (FAILED(hr))
-    {
-#ifndef NDEBUG
-        CRC::CoutError("Failed to create texture2d from cuda resource by unmapping CUDA resources.");
-#endif
-        return nullptr;
-    }
-
+    CRC::UnmapCudaResource(cudaResource);
     return rtTexture;
 }
 
@@ -369,23 +303,8 @@ CRC_API std::unique_ptr<ICRCTexture2D> CRC::CreateSurface2DFromCudaResource
 (
     cudaGraphicsResource_t &cudaResource, const UINT &width, const UINT &height, const DXGI_FORMAT &format
 ){
-    HRESULT hr = CRC::MapCudaResource(cudaResource);
-    if (FAILED(hr))
-    {
-#ifndef NDEBUG
-        CRC::CoutError("Failed to create surface objects from cuda resource by mapping CUDA resources.");
-#endif
-        return nullptr;
-    }
-
+    CRC::MapCudaResource(cudaResource);
     cudaArray_t backBufferArray = CRC::GetCudaMappedArray(cudaResource);
-    if (!backBufferArray)
-    {
-#ifndef NDEBUG
-        CRC::CoutError("Failed to create surface objects from cuda resource by getting CUDA mapped array.");
-#endif
-        return nullptr;
-    }
 
     D3D11_TEXTURE2D_DESC desc;
     desc.Width = width;
@@ -404,7 +323,10 @@ CRC_API std::unique_ptr<ICRCTexture2D> CRC::CreateSurface2DFromCudaResource
 #ifndef NDEBUG
         CRC::CoutError("Failed to create surface objects from cuda resource by casting back surface to ICRCMem.");
 #endif
-        return nullptr;
+        throw std::runtime_error
+        (
+            "Failed to create surface objects from cuda resource by casting back surface to ICRCMem."
+        );
     }
 
     backBuffer->Assign
@@ -414,14 +336,6 @@ CRC_API std::unique_ptr<ICRCTexture2D> CRC::CreateSurface2DFromCudaResource
         width * CRC::GetBytesPerPixel(format)
     );
 
-    hr = CRC::UnmapCudaResource(cudaResource);
-    if (FAILED(hr))
-    {
-#ifndef NDEBUG
-        CRC::CoutError("Failed to create surface objects from cuda resource by unmapping CUDA resources.");
-#endif
-        return nullptr;
-    }
-
+    CRC::UnmapCudaResource(cudaResource);
     return rtTexture;
 }
