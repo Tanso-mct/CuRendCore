@@ -18,10 +18,6 @@ std::unique_ptr<ICRCContainable> CRCBufferFactoryL0_0::Create(IDESC &desc) const
     return buffer;
 }
 
-CRCBuffer::CRCBuffer()
-{
-}
-
 CRCBuffer::CRCBuffer(CRC_BUFFER_DESC &desc)
 {
     Malloc(desc.ByteWidth());

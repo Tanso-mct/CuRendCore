@@ -30,16 +30,3 @@ public:
     virtual ~ICRCResource() = default;
     virtual HRESULT GetType(UINT& rcType) = 0;
 };
-
-class CRC_API ICRCCudaResource : public ICRCResource
-{
-public:
-    virtual ~ICRCCudaResource() = default;
-};
-
-class CRC_API ICRCD3D11Resource : public ICRCResource
-{
-public:
-    virtual ~ICRCD3D11Resource() = default;
-    virtual Microsoft::WRL::ComPtr<ID3D11Resource>& GetResource() = 0;
-};
