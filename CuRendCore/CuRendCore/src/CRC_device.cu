@@ -6,7 +6,13 @@
 std::unique_ptr<ICRCContainable> CRCDeviceFactoryL0_0::Create(IDESC &desc) const
 {
     CRC_DEVICE_DESC* deviceDesc = CRC::As<CRC_DEVICE_DESC>(&desc);
-    if (!deviceDesc) return nullptr;
+    if (!deviceDesc)
+    {
+#ifndef NDEBUG
+        CRC::CoutWarning("Failed to create device. Invalid description.");
+#endif
+        return nullptr;
+    }
 
     std::unique_ptr<CRCDevice> device;
     if (deviceDesc->renderMode_ == CRC_RENDER_MODE::CUDA)
@@ -30,9 +36,9 @@ std::unique_ptr<ICRCContainable> CRCDeviceFactoryL0_0::Create(IDESC &desc) const
     else
     {
 #ifndef NDEBUG
-        CRC::CoutError("Unknown render mode.");
+        CRC::CoutError("Failed to create device. Unknown render mode.");
 #endif
-        throw std::runtime_error("Unknown render mode.");
+        throw std::runtime_error("Failed to create device. Unknown render mode.");
     }
 
     return device;
