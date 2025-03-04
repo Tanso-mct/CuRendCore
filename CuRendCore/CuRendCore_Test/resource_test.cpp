@@ -10,6 +10,7 @@ TEST(CuRendCore, CreateBuffer)
 
     D3D11_BUFFER_DESC& bufferDesc = desc.desc_;
     bufferDesc.ByteWidth = 1024;
+    bufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
 
     std::unique_ptr<ICRCContainable> buffer = factory.Create(desc);
 
@@ -27,6 +28,7 @@ TEST(CuRendCore, CreateTexture2D)
     textureDesc.Width = 1920;
     textureDesc.Height = 1080;
     textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    textureDesc.Usage = D3D11_USAGE_IMMUTABLE;
 
     std::unique_ptr<ICRCContainable> texture = factory.Create(desc);
 

@@ -36,16 +36,37 @@ CRCSwapChain::CRCSwapChain
     );
 
     backSurfaces_.resize(bufferCount_);
+
+    D3D11_TEXTURE2D_DESC backBufferDesc;
+    ZeroMemory(&backBufferDesc, sizeof(D3D11_TEXTURE2D_DESC));
+    backBufferDesc.Width = desc.BufferDesc.Width;
+    backBufferDesc.Height = desc.BufferDesc.Height;
+    backBufferDesc.MipLevels = 1;
+    backBufferDesc.ArraySize = 1;
+    backBufferDesc.Format = desc.BufferDesc.Format;
+    backBufferDesc.SampleDesc.Count = 1;
+    backBufferDesc.SampleDesc.Quality = 0;
+    backBufferDesc.Usage = CRC::GetUsage(desc.BufferUsage);
+    backBufferDesc.BindFlags = D3D11_BIND_RENDER_TARGET;
+    backBufferDesc.CPUAccessFlags = 0;
+    backBufferDesc.MiscFlags = 0;
+
     for (int i = 0; i < bufferCount_; i++)
     {
-        backSurfaces_[i] = CRC::CreateTexture2DFromCudaResource
-        (
-            cudaResources_[i], desc.BufferDesc.Width, desc.BufferDesc.Height, desc.BufferDesc.Format
-        );
+        backSurfaces_[i] = CRC::CreateTexture2DFromCudaResource(cudaResources_[i], backBufferDesc);
     }
 
     CRC::MapCudaResource(cudaResources_[frameIndex_]);
     backBuffer_ = backSurfaces_[frameIndex_].get();
+
+#ifndef NDEBUG
+    CRC::Cout
+    (
+        "Swap chain created.", "\n",
+        "Buffer count :", bufferCount_, "\n",
+        "Refresh rate :", refreshRate_.Denominator, "/", refreshRate_.Numerator
+    );
+#endif
 }
 
 CRCSwapChain::~CRCSwapChain()
@@ -57,6 +78,10 @@ CRCSwapChain::~CRCSwapChain()
     cudaResources_.clear();
 
     backBuffer_ = nullptr;
+
+#ifndef NDEBUG
+    CRC::Cout("Swap chain destroyed.");
+#endif
 }
 
 HRESULT CRCSwapChain::GetBuffer(UINT buffer, ICRCTexture2D*& texture)
@@ -94,12 +119,24 @@ HRESULT CRCSwapChain::ResizeBuffers
     );
 
     backSurfaces_.resize(bufferCount);
+
+    D3D11_TEXTURE2D_DESC backBufferDesc;
+    ZeroMemory(&backBufferDesc, sizeof(D3D11_TEXTURE2D_DESC));
+    backBufferDesc.Width = width;
+    backBufferDesc.Height = height;
+    backBufferDesc.MipLevels = 1;
+    backBufferDesc.ArraySize = 1;
+    backBufferDesc.Format = newFormat;
+    backBufferDesc.SampleDesc.Count = 1;
+    backBufferDesc.SampleDesc.Quality = 0;
+    backBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+    backBufferDesc.BindFlags = D3D11_BIND_RENDER_TARGET;
+    backBufferDesc.CPUAccessFlags = 0;
+    backBufferDesc.MiscFlags = 0;
+
     for (int i = 0; i < bufferCount; i++)
     {
-        backSurfaces_[i] = CRC::CreateTexture2DFromCudaResource
-        (
-            cudaResources_[i], width, height, newFormat
-        );
+        backSurfaces_[i] = CRC::CreateTexture2DFromCudaResource(cudaResources_[i], backBufferDesc);
     }
 
     CRC::MapCudaResource(cudaResources_[frameIndex_]);

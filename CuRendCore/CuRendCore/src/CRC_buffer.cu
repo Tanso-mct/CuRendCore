@@ -21,7 +21,9 @@ std::unique_ptr<ICRCContainable> CRCBufferFactoryL0_0::Create(IDESC &desc) const
 CRCBuffer::CRCBuffer(CRC_BUFFER_DESC &desc)
 {
     D3D11_BUFFER_DESC& src = desc.desc_;
+
     desc_ = src;
+    rcType_ = CRC::GetCRCResourceType(src);
 
     Malloc(src.ByteWidth);
     if (desc.initialData_.pSysMem)
@@ -31,11 +33,24 @@ CRCBuffer::CRCBuffer(CRC_BUFFER_DESC &desc)
             memPtr_, desc.initialData_.pSysMem, byteWidth_, cudaMemcpyHostToDevice
         ));
     }
+
+#ifndef NDEBUG
+    std::string rcTypeStr = CRC::GetCRCResourceTypeString(rcType_);
+    CRC::Cout
+    (
+        "Buffer created.", "\n",
+        "Resource Type :", rcTypeStr
+    );
+#endif
 }
 
 CRCBuffer::~CRCBuffer()
 {
     if (memPtr_) Free();
+
+#ifndef NDEBUG
+    CRC::Cout("Buffer destroyed.");
+#endif
 }
 
 HRESULT CRCBuffer::GetType(UINT& rcType)
@@ -132,7 +147,21 @@ const void CRCID3D11Buffer::GetDesc(D3D11_BUFFER_DESC *dst)
     d3d11Buffer_->GetDesc(dst);
 }
 
-HRESULT CRCID3D11Buffer::GetType(UINT& rcType)
+CRCID3D11Buffer::CRCID3D11Buffer()
+{
+#ifndef NDEBUG
+    CRC::Cout("ID3D11Buffer created.");
+#endif
+}
+
+CRCID3D11Buffer::~CRCID3D11Buffer()
+{
+#ifndef NDEBUG
+    CRC::Cout("ID3D11Buffer destroyed.");
+#endif
+}
+
+HRESULT CRCID3D11Buffer::GetType(UINT &rcType)
 {
     rcType = 0;
     return S_OK;

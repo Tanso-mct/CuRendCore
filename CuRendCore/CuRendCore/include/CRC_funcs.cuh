@@ -9,6 +9,7 @@
 #include <string_view>
 #include <initializer_list>
 #include <vector>
+#include <string>
 
 #include <d3d11.h>
 #include <wrl/client.h>
@@ -73,6 +74,8 @@ CRC_API HRESULT CreateCRCDeviceAndSwapChain
 );
 
 CRC_API UINT GetBytesPerPixel(const DXGI_FORMAT& format);
+CRC_API D3D11_USAGE GetUsage(const DXGI_USAGE& usage);
+
 CRC_API void CreateCudaChannelDescFromDXGIFormat(cudaChannelFormatDesc& channelDesc, const DXGI_FORMAT& format);
 
 CRC_API void GetCpuGpuRWFlags
@@ -81,8 +84,12 @@ CRC_API void GetCpuGpuRWFlags
     const D3D11_USAGE& usage, const UINT& cpuAccessFlags
 );
 
+CRC_API bool NeedsWrite(const UINT& rcType);
+
 CRC_API UINT GetCRCResourceType(const D3D11_BUFFER_DESC& desc);
 CRC_API UINT GetCRCResourceType(const D3D11_TEXTURE2D_DESC& desc);
+
+CRC_API std::string GetCRCResourceTypeString(const UINT& rcType);
 
 struct PairHash 
 {
@@ -134,19 +141,19 @@ CRC_API void CoutWarning(Args&... args)
     else std::cout << std::endl << CRC::C_COLOR_WARNING << CRC::C_TAG_END << CRC::C_COLOR_RESET << std::endl;
 }
 
-void RegisterCudaResources
+CRC_API void RegisterCudaResources
 (
     std::vector<cudaGraphicsResource_t>& cudaResources, const cudaGraphicsRegisterFlags& flags,
     const UINT& bufferCount, IDXGISwapChain* d3d11SwapChain
 );
-void RegisterCudaResource
+CRC_API void RegisterCudaResource
 (
     cudaGraphicsResource_t& cudaResource, const cudaGraphicsRegisterFlags& flags,
     ID3D11Texture2D* d3d11Texture
 );
 
-void UnregisterCudaResources(std::vector<cudaGraphicsResource_t>& cudaResources);
-void UnregisterCudaResource(cudaGraphicsResource_t& cudaResource);
+CRC_API void UnregisterCudaResources(std::vector<cudaGraphicsResource_t>& cudaResources);
+CRC_API void UnregisterCudaResource(cudaGraphicsResource_t& cudaResource);
 
 /**
  * @brief Un registers all CUDA resources from the swap chain.
@@ -155,19 +162,19 @@ void UnregisterCudaResource(cudaGraphicsResource_t& cudaResource);
  * so unregister after presenting and shifting the buffer.
  * The error is probably due to the fact that it is tied to RenderTarget, etc.
  */
-void UnregisterCudaResourcesAtSwapChain
+CRC_API void UnregisterCudaResourcesAtSwapChain
 (
     std::vector<cudaGraphicsResource_t>& cudaResources, 
     Microsoft::WRL::ComPtr<IDXGISwapChain>& d3d11SwapChain, UINT& frameIndex, const UINT& bufferCount
 );
 
-void MapCudaResource(cudaGraphicsResource_t& cudaResource, cudaStream_t stream = 0);
-void UnmapCudaResource(cudaGraphicsResource_t& cudaResource, cudaStream_t stream = 0);
+CRC_API void MapCudaResource(cudaGraphicsResource_t& cudaResource, cudaStream_t stream = 0);
+CRC_API void UnmapCudaResource(cudaGraphicsResource_t& cudaResource, cudaStream_t stream = 0);
 cudaArray_t GetCudaMappedArray(cudaGraphicsResource_t& cudaResource);
 
 CRC_API std::unique_ptr<ICRCTexture2D> CreateTexture2DFromCudaResource
 (
-    cudaGraphicsResource_t& cudaResource, const UINT& width, const UINT& height, const DXGI_FORMAT& format
+    cudaGraphicsResource_t& cudaResource, D3D11_TEXTURE2D_DESC& desc
 );
 
 }

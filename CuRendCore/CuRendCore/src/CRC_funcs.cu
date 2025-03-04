@@ -105,6 +105,15 @@ UINT CRC::GetBytesPerPixel(const DXGI_FORMAT &format)
     }
 }
 
+CRC_API D3D11_USAGE CRC::GetUsage(const DXGI_USAGE &usage)
+{
+    if (usage & DXGI_USAGE_READ_ONLY) 
+    {
+        return D3D11_USAGE_STAGING;
+    }
+    return D3D11_USAGE_DEFAULT;
+}
+
 void CRC::CreateCudaChannelDescFromDXGIFormat(cudaChannelFormatDesc &channelDesc, const DXGI_FORMAT &format)
 {
     switch (format)
@@ -149,6 +158,11 @@ CRC_API void CRC::GetCpuGpuRWFlags
         cpuRead = true;
         cpuWrite = true;
         break;
+
+    case DXGI_USAGE_RENDER_TARGET_OUTPUT:
+        gpuRead = true;
+        gpuWrite = true;
+        break;
     }
 
     switch (cpuAccessFlags)
@@ -163,6 +177,15 @@ CRC_API void CRC::GetCpuGpuRWFlags
     }
 }
 
+CRC_API bool CRC::NeedsWrite(const UINT &rcType)
+{
+    bool needsWrite = false;
+    needsWrite = (rcType & (UINT)CRC_RESOURCE_TYPE::BUFFER_CPU_W) ? true : false;
+    needsWrite = (rcType & (UINT)CRC_RESOURCE_TYPE::TEXTURE2D_CPU_W) ? true : false;
+
+    return needsWrite;
+}
+
 CRC_API UINT CRC::GetCRCResourceType(const D3D11_BUFFER_DESC &desc)
 {
     bool gpuR = false;
@@ -172,10 +195,10 @@ CRC_API UINT CRC::GetCRCResourceType(const D3D11_BUFFER_DESC &desc)
     GetCpuGpuRWFlags(cpuR, cpuW, gpuR, gpuW, desc.Usage, desc.CPUAccessFlags);
 
     UINT type = 0;
-    type &= cpuR ? (UINT)CRC_RESOURCE_TYPE::BUFFER_CPU_R : 0;
-    type &= cpuW ? (UINT)CRC_RESOURCE_TYPE::BUFFER_CPU_W : 0;
-    type &= gpuR ? (UINT)CRC_RESOURCE_TYPE::BUFFER_GPU_R : 0;
-    type &= gpuW ? (UINT)CRC_RESOURCE_TYPE::BUFFER_GPU_W : 0;
+    type |= cpuR ? (UINT)CRC_RESOURCE_TYPE::BUFFER_CPU_R : 0;
+    type |= cpuW ? (UINT)CRC_RESOURCE_TYPE::BUFFER_CPU_W : 0;
+    type |= gpuR ? (UINT)CRC_RESOURCE_TYPE::BUFFER_GPU_R : 0;
+    type |= gpuW ? (UINT)CRC_RESOURCE_TYPE::BUFFER_GPU_W : 0;
 
     return type;
 }
@@ -189,10 +212,25 @@ UINT CRC::GetCRCResourceType(const D3D11_TEXTURE2D_DESC &desc)
     GetCpuGpuRWFlags(cpuR, cpuW, gpuR, gpuW, desc.Usage, desc.CPUAccessFlags);
 
     UINT type = 0;
-    type &= cpuR ? (UINT)CRC_RESOURCE_TYPE::TEXTURE2D_CPU_R : 0;
-    type &= cpuW ? (UINT)CRC_RESOURCE_TYPE::TEXTURE2D_CPU_W : 0;
-    type &= gpuR ? (UINT)CRC_RESOURCE_TYPE::TEXTURE2D_GPU_R : 0;
-    type &= gpuW ? (UINT)CRC_RESOURCE_TYPE::TEXTURE2D_GPU_W : 0;
+    type |= cpuR ? (UINT)CRC_RESOURCE_TYPE::TEXTURE2D_CPU_R : 0;
+    type |= cpuW ? (UINT)CRC_RESOURCE_TYPE::TEXTURE2D_CPU_W : 0;
+    type |= gpuR ? (UINT)CRC_RESOURCE_TYPE::TEXTURE2D_GPU_R : 0;
+    type |= gpuW ? (UINT)CRC_RESOURCE_TYPE::TEXTURE2D_GPU_W : 0;
+
+    return type;
+}
+
+CRC_API std::string CRC::GetCRCResourceTypeString(const UINT &rcType)
+{
+    std::string type = "";
+    type += (rcType & (UINT)CRC_RESOURCE_TYPE::BUFFER_CPU_R) ? "CPU_R " : "";
+    type += (rcType & (UINT)CRC_RESOURCE_TYPE::BUFFER_CPU_W) ? "CPU_W " : "";
+    type += (rcType & (UINT)CRC_RESOURCE_TYPE::BUFFER_GPU_R) ? "GPU_R " : "";
+    type += (rcType & (UINT)CRC_RESOURCE_TYPE::BUFFER_GPU_W) ? "GPU_W " : "";
+    type += (rcType & (UINT)CRC_RESOURCE_TYPE::TEXTURE2D_CPU_R) ? "CPU_R " : "";
+    type += (rcType & (UINT)CRC_RESOURCE_TYPE::TEXTURE2D_CPU_W) ? "CPU_W " : "";
+    type += (rcType & (UINT)CRC_RESOURCE_TYPE::TEXTURE2D_GPU_R) ? "GPU_R " : "";
+    type += (rcType & (UINT)CRC_RESOURCE_TYPE::TEXTURE2D_GPU_W) ? "GPU_W " : "";
 
     return type;
 }
@@ -338,24 +376,15 @@ cudaArray_t CRC::GetCudaMappedArray(cudaGraphicsResource_t& cudaResource)
 
 CRC_API std::unique_ptr<ICRCTexture2D> CRC::CreateTexture2DFromCudaResource
 (
-    cudaGraphicsResource_t& cudaResource, const UINT& width, const UINT& height, const DXGI_FORMAT& format
+    cudaGraphicsResource_t& cudaResource, D3D11_TEXTURE2D_DESC& desc
 ){
     CRC::MapCudaResource(cudaResource);
     cudaArray_t backBufferArray = CRC::GetCudaMappedArray(cudaResource);
 
-    D3D11_TEXTURE2D_DESC desc;
-    desc.Width = width;
-    desc.Height = height;
-    desc.MipLevels = 1;
-    desc.ArraySize = 1;
-    desc.Format = format;
-    desc.SampleDesc.Count = 1;
-    desc.SampleDesc.Quality = 0;
-
     std::unique_ptr<ICRCTexture2D> rtTexture = std::make_unique<CRCCudaResource>(desc);
     CRCCudaResource* backTexture = CRC::As<CRCCudaResource>(rtTexture.get());
 
-    backTexture->Assign(backBufferArray, CRC::GetBytesPerPixel(format) * width * height);
+    backTexture->Assign(backBufferArray, CRC::GetBytesPerPixel(desc.Format) * desc.Width * desc.Height);
 
     CRC::UnmapCudaResource(cudaResource);
     return rtTexture;

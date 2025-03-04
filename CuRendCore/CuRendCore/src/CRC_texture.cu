@@ -24,6 +24,7 @@ CRCTexture2D::CRCTexture2D(CRC_TEXTURE2D_DESC& desc)
     byteWidth_ = CRC::GetBytesPerPixel(src.Format) * src.Width * src.Height;
 
     desc_ = src;
+    rcType_ = CRC::GetCRCResourceType(src);
 
     Malloc(byteWidth_);
     if (desc.initialData_.pSysMem)
@@ -33,11 +34,24 @@ CRCTexture2D::CRCTexture2D(CRC_TEXTURE2D_DESC& desc)
             cudaArray_, desc.initialData_.pSysMem, byteWidth_, cudaMemcpyHostToDevice
         ));
     }
+
+#ifndef NDEBUG
+    std::string rcTypeStr = CRC::GetCRCResourceTypeString(rcType_);
+    CRC::Cout
+    (
+        "Texture2D created.", "\n",
+        "Resource Type :", rcTypeStr
+    );
+#endif
 }
 
 CRCTexture2D::~CRCTexture2D()
 {
     if (cudaArray_) Free();
+
+#ifndef NDEBUG
+    CRC::Cout("Texture2D destroyed.");
+#endif
 }
 
 HRESULT CRCTexture2D::GetType(UINT &rcType)
@@ -67,6 +81,27 @@ void CRCTexture2D::Malloc(UINT byteWidth)
     CRC::CreateCudaChannelDescFromDXGIFormat(channelDesc, desc_.Format);
 
     CRC::CheckCuda(cudaMallocArray(&cudaArray_, &channelDesc, desc_.Width, desc_.Height));
+
+    struct cudaResourceDesc resDesc;
+    ZeroMemory(&resDesc, sizeof(resDesc));
+    resDesc.resType = cudaResourceTypeArray;
+    resDesc.res.array.array = cudaArray_;
+
+    if (CRC::NeedsWrite(rcType_))
+    {
+        CRC::CheckCuda(cudaCreateSurfaceObject(&surfaceObject_, &resDesc));
+    }
+    else
+    {
+        struct cudaTextureDesc texDesc;
+        ZeroMemory(&texDesc, sizeof(texDesc));
+        texDesc.addressMode[0] = cudaAddressModeClamp;
+        texDesc.addressMode[1] = cudaAddressModeClamp;
+        texDesc.filterMode = cudaFilterModePoint;
+        texDesc.readMode = cudaReadModeElementType;
+
+        CRC::CheckCuda(cudaCreateTextureObject(&textureObject_, &resDesc, &texDesc, nullptr));
+    }
 
 #ifndef NDEBUG
     CRC::Cout
@@ -104,11 +139,25 @@ void CRCTexture2D::Free()
 CRCCudaResource::CRCCudaResource(D3D11_TEXTURE2D_DESC &desc)
 {
     desc_ = desc;
+    rcType_ = CRC::GetCRCResourceType(desc);
+
+#ifndef NDEBUG
+    std::string rcTypeStr = CRC::GetCRCResourceTypeString(rcType_);
+    CRC::Cout
+    (
+        "Texture2D created.", "\n",
+        "Resource Type :", rcTypeStr
+    );
+#endif
 }
 
 CRCCudaResource::~CRCCudaResource()
 {
     if (cudaArray_) Unassign();
+
+#ifndef NDEBUG
+    CRC::Cout("Texture2D destroyed.");
+#endif
 }
 
 HRESULT CRCCudaResource::GetType(UINT &rcType)
@@ -141,6 +190,27 @@ void CRCCudaResource::Assign(void *const mem, UINT byteWidth)
         CRC::CoutError("Failed to cast cudaArray.");
 #endif
         throw std::runtime_error("Failed to cast cudaArray.");
+    }
+
+    struct cudaResourceDesc resDesc;
+    ZeroMemory(&resDesc, sizeof(resDesc));
+    resDesc.resType = cudaResourceTypeArray;
+    resDesc.res.array.array = cudaArray_;
+
+    if (CRC::NeedsWrite(rcType_))
+    {
+        CRC::CheckCuda(cudaCreateSurfaceObject(&surfaceObject_, &resDesc));
+    }
+    else
+    {
+        struct cudaTextureDesc texDesc;
+        ZeroMemory(&texDesc, sizeof(texDesc));
+        texDesc.addressMode[0] = cudaAddressModeClamp;
+        texDesc.addressMode[1] = cudaAddressModeClamp;
+        texDesc.filterMode = cudaFilterModePoint;
+        texDesc.readMode = cudaReadModeElementType;
+
+        CRC::CheckCuda(cudaCreateTextureObject(&textureObject_, &resDesc, &texDesc, nullptr));
     }
 }
 
@@ -195,6 +265,20 @@ std::unique_ptr<ICRCContainable> CRCID3D11Texture2DFactoryL0_0::Create(IDESC &de
     }
 
     return texture;
+}
+
+CRCID3D11Texture2D::CRCID3D11Texture2D()
+{
+#ifndef NDEBUG
+    CRC::Cout("Texture2D created.");
+#endif
+}
+
+CRCID3D11Texture2D::~CRCID3D11Texture2D()
+{
+#ifndef NDEBUG
+    CRC::Cout("Texture2D destroyed.");
+#endif
 }
 
 HRESULT CRCID3D11Texture2D::GetType(UINT &rcType)

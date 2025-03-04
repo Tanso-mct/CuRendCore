@@ -81,8 +81,8 @@ private:
     Microsoft::WRL::ComPtr<ID3D11Buffer> d3d11Buffer_;
 
 public:
-    CRCID3D11Buffer() = default;
-    virtual ~CRCID3D11Buffer() override = default;
+    CRCID3D11Buffer();
+    virtual ~CRCID3D11Buffer() override;
 
     // ICRCResource
     virtual HRESULT GetType(UINT& rcType) override;

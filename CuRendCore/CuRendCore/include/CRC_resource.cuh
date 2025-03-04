@@ -13,15 +13,15 @@
 enum class CRC_API CRC_RESOURCE_TYPE : UINT
 {
     UNKNOWN = 0,
-    BUFFER_CPU_R,
-    BUFFER_CPU_W,
-    BUFFER_GPU_R,
-    BUFFER_GPU_W,
+    BUFFER_CPU_R = 1 << 0,
+    BUFFER_CPU_W = 1 << 1,
+    BUFFER_GPU_R = 1 << 2,
+    BUFFER_GPU_W = 1 << 3,
 
-    TEXTURE2D_CPU_R,
-    TEXTURE2D_CPU_W,
-    TEXTURE2D_GPU_R,
-    TEXTURE2D_GPU_W,
+    TEXTURE2D_CPU_R = 1 << 4,
+    TEXTURE2D_CPU_W = 1 << 5,
+    TEXTURE2D_GPU_R = 1 << 6,
+    TEXTURE2D_GPU_W = 1 << 7,
 };
 
 class CRC_API ICRCResource
