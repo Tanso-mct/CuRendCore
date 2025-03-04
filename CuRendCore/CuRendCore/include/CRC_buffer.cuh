@@ -44,7 +44,7 @@ class CRC_API CRCBuffer
 {
 private:
     D3D11_BUFFER_DESC desc_ = {};
-    
+    UINT rcType_ = 0;
 
     void* memPtr_ = nullptr;
     UINT byteWidth_ = 0;
@@ -55,11 +55,14 @@ public:
     CRCBuffer(CRC_BUFFER_DESC& desc);
     virtual ~CRCBuffer() override;
 
+    // ICRCResource
     virtual HRESULT GetType(UINT& rcType) override;
 
+    // ICRCBuffer
     virtual const void GetDesc(D3D11_BUFFER_DESC* dst) override;
     virtual void* const GetMem() override { return reinterpret_cast<void*>(memPtr_); }
 
+    // ICRCMemory
     virtual void Malloc(UINT byteWidth) override;
     virtual void Free() override;
 };
@@ -81,8 +84,10 @@ public:
     CRCID3D11Buffer() = default;
     virtual ~CRCID3D11Buffer() override = default;
 
+    // ICRCResource
     virtual HRESULT GetType(UINT& rcType) override;
 
+    // ICRCBuffer
     virtual const void GetDesc(D3D11_BUFFER_DESC* dst) override;
     virtual void* const GetMem() override { return nullptr; }
 

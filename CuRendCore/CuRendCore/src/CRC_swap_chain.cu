@@ -38,7 +38,7 @@ CRCSwapChain::CRCSwapChain
     backSurfaces_.resize(bufferCount_);
     for (int i = 0; i < bufferCount_; i++)
     {
-        backSurfaces_[i] = CRC::CreateSurface2DFromCudaResource
+        backSurfaces_[i] = CRC::CreateTexture2DFromCudaResource
         (
             cudaResources_[i], desc.BufferDesc.Width, desc.BufferDesc.Height, desc.BufferDesc.Format
         );
@@ -96,7 +96,7 @@ HRESULT CRCSwapChain::ResizeBuffers
     backSurfaces_.resize(bufferCount);
     for (int i = 0; i < bufferCount; i++)
     {
-        backSurfaces_[i] = CRC::CreateSurface2DFromCudaResource
+        backSurfaces_[i] = CRC::CreateTexture2DFromCudaResource
         (
             cudaResources_[i], width, height, newFormat
         );

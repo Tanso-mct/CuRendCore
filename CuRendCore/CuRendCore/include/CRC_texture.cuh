@@ -33,7 +33,6 @@ public:
 
     virtual const cudaSurfaceObject_t& GetSurfaceObject() { return 0; }
     virtual const cudaTextureObject_t& GetTextureObject() { return 0; }
-    
 };
 
 class CRC_API CRCTexture2DFactoryL0_0 : public ICRCFactory
@@ -89,7 +88,7 @@ private:
 public:
     CRCCudaResource() = delete;
 
-    CRCCudaResource(CRC_TEXTURE2D_DESC& desc);
+    CRCCudaResource(D3D11_TEXTURE2D_DESC& desc);
     ~CRCCudaResource() override;
 
     // ICRCResource

@@ -170,9 +170,4 @@ CRC_API std::unique_ptr<ICRCTexture2D> CreateTexture2DFromCudaResource
     cudaGraphicsResource_t& cudaResource, const UINT& width, const UINT& height, const DXGI_FORMAT& format
 );
 
-CRC_API std::unique_ptr<ICRCTexture2D> CreateSurface2DFromCudaResource
-(
-    cudaGraphicsResource_t& cudaResource, const UINT& width, const UINT& height, const DXGI_FORMAT& format
-);
-
 }

@@ -7,7 +7,9 @@ TEST(CuRendCore, CreateBuffer)
 
     CRCBufferFactoryL0_0 factory;
     CRC_BUFFER_DESC desc(device);
-    desc.ByteWidth() = 1024;
+
+    D3D11_BUFFER_DESC& bufferDesc = desc.desc_;
+    bufferDesc.ByteWidth = 1024;
 
     std::unique_ptr<ICRCContainable> buffer = factory.Create(desc);
 
@@ -20,9 +22,11 @@ TEST(CuRendCore, CreateTexture2D)
 
     CRCTexture2DFactoryL0_0 factory;
     CRC_TEXTURE2D_DESC desc(device);
-    desc.Width() = 1920;
-    desc.Height() = 1080;
-    desc.Format() = DXGI_FORMAT_R8G8B8A8_UNORM;
+
+    D3D11_TEXTURE2D_DESC& textureDesc = desc.desc_;
+    textureDesc.Width = 1920;
+    textureDesc.Height = 1080;
+    textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 
     std::unique_ptr<ICRCContainable> texture = factory.Create(desc);
 

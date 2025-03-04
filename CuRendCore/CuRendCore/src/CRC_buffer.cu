@@ -20,17 +20,17 @@ std::unique_ptr<ICRCContainable> CRCBufferFactoryL0_0::Create(IDESC &desc) const
 
 CRCBuffer::CRCBuffer(CRC_BUFFER_DESC &desc)
 {
-    Malloc(desc.ByteWidth());
-    
-    if (desc.SysMem())
+    D3D11_BUFFER_DESC& src = desc.desc_;
+    desc_ = src;
+
+    Malloc(src.ByteWidth);
+    if (desc.initialData_.pSysMem)
     {
         CRC::CheckCuda(cudaMemcpy
         (
-            memPtr_, desc.SysMem(), desc.ByteWidth(), cudaMemcpyHostToDevice
+            memPtr_, desc.initialData_.pSysMem, byteWidth_, cudaMemcpyHostToDevice
         ));
     }
-
-    desc_ = desc.Desc();
 }
 
 CRCBuffer::~CRCBuffer()
@@ -49,7 +49,7 @@ const void CRCBuffer::GetDesc(D3D11_BUFFER_DESC *dst)
     std::memcpy(dst, &desc_, sizeof(D3D11_BUFFER_DESC));
 }
 
-void CRCBuffer::Malloc(UINT byteWidth, UINT pitch, UINT slicePitch, DXGI_FORMAT format)
+void CRCBuffer::Malloc(UINT byteWidth)
 {
     if (memPtr_)
     {
@@ -66,9 +66,7 @@ void CRCBuffer::Malloc(UINT byteWidth, UINT pitch, UINT slicePitch, DXGI_FORMAT 
     CRC::Cout
     (
         "Buffer device memory allocated.", "\n",
-        "ByteWidth :", byteWidth_, "\n",
-        "Pitch :", pitch, "\n",
-        "SlicePitch :", slicePitch
+        "ByteWidth :", byteWidth_
     );
 #endif
 }
@@ -104,46 +102,29 @@ std::unique_ptr<ICRCContainable> CRCID3D11BufferFactoryL0_0::Create(IDESC &desc)
         return nullptr;
     }
 
-    std::unique_ptr<CRCID3D11Buffer> buffer = std::make_unique<CRCID3D11Buffer>();
-
-    D3D11_SUBRESOURCE_DATA* initialData = nullptr;
-    if (bufferDesc->SysMem()) initialData = &bufferDesc->InitialData();
-
     if (!bufferDesc->d3d11Device_)
     {
 #ifndef NDEBUG
-        CRC::CoutError("Failed to create buffer. D3D11 device is nullptr.");
+        CRC::CoutWarning("Failed to create buffer. D3D11 device is nullptr.");
 #endif
         return nullptr;
     }
 
+    std::unique_ptr<CRCID3D11Buffer> buffer = std::make_unique<CRCID3D11Buffer>();
+
     HRESULT hr = bufferDesc->d3d11Device_->CreateBuffer
     (
-        &bufferDesc->Desc(), initialData, buffer->Get().GetAddressOf()
+        &bufferDesc->desc_, &bufferDesc->initialData_, buffer->Get().GetAddressOf()
     );
     if (FAILED(hr))
     {
 #ifndef NDEBUG
         CRC::CoutError("Failed to create buffer.");
 #endif
-        return nullptr;
+        throw std::runtime_error("Failed to create buffer.");
     }
 
     return buffer;
-}
-
-Microsoft::WRL::ComPtr<ID3D11Resource> &CRCID3D11Buffer::GetResource()
-{
-    Microsoft::WRL::ComPtr<ID3D11Resource> resource;
-    d3d11Buffer_.As(&resource);
-
-    return resource;
-}
-
-HRESULT CRCID3D11Buffer::GetType(UINT& rcType)
-{
-    rcType = 0;
-    return S_OK;
 }
 
 const void CRCID3D11Buffer::GetDesc(D3D11_BUFFER_DESC *dst)
@@ -151,10 +132,8 @@ const void CRCID3D11Buffer::GetDesc(D3D11_BUFFER_DESC *dst)
     d3d11Buffer_->GetDesc(dst);
 }
 
-const UINT &CRCID3D11Buffer::GetByteWidth() const
+HRESULT CRCID3D11Buffer::GetType(UINT& rcType)
 {
-    D3D11_BUFFER_DESC desc;
-    d3d11Buffer_->GetDesc(&desc);
-
-    return desc.ByteWidth;
+    rcType = 0;
+    return S_OK;
 }
