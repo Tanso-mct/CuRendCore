@@ -387,3 +387,17 @@ CRC_API std::unique_ptr<ICRCTexture2D> CRC::CreateTexture2DFromCudaResource
     CRC::UnmapCudaResource(cudaResource);
     return backTexture;
 }
+
+CRC_API ICRCTexture2D *CRC::CreatePtTexture2DFromCudaResource
+(
+    cudaGraphicsResource_t &cudaResource, D3D11_TEXTURE2D_DESC &desc
+){
+    CRC::MapCudaResource(cudaResource);
+    cudaArray_t backBufferArray = CRC::GetCudaMappedArray(cudaResource);
+
+    CRCCudaResource *backTexture = new CRCCudaResource(desc);
+    backTexture->Assign(backBufferArray, CRC::GetBytesPerPixel(desc.Format) * desc.Width * desc.Height);
+
+    CRC::UnmapCudaResource(cudaResource);
+    return backTexture;
+}

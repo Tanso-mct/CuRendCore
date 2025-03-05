@@ -161,4 +161,9 @@ CRC_API std::unique_ptr<ICRCTexture2D> CreateTexture2DFromCudaResource
     cudaGraphicsResource_t& cudaResource, D3D11_TEXTURE2D_DESC& desc
 );
 
+CRC_API ICRCTexture2D* CreatePtTexture2DFromCudaResource
+(
+    cudaGraphicsResource_t& cudaResource, D3D11_TEXTURE2D_DESC& desc
+);
+
 }

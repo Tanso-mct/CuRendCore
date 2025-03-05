@@ -53,11 +53,11 @@ CRCSwapChain::CRCSwapChain
 
     for (int i = 0; i < bufferCount_; i++)
     {
-        backSurfaces_[i] = CRC::CreateTexture2DFromCudaResource(cudaResources_[i], backBufferDesc);
+        backSurfaces_[i] = CRC::CreatePtTexture2DFromCudaResource(cudaResources_[i], backBufferDesc);
     }
 
     CRC::MapCudaResource(cudaResources_[frameIndex_]);
-    backBuffer_ = backSurfaces_[frameIndex_].get();
+    backBuffer_ = backSurfaces_[frameIndex_];
 
 #ifndef NDEBUG
     CRC::Cout
@@ -72,7 +72,8 @@ CRCSwapChain::CRCSwapChain
 CRCSwapChain::~CRCSwapChain()
 {
     CRC::UnmapCudaResource(cudaResources_[frameIndex_]);
-    backSurfaces_.clear();
+
+    for (int i = 0; i < bufferCount_; i++) delete backSurfaces_[i];
 
     CRC::UnregisterCudaResourcesAtSwapChain(cudaResources_, d3d11SwapChain_, frameIndex_, bufferCount_);
     cudaResources_.clear();
@@ -97,7 +98,7 @@ HRESULT CRCSwapChain::ResizeBuffers
 ){
     CRC::UnmapCudaResource(cudaResources_[frameIndex_]);
 
-    backSurfaces_.clear();
+    for (int i = 0; i < bufferCount_; i++) delete backSurfaces_[i];
 
     CRC::UnregisterCudaResourcesAtSwapChain(cudaResources_, d3d11SwapChain_, frameIndex_, bufferCount_);
     cudaResources_.clear();
@@ -136,11 +137,11 @@ HRESULT CRCSwapChain::ResizeBuffers
 
     for (int i = 0; i < bufferCount; i++)
     {
-        backSurfaces_[i] = CRC::CreateTexture2DFromCudaResource(cudaResources_[i], backBufferDesc);
+        backSurfaces_[i] = CRC::CreatePtTexture2DFromCudaResource(cudaResources_[i], backBufferDesc);
     }
 
     CRC::MapCudaResource(cudaResources_[frameIndex_]);
-    backBuffer_ = backSurfaces_[frameIndex_].get();
+    backBuffer_ = backSurfaces_[frameIndex_];
 
     return hr;
 }
@@ -162,7 +163,7 @@ HRESULT CRCSwapChain::Present(UINT syncInterval, UINT flags)
     frameIndex_ = (frameIndex_ + 1) % bufferCount_;
 
     CRC::MapCudaResource(cudaResources_[frameIndex_]);
-    backBuffer_ = backSurfaces_[frameIndex_].get();
+    backBuffer_ = backSurfaces_[frameIndex_];
 
     return S_OK;
 }

@@ -60,7 +60,7 @@ private:
     UINT frameIndex_ = 0;
 
     std::vector<cudaGraphicsResource_t> cudaResources_;
-    std::vector<std::unique_ptr<ICRCTexture2D>> backSurfaces_;
+    std::vector<ICRCTexture2D*> backSurfaces_;
 
     ICRCTexture2D* backBuffer_ = nullptr;
 
