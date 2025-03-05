@@ -67,7 +67,9 @@ void MainSceneEvent::InputHandleExample(std::unique_ptr<CRCUserInputAttr>& input
 
 void MainSceneEvent::OnUpdate(std::unique_ptr<ICRCContainer>& container, UINT msg, WPARAM wParam, LPARAM lParam)
 {   
-    CRCTransElement<CRCUserInputAttr, ICRCContainable> input(container, container->Take(idUserInput_), idUserInput_);
+    CRCTransCastUnique<CRCUserInputAttr, ICRCContainable> input(container->Get(idUserInput_));
+    if (!input()) return;
+
     InputHandleExample(input());
 }
 

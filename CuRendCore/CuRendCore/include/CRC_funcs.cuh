@@ -42,22 +42,6 @@ enum class CRC_RESOURCE_TYPE : UINT;
 namespace CRC
 {
 
-template <typename T, typename S>
-T* As(S* source)
-{
-    T* target = dynamic_cast<T*>(source);
-    return target;
-}
-
-template <typename T, typename S>
-std::unique_ptr<T> UniqueAs(std::unique_ptr<S>& source)
-{
-    T* target = dynamic_cast<T*>(source.get());
-
-    if (target) return std::unique_ptr<T>(static_cast<T*>(source.release()));
-    else return nullptr;
-}
-
 CRC_API HRESULT ShowWindowCRC(HWND& hWnd);
 
 CRC_API HRESULT CreateD3D11DeviceAndSwapChain

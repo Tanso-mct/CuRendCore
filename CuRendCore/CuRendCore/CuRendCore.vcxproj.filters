@@ -74,6 +74,9 @@
     <ClInclude Include="include\CRC_factory.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="include\CRC_data_cast.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="src\CRC_device_context.cu">

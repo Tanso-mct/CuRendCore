@@ -3,6 +3,7 @@
 #include "CRC_funcs.cuh"
 
 #include "CRC_config.h"
+#include "CRC_data_cast.h"
 
 #include "CRC_window.h"
 #include "CRC_scene.h"

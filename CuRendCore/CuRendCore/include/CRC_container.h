@@ -56,31 +56,3 @@ public:
     int GetSize();
     void Clear();
 };
-
-template <typename T, typename S>
-class CRC_API CRCTransElement
-{
-private:
-    std::unique_ptr<ICRCContainer>& container_;
-    std::unique_ptr<T> element_;
-    int id_;
-
-public:
-    CRCTransElement(std::unique_ptr<ICRCContainer>& container, std::unique_ptr<S> element, int id)
-    : container_(container), id_(id)
-    {
-        T* target = dynamic_cast<T*>(element.get());
-        if (target) element_ = std::unique_ptr<T>(static_cast<T*>(element.release()));
-        else throw std::runtime_error("Failed to cast element to T.");
-    }
-
-    ~CRCTransElement()
-    {
-        container_->Put(id_, std::move(element_));
-    }
-
-    std::unique_ptr<T>& operator()() 
-    {
-        return element_;
-    }
-};

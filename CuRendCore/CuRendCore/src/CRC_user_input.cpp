@@ -150,7 +150,8 @@ CRCUserInputEvent::CRCUserInputEvent(int& idAttr)
 
 void CRCUserInputEvent::OnUpdate(std::unique_ptr<ICRCContainer>& container, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-    CRCTransElement<CRCUserInputAttr, ICRCContainable> input(container, container->Take(idAttr_), idAttr_);
+    CRCTransCastUnique<CRCUserInputAttr, ICRCContainable> input(container->Get(idAttr_));
+    if (!input()) return;
 
     for (int i = 0; i < static_cast<int>(CRC_KEY::COUNT); i++)
     {
@@ -226,7 +227,8 @@ void CRCUserInputEvent::OnUpdate(std::unique_ptr<ICRCContainer>& container, UINT
 
 void CRCUserInputEvent::OnKeyDown(std::unique_ptr<ICRCContainer>& container, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-    CRCTransElement<CRCUserInputAttr, ICRCContainable> input(container, container->Take(idAttr_), idAttr_);
+    CRCTransCastUnique<CRCUserInputAttr, ICRCContainable> input(container->Get(idAttr_));
+    if (!input()) return;
 
     if (keyMap_.find({wParam, (lParam & (1 << 24)) != 0}) == keyMap_.end()) return;
 
@@ -236,7 +238,8 @@ void CRCUserInputEvent::OnKeyDown(std::unique_ptr<ICRCContainer>& container, UIN
 
 void CRCUserInputEvent::OnKeyUp(std::unique_ptr<ICRCContainer>& container, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-    CRCTransElement<CRCUserInputAttr, ICRCContainable> input(container, container->Take(idAttr_), idAttr_);
+    CRCTransCastUnique<CRCUserInputAttr, ICRCContainable> input(container->Get(idAttr_));
+    if (!input()) return;
 
     if (keyMap_.find({wParam, (lParam & (1 << 24)) != 0}) == keyMap_.end()) return;
     input()->keyState_[static_cast<std::size_t>(keyMap_[{wParam, (lParam & (1 << 24)) != 0}])].isReleased = true;
@@ -244,7 +247,8 @@ void CRCUserInputEvent::OnKeyUp(std::unique_ptr<ICRCContainer>& container, UINT 
 
 void CRCUserInputEvent::OnMouse(std::unique_ptr<ICRCContainer>& container, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-    CRCTransElement<CRCUserInputAttr, ICRCContainable> input(container, container->Take(idAttr_), idAttr_);
+    CRCTransCastUnique<CRCUserInputAttr, ICRCContainable> input(container->Get(idAttr_));
+    if (!input()) return;
 
     if (mouseMap_.find(msg) == mouseMap_.end()) return;
     input()->mouseState_[static_cast<std::size_t>(mouseMap_[msg].first)] = mouseMap_[msg].second;

@@ -20,8 +20,13 @@ class CRC_API CRC_SHADER_RESOURCE_VIEW_DESC : public IDESC
 {
 public:
     CRC_SHADER_RESOURCE_VIEW_DESC() = delete;
-    CRC_SHADER_RESOURCE_VIEW_DESC(std::unique_ptr<ICRCContainable>& resource) : resource_(resource) {}
+    CRC_SHADER_RESOURCE_VIEW_DESC
+    (
+        Microsoft::WRL::ComPtr<ID3D11Device>& device, std::unique_ptr<ICRCContainable>& resource
+    ) : d3d11Device_(device), resource_(resource) {}
     ~CRC_SHADER_RESOURCE_VIEW_DESC() override = default;
+
+    Microsoft::WRL::ComPtr<ID3D11Device>& d3d11Device_;
 
     D3D11_SHADER_RESOURCE_VIEW_DESC desc_ = {};
     std::unique_ptr<ICRCContainable>& resource_;
@@ -60,6 +65,13 @@ public:
     virtual const void GetDesc(D3D11_SHADER_RESOURCE_VIEW_DESC* dst) override;
 };
 
+class CRC_API CRCID3D11ShaderResourceViewFactoryL0_0 : public ICRCFactory
+{
+public:
+    ~CRCID3D11ShaderResourceViewFactoryL0_0() override = default;
+    virtual std::unique_ptr<ICRCContainable> Create(IDESC& desc) const override;
+};
+
 class CRC_API CRCID3D11ShaderResourceView 
 : public ICRCContainable, public ICRCView, public ICRCShaderResourceView
 {
@@ -75,4 +87,6 @@ public:
 
     // ICRCShaderResourceView
     virtual const void GetDesc(D3D11_SHADER_RESOURCE_VIEW_DESC* dst) override;
+
+    virtual Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& Get() { return d3d11SRV_; }
 };
