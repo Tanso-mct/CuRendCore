@@ -127,10 +127,22 @@ std::unique_ptr<ICRCContainable> CRCID3D11BufferFactoryL0_0::Create(IDESC &desc)
 
     std::unique_ptr<CRCID3D11Buffer> buffer = std::make_unique<CRCID3D11Buffer>();
 
-    HRESULT hr = bufferDesc->d3d11Device_->CreateBuffer
-    (
-        &bufferDesc->desc_, &bufferDesc->initialData_, buffer->Get().GetAddressOf()
-    );
+    HRESULT hr;
+    if (bufferDesc->initialData_.pSysMem)
+    {
+        hr = bufferDesc->d3d11Device_->CreateBuffer
+        (
+            &bufferDesc->desc_, &bufferDesc->initialData_, &buffer->Get()
+        );
+    }
+    else
+    {
+        hr = bufferDesc->d3d11Device_->CreateBuffer
+        (
+            &bufferDesc->desc_, nullptr, &buffer->Get()
+        );
+    }
+
     if (FAILED(hr))
     {
 #ifndef NDEBUG

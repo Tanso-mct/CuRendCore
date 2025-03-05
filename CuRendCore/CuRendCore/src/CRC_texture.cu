@@ -252,10 +252,22 @@ std::unique_ptr<ICRCContainable> CRCID3D11Texture2DFactoryL0_0::Create(IDESC &de
 
     std::unique_ptr<CRCID3D11Texture2D> texture = std::make_unique<CRCID3D11Texture2D>();
 
-    HRESULT hr = textureDesc->d3d11Device_->CreateTexture2D
-    (
-        &textureDesc->desc_, &textureDesc->initialData_, texture->Get().GetAddressOf()
-    );
+    HRESULT hr;
+    if (textureDesc->initialData_.pSysMem)
+    {
+        hr = textureDesc->d3d11Device_->CreateTexture2D
+        (
+            &textureDesc->desc_, &textureDesc->initialData_, &texture->Get()
+        );
+    }
+    else
+    {
+        hr = textureDesc->d3d11Device_->CreateTexture2D
+        (
+            &textureDesc->desc_, nullptr, &texture->Get()
+        );
+    }
+
     if (FAILED(hr))
     {
 #ifndef NDEBUG

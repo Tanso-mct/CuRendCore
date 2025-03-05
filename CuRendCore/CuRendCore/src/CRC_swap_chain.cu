@@ -192,30 +192,69 @@ std::unique_ptr<ICRCContainable> CRCIDXGISwapChainFactoryL0_0::Create(IDESC &des
     return swapChain;
 }
 
-HRESULT CRCIDXGISwapChain::GetBuffer(UINT buffer, ICRCTexture2D*& texture)
+CRCIDXGISwapChain::CRCIDXGISwapChain(Microsoft::WRL::ComPtr<IDXGISwapChain>& d3d11SwapChain)
+: d3d11SwapChain_(d3d11SwapChain)
 {
-    CRCID3D11Texture2D* backBuffer = CRC::As<CRCID3D11Texture2D>(texture);
-    if (!backBuffer)
+    backBuffer_ = new CRCID3D11Texture2D();
+}
+
+CRCIDXGISwapChain::~CRCIDXGISwapChain()
+{
+    delete backBuffer_;
+}
+
+HRESULT CRCIDXGISwapChain::GetBuffer(UINT buffer, ICRCTexture2D *&texture)
+{
+    if (!d3d11SwapChain_)
     {
 #ifndef NDEBUG
-        CRC::CoutWarning("Failed to get buffer. Texture is not CRCID3D11Texture2D.");
+        CRC::CoutWarning("Failed to get buffer. IDXGISwapChain is nullptr.");
 #endif
-        return E_INVALIDARG;
+        return E_FAIL;
     }
 
-    return d3d11SwapChain_->GetBuffer(buffer, __uuidof(ID3D11Texture2D), &backBuffer->Get());
+    HRESULT hr = d3d11SwapChain_->GetBuffer
+    (
+        buffer, IID_PPV_ARGS(&CRC::As<CRCID3D11Texture2D>(backBuffer_)->Get())
+    );
+    if (FAILED(hr))
+    {
+#ifndef NDEBUG
+        CRC::CoutWarning("Failed to get buffer. IDXGISwapChain GetBuffer failed.");
+#endif
+    }
+
+    texture = backBuffer_;
+
+    return hr;
 }
 
 HRESULT CRCIDXGISwapChain::ResizeBuffers
 (
     UINT bufferCount, UINT width, UINT height, DXGI_FORMAT newFormat, UINT swapChainFlags
 ){
-    return d3d11SwapChain_->ResizeBuffers(bufferCount, width, height, newFormat, swapChainFlags);
+    HRESULT hr = d3d11SwapChain_->ResizeBuffers(bufferCount, width, height, newFormat, swapChainFlags);
+    if (FAILED(hr))
+    {
+#ifndef NDEBUG
+        CRC::CoutWarning("Failed to resize buffers. IDXGISwapChain ResizeBuffers failed.");
+#endif
+    }
+
+    return hr;
 }
 
 HRESULT CRCIDXGISwapChain::Present(UINT syncInterval, UINT flags)
 {
-    return d3d11SwapChain_->Present(syncInterval, flags);
+    HRESULT hr = d3d11SwapChain_->Present(syncInterval, flags);
+    if (FAILED(hr))
+    {
+#ifndef NDEBUG
+        CRC::CoutWarning("Failed to present swap chain. IDXGISwapChain Present failed.");
+#endif
+    }
+
+    return hr;
 }
 
 HRESULT CRCIDXGISwapChain::GetDesc(DXGI_SWAP_CHAIN_DESC *pDesc)

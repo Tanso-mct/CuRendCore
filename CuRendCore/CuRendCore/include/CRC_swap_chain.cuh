@@ -101,10 +101,11 @@ class CRC_API CRCIDXGISwapChain : public ICRCContainable, public ICRCSwapChain
 {
 private:
     Microsoft::WRL::ComPtr<IDXGISwapChain>& d3d11SwapChain_;
+    ICRCTexture2D* backBuffer_ = nullptr;
 
 public:
-    CRCIDXGISwapChain(Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain) : d3d11SwapChain_(d3d11SwapChain) {}
-    ~CRCIDXGISwapChain() override = default;
+    CRCIDXGISwapChain(Microsoft::WRL::ComPtr<IDXGISwapChain>& d3d11SwapChain);
+    ~CRCIDXGISwapChain() override;
 
     Microsoft::WRL::ComPtr<IDXGISwapChain>& GetD3D11SwapChain() override { return d3d11SwapChain_; }
 
