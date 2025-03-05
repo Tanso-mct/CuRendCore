@@ -150,114 +150,109 @@ CRCUserInputEvent::CRCUserInputEvent(int& idAttr)
 
 void CRCUserInputEvent::OnUpdate(std::unique_ptr<ICRCContainer>& container, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-    CRCUserInputAttr* input = CRC::As<CRCUserInputAttr>(container->Get(idAttr_).get());
-    if (!input) return;
+    CRCTransElement<CRCUserInputAttr, ICRCContainable> input(container, container->Take(idAttr_), idAttr_);
 
     for (int i = 0; i < static_cast<int>(CRC_KEY::COUNT); i++)
     {
-        if (input->keyState_[i].isPressed)
+        if (input()->keyState_[i].isPressed)
         {
-            input->keyState_[i].isHeld = true;
-            input->keyState_[i].isPressed = false;
+            input()->keyState_[i].isHeld = true;
+            input()->keyState_[i].isPressed = false;
         }
-        else if (input->keyState_[i].isReleased)
+        else if (input()->keyState_[i].isReleased)
         {
-            input->keyState_[i].isHeld = false;
-            input->keyState_[i].isReleased = false;
+            input()->keyState_[i].isHeld = false;
+            input()->keyState_[i].isReleased = false;
 
-            if (input->previousKey_ == static_cast<CRC_KEY>(i))
+            if (input()->previousKey_ == static_cast<CRC_KEY>(i))
             {
                 auto currentTime = std::chrono::high_resolution_clock::now();
                 double elapsed = std::chrono::duration_cast<std::chrono::milliseconds>
                 (
-                    currentTime - input->keyTime_
+                    currentTime - input()->keyTime_
                 ).count();
 
-                if (elapsed < input->dblTapTime_)
+                if (elapsed < input()->dblTapTime_)
                 {
-                    input->keyState_[i].isDBL = true;
+                    input()->keyState_[i].isDBL = true;
                 }
             }
 
-            input->previousKey_ = static_cast<CRC_KEY>(i);
-            input->keyTime_ = std::chrono::high_resolution_clock::now();
+            input()->previousKey_ = static_cast<CRC_KEY>(i);
+            input()->keyTime_ = std::chrono::high_resolution_clock::now();
         }
-        else if (input->keyState_[i].isDBL)
+        else if (input()->keyState_[i].isDBL)
         {
-            input->keyState_[i].isDBL = false;
+            input()->keyState_[i].isDBL = false;
         }
     }
 
     for (int i = 0; i < static_cast<int>(CRC_MOUSE::COUNT); i++)
     {
-        if (input->mouseState_[i].isPressed)
+        if (input()->mouseState_[i].isPressed)
         {
-            input->mouseState_[i].isHeld = true;
-            input->mouseState_[i].isPressed = false;
+            input()->mouseState_[i].isHeld = true;
+            input()->mouseState_[i].isPressed = false;
         }
-        else if (input->mouseState_[i].isReleased)
+        else if (input()->mouseState_[i].isReleased)
         {
-            input->mouseState_[i].isHeld = false;
-            input->mouseState_[i].isReleased = false;
+            input()->mouseState_[i].isHeld = false;
+            input()->mouseState_[i].isReleased = false;
 
-            if (input->previousMouse_ == static_cast<CRC_MOUSE>(i))
+            if (input()->previousMouse_ == static_cast<CRC_MOUSE>(i))
             {
                 auto currentTime = std::chrono::high_resolution_clock::now();
                 double elapsed = std::chrono::duration_cast<std::chrono::milliseconds>
                 (
-                    currentTime - input->mouseTime_
+                    currentTime - input()->mouseTime_
                 ).count();
 
-                if (elapsed < input->dblTapTime_)
+                if (elapsed < input()->dblTapTime_)
                 {
-                    input->mouseState_[i].isDBL = true;
+                    input()->mouseState_[i].isDBL = true;
                 }
             }
 
-            input->previousMouse_ = static_cast<CRC_MOUSE>(i);
-            input->mouseTime_ = std::chrono::high_resolution_clock::now();
+            input()->previousMouse_ = static_cast<CRC_MOUSE>(i);
+            input()->mouseTime_ = std::chrono::high_resolution_clock::now();
         }
-        else if (input->mouseState_[i].isDBL)
+        else if (input()->mouseState_[i].isDBL)
         {
-            input->mouseState_[i].isDBL = false;
+            input()->mouseState_[i].isDBL = false;
         }
     }
-
-    input->mouseWheelDelta_ = 0;
+    input()->mouseWheelDelta_ = 0;
 }
 
 void CRCUserInputEvent::OnKeyDown(std::unique_ptr<ICRCContainer>& container, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-    CRCUserInputAttr* input = CRC::As<CRCUserInputAttr>(container->Get(idAttr_).get());
-    if (!input) return;
+    CRCTransElement<CRCUserInputAttr, ICRCContainable> input(container, container->Take(idAttr_), idAttr_);
 
     if (keyMap_.find({wParam, (lParam & (1 << 24)) != 0}) == keyMap_.end()) return;
 
-    if (input->keyState_[static_cast<std::size_t>(keyMap_[{wParam, (lParam & (1 << 24)) != 0}])].isHeld) return;
-    input->keyState_[static_cast<std::size_t>(keyMap_[{wParam, (lParam & (1 << 24)) != 0}])].isPressed = true;
+    if (input()->keyState_[static_cast<std::size_t>(keyMap_[{wParam, (lParam & (1 << 24)) != 0}])].isHeld) return;
+    input()->keyState_[static_cast<std::size_t>(keyMap_[{wParam, (lParam & (1 << 24)) != 0}])].isPressed = true;
 }
 
 void CRCUserInputEvent::OnKeyUp(std::unique_ptr<ICRCContainer>& container, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-    CRCUserInputAttr* input = CRC::As<CRCUserInputAttr>(container->Get(idAttr_).get());
-    if (!input) return;
+    CRCTransElement<CRCUserInputAttr, ICRCContainable> input(container, container->Take(idAttr_), idAttr_);
 
     if (keyMap_.find({wParam, (lParam & (1 << 24)) != 0}) == keyMap_.end()) return;
-    input->keyState_[static_cast<std::size_t>(keyMap_[{wParam, (lParam & (1 << 24)) != 0}])].isReleased = true;
+    input()->keyState_[static_cast<std::size_t>(keyMap_[{wParam, (lParam & (1 << 24)) != 0}])].isReleased = true;
 }
 
 void CRCUserInputEvent::OnMouse(std::unique_ptr<ICRCContainer>& container, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-    CRCUserInputAttr* input = CRC::As<CRCUserInputAttr>(container->Get(idAttr_).get());
-    if (!input) return;
+    CRCTransElement<CRCUserInputAttr, ICRCContainable> input(container, container->Take(idAttr_), idAttr_);
 
     if (mouseMap_.find(msg) == mouseMap_.end()) return;
-    input->mouseState_[static_cast<std::size_t>(mouseMap_[msg].first)] = mouseMap_[msg].second;
+    input()->mouseState_[static_cast<std::size_t>(mouseMap_[msg].first)] = mouseMap_[msg].second;
 
-    if (msg == WM_MOUSEWHEEL) input->mouseWheelDelta_ = GET_WHEEL_DELTA_WPARAM(wParam);
+    if (msg == WM_MOUSEWHEEL) input()->mouseWheelDelta_ = GET_WHEEL_DELTA_WPARAM(wParam);
     else if (msg == WM_MOUSEMOVE)
     {
-        input->mousePosX_ = LOWORD(lParam);
-        input->mousePosY_ = HIWORD(lParam);
+        input()->mousePosX_ = LOWORD(lParam);
+        input()->mousePosY_ = HIWORD(lParam);
     }
 }
