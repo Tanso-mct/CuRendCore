@@ -17,5 +17,6 @@ class CRC_API ICRCView
 {
 public:
     virtual ~ICRCView() = default;
-    virtual std::unique_ptr<ICRCResource>& GetResource() = 0;
+    virtual std::unique_ptr<ICRCContainable>& GetResource() = 0;
 };
+

@@ -2,8 +2,8 @@
 
 #include "CRC_config.h"
 #include "CRC_container.h"
-#include "CRC_resource.cuh"
 #include "CRC_view.cuh"
+#include "CRC_factory.h"
 
 #include <d3d11.h>
 #include <wrl/client.h>
@@ -14,31 +14,65 @@
 
 #include <memory>
 
+class ICRCCreatable;
+
+class CRC_API CRC_SHADER_RESOURCE_VIEW_DESC : public IDESC
+{
+public:
+    CRC_SHADER_RESOURCE_VIEW_DESC() = delete;
+    CRC_SHADER_RESOURCE_VIEW_DESC(std::unique_ptr<ICRCContainable>& resource) : resource_(resource) {}
+    ~CRC_SHADER_RESOURCE_VIEW_DESC() override = default;
+
+    D3D11_SHADER_RESOURCE_VIEW_DESC desc_ = {};
+    std::unique_ptr<ICRCContainable>& resource_;
+};
+
 class CRC_API ICRCShaderResourceView
 {
 public:
     virtual ~ICRCShaderResourceView() = default;
+    virtual const void GetDesc(D3D11_SHADER_RESOURCE_VIEW_DESC* dst) = 0;
 };
 
-class CRC_API CRCShaderResourceView : public ICRCContainable, public ICRCView, public ICRCShaderResourceView
+class CRC_API CRCShaderResourceViewFactoryL0_0 : public ICRCFactory
+{
+public:
+    ~CRCShaderResourceViewFactoryL0_0() override = default;
+    virtual std::unique_ptr<ICRCContainable> Create(IDESC& desc) const override;
+};
+
+class CRC_API CRCShaderResourceView 
+: public ICRCContainable, public ICRCView, public ICRCShaderResourceView
 {
 private:
-    std::unique_ptr<ICRCResource>& resource;
+    D3D11_SHADER_RESOURCE_VIEW_DESC desc_ = {};
+    std::unique_ptr<ICRCContainable>& resource_;
 
 public:
-    ~CRCShaderResourceView() override = default;
+    CRCShaderResourceView() = delete;
+    CRCShaderResourceView(std::unique_ptr<ICRCContainable>& resource, D3D11_SHADER_RESOURCE_VIEW_DESC& desc);
+    virtual ~CRCShaderResourceView() override = default;
     
-    virtual std::unique_ptr<ICRCResource>& GetResource() override;
+    // ICRCView
+    virtual std::unique_ptr<ICRCContainable>& GetResource() override { return resource_; }
+
+    // ICRCShaderResourceView
+    virtual const void GetDesc(D3D11_SHADER_RESOURCE_VIEW_DESC* dst) override;
 };
 
-class CRC_API CRCID3D11ShaderResourceView : public ICRCContainable, public ICRCView, public ICRCShaderResourceView
+class CRC_API CRCID3D11ShaderResourceView 
+: public ICRCContainable, public ICRCView, public ICRCShaderResourceView
 {
 private:
-    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> d3d11SRV;
-    std::unique_ptr<ICRCResource> emptyResource = nullptr;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> d3d11SRV_;
+    std::unique_ptr<ICRCContainable> emptyResource_ = nullptr;
 
 public:
-    ~CRCID3D11ShaderResourceView() override = default;
+    virtual ~CRCID3D11ShaderResourceView() override = default;
 
-    virtual std::unique_ptr<ICRCResource>& GetResource() override;
+    // ICRCView
+    virtual std::unique_ptr<ICRCContainable>& GetResource() override { return emptyResource_; }
+
+    // ICRCShaderResourceView
+    virtual const void GetDesc(D3D11_SHADER_RESOURCE_VIEW_DESC* dst) override;
 };
