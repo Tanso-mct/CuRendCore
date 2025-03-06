@@ -18,10 +18,54 @@ std::unique_ptr<ICRCContainable> CRCShaderResourceViewFactoryL0_0::Create(IDESC 
         return nullptr;
     }
 
+    if (!srvDesc->resource_)
+    {
+#ifndef NDEBUG
+        CRC::CoutWarning
+        (
+            "Failed to create shader resource view from desc. Resource is nullptr."
+        );
+#endif
+        return nullptr;
+    }
+
+    {
+        CRCTransCastUniqueItoI<CRCTexture2D, ICRCTexture2D, ICRCContainable> texture(srvDesc->resource_);
+        if (!texture())
+        {
+#ifndef NDEBUG
+            CRC::CoutWarning
+            (
+                "Failed to create shader resource view from desc. Resource is not ICRCTexture2D."
+            );
+#endif
+            return nullptr;
+        }
+
+        D3D11_TEXTURE2D_DESC desc;
+        texture()->GetDesc(&desc);
+
+        if (!(desc.BindFlags & D3D11_BIND_SHADER_RESOURCE))
+        {
+#ifndef NDEBUG
+            CRC::CoutWarning
+            (
+                "Failed to create shader resource view from desc. Texture2D is not bindable as shader resource."
+            );
+#endif
+            return nullptr;
+        }
+    }
+
     std::unique_ptr<CRCShaderResourceView> srv = std::make_unique<CRCShaderResourceView>
     (
         srvDesc->resource_, srvDesc->desc_
     );
+
+#ifndef NDEBUG
+    CRC::Cout("Created shader resource view from desc.");
+#endif
+
     return srv;
 }
 
@@ -31,6 +75,13 @@ CRCShaderResourceView::CRCShaderResourceView
 ) : resource_(resource)
 {
     desc_ = desc;
+}
+
+CRCShaderResourceView::~CRCShaderResourceView()
+{
+#ifndef NDEBUG
+    CRC::Cout("Destroyed shader resource view.");
+#endif
 }
 
 const void CRCShaderResourceView::GetDesc(D3D11_SHADER_RESOURCE_VIEW_DESC *dst)
@@ -68,12 +119,12 @@ std::unique_ptr<ICRCContainable> CRCID3D11ShaderResourceViewFactoryL0_0::Create(
         CRCTransCastUnique<CRCID3D11Texture2D, ICRCContainable> texture(srvDesc->resource_);
         if (!texture())
         {
-    #ifndef NDEBUG
+#ifndef NDEBUG
             CRC::CoutWarning
             (
                 "Failed to create shader resource view from desc. Resource is not CRCID3D11Texture2D."
             );
-    #endif
+#endif
             return nullptr;
         }
 
@@ -85,17 +136,28 @@ std::unique_ptr<ICRCContainable> CRCID3D11ShaderResourceViewFactoryL0_0::Create(
         );
         if (FAILED(hr))
         {
-    #ifndef NDEBUG
+#ifndef NDEBUG
             CRC::CoutWarning
             (
                 "Failed to create shader resource view from desc. D3D11Device CreateShaderResourceView failed."
             );
-    #endif
+#endif
             return nullptr;
         }
     }
 
+#ifndef NDEBUG
+    CRC::Cout("Created D3D11 shader resource view from desc.");
+#endif
+
     return srv;
+}
+
+CRCID3D11ShaderResourceView::~CRCID3D11ShaderResourceView()
+{
+#ifndef NDEBUG
+    CRC::Cout("Destroyed D3D11 shader resource view.");
+#endif
 }
 
 const void CRCID3D11ShaderResourceView::GetDesc(D3D11_SHADER_RESOURCE_VIEW_DESC *dst)

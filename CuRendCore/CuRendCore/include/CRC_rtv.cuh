@@ -18,8 +18,13 @@ class CRC_API CRC_RENDER_TARGET_VIEW_DESC : public IDESC
 {
 public:
     CRC_RENDER_TARGET_VIEW_DESC() = delete;
-    CRC_RENDER_TARGET_VIEW_DESC(std::unique_ptr<ICRCContainable>& resource) : resource_(resource) {}
+    CRC_RENDER_TARGET_VIEW_DESC
+    (
+        Microsoft::WRL::ComPtr<ID3D11Device>& device, std::unique_ptr<ICRCContainable>& resource
+    ) : d3d11Device_(device), resource_(resource) {}
     ~CRC_RENDER_TARGET_VIEW_DESC() override = default;
+
+    Microsoft::WRL::ComPtr<ID3D11Device>& d3d11Device_;
 
     D3D11_RENDER_TARGET_VIEW_DESC desc_ = {};
     std::unique_ptr<ICRCContainable>& resource_;
@@ -49,13 +54,20 @@ private:
 public:
     CRCRenderTargetView() = delete;
     CRCRenderTargetView(std::unique_ptr<ICRCContainable>& resource, D3D11_RENDER_TARGET_VIEW_DESC& desc);
-    virtual ~CRCRenderTargetView() override = default;
+    virtual ~CRCRenderTargetView() override;
 
     // ICRCView
     virtual std::unique_ptr<ICRCContainable>& GetResource() override { return resource_; }
 
     // ICRCRenderTargetView
     virtual const void GetDesc(D3D11_RENDER_TARGET_VIEW_DESC* dst) override;
+};
+
+class CRC_API CRCID3D11RenderTargetViewFactoryL0_0 : public ICRCFactory
+{
+public:
+    ~CRCID3D11RenderTargetViewFactoryL0_0() override = default;
+    virtual std::unique_ptr<ICRCContainable> Create(IDESC& desc) const override;
 };
 
 class CRC_API CRCID3D11RenderTargetView 
@@ -66,11 +78,13 @@ private:
     std::unique_ptr<ICRCContainable> emptyResource_ = nullptr;
 
 public:
-    virtual ~CRCID3D11RenderTargetView() override = default;
+    virtual ~CRCID3D11RenderTargetView() override;
 
     // ICRCView
     virtual std::unique_ptr<ICRCContainable>& GetResource() override { return emptyResource_; }
 
     // ICRCRenderTargetView
     virtual const void GetDesc(D3D11_RENDER_TARGET_VIEW_DESC* dst) override;
+
+    virtual Microsoft::WRL::ComPtr<ID3D11RenderTargetView>& Get() { return d3d11RTV_; }
 };

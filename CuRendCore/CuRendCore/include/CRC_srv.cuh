@@ -56,7 +56,7 @@ private:
 public:
     CRCShaderResourceView() = delete;
     CRCShaderResourceView(std::unique_ptr<ICRCContainable>& resource, D3D11_SHADER_RESOURCE_VIEW_DESC& desc);
-    virtual ~CRCShaderResourceView() override = default;
+    virtual ~CRCShaderResourceView() override;
     
     // ICRCView
     virtual std::unique_ptr<ICRCContainable>& GetResource() override { return resource_; }
@@ -80,7 +80,7 @@ private:
     std::unique_ptr<ICRCContainable> emptyResource_ = nullptr;
 
 public:
-    virtual ~CRCID3D11ShaderResourceView() override = default;
+    virtual ~CRCID3D11ShaderResourceView() override;
 
     // ICRCView
     virtual std::unique_ptr<ICRCContainable>& GetResource() override { return emptyResource_; }

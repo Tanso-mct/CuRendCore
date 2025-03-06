@@ -106,6 +106,7 @@
         "map": "cpp",
         "set": "cpp",
         "xtree": "cpp",
-        "string_view": "cpp"
+        "string_view": "cpp",
+        "target": "cpp"
     }
 }

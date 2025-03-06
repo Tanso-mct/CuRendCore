@@ -18,8 +18,13 @@ class CRC_API CRC_DEPTH_STENCIL_VIEW_DESC : public IDESC
 {
 public:
     CRC_DEPTH_STENCIL_VIEW_DESC() = delete;
-    CRC_DEPTH_STENCIL_VIEW_DESC(std::unique_ptr<ICRCContainable>& resource) : resource_(resource) {}
+    CRC_DEPTH_STENCIL_VIEW_DESC
+    (
+        Microsoft::WRL::ComPtr<ID3D11Device>& device, std::unique_ptr<ICRCContainable>& resource
+    ) : d3d11Device_(device), resource_(resource) {}
     ~CRC_DEPTH_STENCIL_VIEW_DESC() override = default;
+
+    Microsoft::WRL::ComPtr<ID3D11Device>& d3d11Device_;
 
     D3D11_DEPTH_STENCIL_VIEW_DESC desc_ = {};
     std::unique_ptr<ICRCContainable>& resource_;
@@ -49,13 +54,20 @@ private:
 public:
     CRCDepthStencilView() = delete;
     CRCDepthStencilView(std::unique_ptr<ICRCContainable>& resource, D3D11_DEPTH_STENCIL_VIEW_DESC& desc);
-    virtual ~CRCDepthStencilView() override = default;
+    virtual ~CRCDepthStencilView() override;
     
     // ICRCView
     virtual std::unique_ptr<ICRCContainable>& GetResource() override { return resource_; }
 
     // ICRCDepthStencilView
     virtual const void GetDesc(D3D11_DEPTH_STENCIL_VIEW_DESC* dst) override;
+};
+
+class CRC_API CRCID3D11DepthStencilViewFactoryL0_0 : public ICRCFactory
+{
+public:
+    ~CRCID3D11DepthStencilViewFactoryL0_0() override = default;
+    virtual std::unique_ptr<ICRCContainable> Create(IDESC& desc) const override;
 };
 
 class CRC_API CRCID3D11DepthStencilView 
@@ -66,12 +78,14 @@ private:
     std::unique_ptr<ICRCContainable> emptyResource = nullptr;
 
 public:
-    virtual ~CRCID3D11DepthStencilView() override = default;
+    virtual ~CRCID3D11DepthStencilView() override;
 
     // ICRCView
     virtual std::unique_ptr<ICRCContainable>& GetResource() override { return emptyResource; }
 
     // ICRCDepthStencilView
     virtual const void GetDesc(D3D11_DEPTH_STENCIL_VIEW_DESC* dst) override;
+
+    virtual Microsoft::WRL::ComPtr<ID3D11DepthStencilView>& Get() { return d3d11DSV; }
 };
 

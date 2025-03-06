@@ -279,13 +279,6 @@ std::unique_ptr<ICRCContainable> CRCID3D11Texture2DFactoryL0_0::Create(IDESC &de
     return texture;
 }
 
-CRCID3D11Texture2D::CRCID3D11Texture2D()
-{
-#ifndef NDEBUG
-    CRC::Cout("Texture2D created.");
-#endif
-}
-
 CRCID3D11Texture2D::~CRCID3D11Texture2D()
 {
 #ifndef NDEBUG

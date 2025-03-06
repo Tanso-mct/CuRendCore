@@ -118,7 +118,7 @@ private:
     Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11Texture2D_;
 
 public:
-    CRCID3D11Texture2D();
+    CRCID3D11Texture2D() = default;
     ~CRCID3D11Texture2D() override;
 
     // ICRCResource

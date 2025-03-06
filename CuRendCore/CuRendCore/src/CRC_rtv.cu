@@ -2,8 +2,7 @@
 #include "CRC_funcs.cuh"
 
 #include "CRC_rtv.cuh"
-
-#include "CRC_container.h"
+#include "CRC_texture.cuh"
 
 std::unique_ptr<ICRCContainable> CRCRenderTargetViewFactoryL0_0::Create(IDESC &desc) const
 {
@@ -19,10 +18,54 @@ std::unique_ptr<ICRCContainable> CRCRenderTargetViewFactoryL0_0::Create(IDESC &d
         return nullptr;
     }
 
+    if (!rtvDesc->resource_)
+    {
+#ifndef NDEBUG
+        CRC::CoutWarning
+        (
+            "Failed to create render target view from desc. Resource is nullptr."
+        );
+#endif
+        return nullptr;
+    }
+
+    {
+        CRCTransCastUniqueItoI<CRCTexture2D, ICRCTexture2D, ICRCContainable> texture(rtvDesc->resource_);
+        if (!texture())
+        {
+#ifndef NDEBUG
+            CRC::CoutWarning
+            (
+                "Failed to create render target view from desc. Resource is not ICRCTexture2D."
+            );
+#endif
+            return nullptr;
+        }
+
+        D3D11_TEXTURE2D_DESC desc;
+        texture()->GetDesc(&desc);
+
+        if (!(desc.BindFlags & D3D11_BIND_RENDER_TARGET))
+        {
+#ifndef NDEBUG
+            CRC::CoutWarning
+            (
+                "Failed to create render target view from desc. Texture2D is not bindable as render target."
+            );
+#endif
+            return nullptr;
+        }
+    }
+
     std::unique_ptr<CRCRenderTargetView> rtv = std::make_unique<CRCRenderTargetView>
     (
         rtvDesc->resource_, rtvDesc->desc_
     );
+
+#ifndef NDEBUG
+    CRC::Cout("Created render target view from desc.");
+#endif
+
     return rtv;
 }
 
@@ -35,9 +78,87 @@ CRCRenderTargetView::CRCRenderTargetView
     desc_ = desc;
 }
 
+CRCRenderTargetView::~CRCRenderTargetView()
+{
+#ifndef NDEBUG
+    CRC::Cout("Destroyed render target view.");
+#endif
+}
+
 const void CRCRenderTargetView::GetDesc(D3D11_RENDER_TARGET_VIEW_DESC *dst)
 {
     std::memcpy(dst, &desc_, sizeof(D3D11_RENDER_TARGET_VIEW_DESC));
+}
+
+std::unique_ptr<ICRCContainable> CRCID3D11RenderTargetViewFactoryL0_0::Create(IDESC &desc) const
+{
+    CRC_RENDER_TARGET_VIEW_DESC* rtvDesc = CRC::As<CRC_RENDER_TARGET_VIEW_DESC>(&desc);
+    if (!rtvDesc)
+    {
+#ifndef NDEBUG
+        CRC::CoutWarning
+        (
+            "Failed to create render target view from desc. Desc is not CRC_RENDER_TARGET_VIEW_DESC."
+        );
+#endif
+        return nullptr;
+    }
+
+    if (!rtvDesc->d3d11Device_)
+    {
+#ifndef NDEBUG
+        CRC::CoutWarning
+        (
+            "Failed to create render target view from desc. D3D11 device is nullptr."
+        );
+#endif
+        return nullptr;
+    }
+
+    std::unique_ptr<CRCID3D11RenderTargetView> rtv;
+    {
+        CRCTransCastUnique<CRCID3D11Texture2D, ICRCContainable> texture(rtvDesc->resource_);
+        if (!texture())
+        {
+    #ifndef NDEBUG
+            CRC::CoutWarning
+            (
+                "Failed to create render target view from desc. Resource is not CRCID3D11Texture2D."
+            );
+    #endif
+            return nullptr;
+        }
+
+        rtv = std::make_unique<CRCID3D11RenderTargetView>();
+
+        HRESULT hr = rtvDesc->d3d11Device_->CreateRenderTargetView
+        (
+            texture()->Get().Get(), &rtvDesc->desc_, rtv->Get().GetAddressOf()
+        );
+        if (FAILED(hr))
+        {
+    #ifndef NDEBUG
+            CRC::CoutWarning
+            (
+                "Failed to create render target view from desc. D3D11Device CreateRenderTargetView failed."
+            );
+    #endif
+            return nullptr;
+        }
+    }
+
+#ifndef NDEBUG
+    CRC::Cout("Created D3D11 render target view from desc.");
+#endif
+
+    return rtv;
+}
+
+CRCID3D11RenderTargetView::~CRCID3D11RenderTargetView()
+{
+#ifndef NDEBUG
+    CRC::Cout("Destroyed D3D11 render target view.");
+#endif
 }
 
 const void CRCID3D11RenderTargetView::GetDesc(D3D11_RENDER_TARGET_VIEW_DESC *dst)
