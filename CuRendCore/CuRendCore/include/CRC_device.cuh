@@ -2,8 +2,6 @@
 
 #include "CRC_config.h"
 #include "CRC_factory.h"
-#include "CRC_texture.cuh"
-#include "CRC_buffer.cuh"
 
 #include <d3d11.h>
 #include <wrl/client.h>
@@ -11,6 +9,12 @@
 
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
+
+class CRC_API CRC_BUFFER_DESC;
+class CRC_API CRC_TEXTURE2D_DESC;
+class CRC_API CRC_SHADER_RESOURCE_VIEW_DESC;
+class CRC_API CRC_RENDER_TARGET_VIEW_DESC;
+class CRC_API CRC_DEPTH_STENCIL_VIEW_DESC;
 
 class CRC_API CRC_DEVICE_DESC : public IDESC
 {
@@ -32,6 +36,21 @@ public:
 
     virtual HRESULT CreateBuffer(CRC_BUFFER_DESC& desc, std::unique_ptr<ICRCContainable>& buffer) = 0;
     virtual HRESULT CreateTexture2D(CRC_TEXTURE2D_DESC& desc, std::unique_ptr<ICRCContainable>& texture2d) = 0;
+
+    virtual HRESULT CreateShaderResourceView
+    (
+        CRC_SHADER_RESOURCE_VIEW_DESC& desc,std::unique_ptr<ICRCContainable>& srv
+    ) = 0;
+
+    virtual HRESULT CreateRenderTargetView
+    (
+        CRC_RENDER_TARGET_VIEW_DESC& desc, std::unique_ptr<ICRCContainable>& rtv
+    ) = 0;
+
+    virtual HRESULT CreateDepthStencilView
+    (
+        CRC_DEPTH_STENCIL_VIEW_DESC& desc, std::unique_ptr<ICRCContainable>& dsv
+    ) = 0;
 };
 
 class CRC_API CRCDeviceFactoryL0_0 : public ICRCFactory
@@ -49,21 +68,28 @@ private:
     const std::unique_ptr<ICRCFactory> bufferFactory = nullptr;
     const std::unique_ptr<ICRCFactory> texture2DFactory = nullptr;
 
+    const std::unique_ptr<ICRCFactory> srvFactory_ = nullptr;
+    const std::unique_ptr<ICRCFactory> rtvFactory_ = nullptr;
+    const std::unique_ptr<ICRCFactory> dsvFactory_ = nullptr;
+
 public:
     CRCDevice
     (
         Microsoft::WRL::ComPtr<ID3D11Device>& d3d11Device,
         std::unique_ptr<ICRCFactory> bufferFactory, 
-        std::unique_ptr<ICRCFactory> texture2DFactory
-    )
-    : d3d11Device(d3d11Device)
-    , bufferFactory(std::move(bufferFactory))
-    , texture2DFactory(std::move(texture2DFactory)) {}
+        std::unique_ptr<ICRCFactory> texture2DFactory,
+        std::unique_ptr<ICRCFactory> srvFactory,
+        std::unique_ptr<ICRCFactory> rtvFactory,
+        std::unique_ptr<ICRCFactory> dsvFactory
+    );
 
-    ~CRCDevice() override = default;
+    ~CRCDevice() override;
 
     Microsoft::WRL::ComPtr<ID3D11Device>& GetD3D11Device() override { return d3d11Device; }
 
     HRESULT CreateBuffer(CRC_BUFFER_DESC& desc, std::unique_ptr<ICRCContainable>& buffer) override;
     HRESULT CreateTexture2D(CRC_TEXTURE2D_DESC& desc, std::unique_ptr<ICRCContainable>& texture2d) override;
+    HRESULT CreateShaderResourceView(CRC_SHADER_RESOURCE_VIEW_DESC& desc,std::unique_ptr<ICRCContainable>& srv) override;
+    HRESULT CreateRenderTargetView(CRC_RENDER_TARGET_VIEW_DESC& desc, std::unique_ptr<ICRCContainable>& rtv) override;
+    HRESULT CreateDepthStencilView(CRC_DEPTH_STENCIL_VIEW_DESC& desc, std::unique_ptr<ICRCContainable>& dsv) override;
 };
