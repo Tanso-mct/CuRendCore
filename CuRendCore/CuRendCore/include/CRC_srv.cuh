@@ -80,6 +80,7 @@ private:
     std::unique_ptr<ICRCContainable> emptyResource_ = nullptr;
 
 public:
+    CRCID3D11ShaderResourceView();
     virtual ~CRCID3D11ShaderResourceView() override;
 
     // ICRCView

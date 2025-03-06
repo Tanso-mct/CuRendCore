@@ -78,6 +78,7 @@ private:
     std::unique_ptr<ICRCContainable> emptyResource_ = nullptr;
 
 public:
+    CRCID3D11RenderTargetView();
     virtual ~CRCID3D11RenderTargetView() override;
 
     // ICRCView

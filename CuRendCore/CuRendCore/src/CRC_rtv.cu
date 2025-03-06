@@ -62,10 +62,6 @@ std::unique_ptr<ICRCContainable> CRCRenderTargetViewFactoryL0_0::Create(IDESC &d
         rtvDesc->resource_, rtvDesc->desc_
     );
 
-#ifndef NDEBUG
-    CRC::Cout("Created render target view from desc.");
-#endif
-
     return rtv;
 }
 
@@ -76,6 +72,10 @@ CRCRenderTargetView::CRCRenderTargetView
 ) : resource_(resource)
 {
     desc_ = desc;
+
+#ifndef NDEBUG
+    CRC::Cout("Created render target view from desc.");
+#endif
 }
 
 CRCRenderTargetView::~CRCRenderTargetView()
@@ -147,11 +147,14 @@ std::unique_ptr<ICRCContainable> CRCID3D11RenderTargetViewFactoryL0_0::Create(ID
         }
     }
 
+    return rtv;
+}
+
+CRCID3D11RenderTargetView::CRCID3D11RenderTargetView()
+{
 #ifndef NDEBUG
     CRC::Cout("Created D3D11 render target view from desc.");
 #endif
-
-    return rtv;
 }
 
 CRCID3D11RenderTargetView::~CRCID3D11RenderTargetView()

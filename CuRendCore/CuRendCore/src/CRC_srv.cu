@@ -62,10 +62,6 @@ std::unique_ptr<ICRCContainable> CRCShaderResourceViewFactoryL0_0::Create(IDESC 
         srvDesc->resource_, srvDesc->desc_
     );
 
-#ifndef NDEBUG
-    CRC::Cout("Created shader resource view from desc.");
-#endif
-
     return srv;
 }
 
@@ -75,6 +71,10 @@ CRCShaderResourceView::CRCShaderResourceView
 ) : resource_(resource)
 {
     desc_ = desc;
+
+#ifndef NDEBUG
+    CRC::Cout("Created shader resource view from desc.");
+#endif
 }
 
 CRCShaderResourceView::~CRCShaderResourceView()
@@ -146,11 +146,14 @@ std::unique_ptr<ICRCContainable> CRCID3D11ShaderResourceViewFactoryL0_0::Create(
         }
     }
 
+    return srv;
+}
+
+CRCID3D11ShaderResourceView::CRCID3D11ShaderResourceView()
+{
 #ifndef NDEBUG
     CRC::Cout("Created D3D11 shader resource view from desc.");
 #endif
-
-    return srv;
 }
 
 CRCID3D11ShaderResourceView::~CRCID3D11ShaderResourceView()
