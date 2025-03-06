@@ -61,21 +61,13 @@ public:
     CRCTransCastUniqueItoI(std::unique_ptr<S>& src) : src_(src)
     {
         PARENT* parentPtr = dynamic_cast<PARENT*>(src.get());
-        if (parentPtr)
-        {
-            std::unique_ptr<PARENT> parent  = std::unique_ptr<PARENT>(static_cast<PARENT*>(src.release()));
-            casted_ = std::move(parent);
-        }
+        if (parentPtr) casted_ = std::unique_ptr<PARENT>(static_cast<PARENT*>(src.release()));
     }
 
     ~CRCTransCastUniqueItoI()
     {
         PARENT* parentPtr = dynamic_cast<PARENT*>(casted_.get());
-        if (parentPtr)
-        {
-            std::unique_ptr<PARENT> parent  = std::unique_ptr<PARENT>(static_cast<PARENT*>(casted_.release()));
-            src_ = std::move(parent);
-        }
+        if (parentPtr) src_ = std::unique_ptr<PARENT>(static_cast<PARENT*>(casted_.release()));
     }
 
     std::unique_ptr<D>& operator()() 
