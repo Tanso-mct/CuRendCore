@@ -23,9 +23,10 @@ CRCBuffer::CRCBuffer(CRC_BUFFER_DESC &desc)
     D3D11_BUFFER_DESC& src = desc.desc_;
 
     desc_ = src;
-    rcType_ = CRC::GetCRCResourceType(src);
+    resType_ = CRC::GetCRCResourceType(src);
+    resType_ |= (UINT)CRC_RESOURCE_TYPE::CRC_RESOURCE;
 
-    if (rcType_ & (UINT)CRC_RESOURCE_TYPE::BUFFER_GPU_R || rcType_ & (UINT)CRC_RESOURCE_TYPE::BUFFER_GPU_W)
+    if (resType_ & (UINT)CRC_RESOURCE_TYPE::GPU_R || resType_ & (UINT)CRC_RESOURCE_TYPE::GPU_W)
     {
         Malloc(src.ByteWidth);
         if (desc.initialData_.pSysMem)
@@ -37,7 +38,7 @@ CRCBuffer::CRCBuffer(CRC_BUFFER_DESC &desc)
         }
     }
 
-    if (rcType_ & (UINT)CRC_RESOURCE_TYPE::BUFFER_CPU_R || rcType_ & (UINT)CRC_RESOURCE_TYPE::BUFFER_CPU_W)
+    if (resType_ & (UINT)CRC_RESOURCE_TYPE::CPU_R || resType_ & (UINT)CRC_RESOURCE_TYPE::CPU_W)
     {
         HostMalloc(src.ByteWidth);
         if (desc.initialData_.pSysMem)
@@ -50,7 +51,7 @@ CRCBuffer::CRCBuffer(CRC_BUFFER_DESC &desc)
     }
 
 #ifndef NDEBUG
-    std::string rcTypeStr = CRC::GetCRCResourceTypeString(rcType_);
+    std::string rcTypeStr = CRC::GetCRCResourceTypeString(resType_);
     CRC::Cout
     (
         "Buffer created.", "\n",
@@ -69,9 +70,9 @@ CRCBuffer::~CRCBuffer()
 #endif
 }
 
-HRESULT CRCBuffer::GetType(UINT& rcType)
+HRESULT CRCBuffer::GetResourceType(UINT& rcType)
 {
-    rcType = rcType_;
+    rcType = resType_;
     return S_OK;
 }
 
@@ -250,19 +251,29 @@ std::unique_ptr<ICRCContainable> CRCID3D11BufferFactoryL0_0::Create(IDESC &desc)
         throw std::runtime_error("Failed to create buffer.");
     }
 
+    D3D11_BUFFER_DESC d3d11Desc;
+    buffer->GetDesc(&d3d11Desc);
+
+    UINT resType = 0;
+    resType = CRC::GetCRCResourceType(d3d11Desc);
+    resType |= (UINT)CRC_RESOURCE_TYPE::D3D11_RESOURCE;
+    buffer->SetResourceType(resType);
+
+#ifndef NDEBUG
+    std::string rcTypeStr = CRC::GetCRCResourceTypeString(resType);
+    CRC::Cout
+    (
+        "ID3D11Buffer created.", "\n",
+        "Resource Type :", rcTypeStr
+    );
+#endif
+
     return buffer;
 }
 
 const void CRCID3D11Buffer::GetDesc(D3D11_BUFFER_DESC *dst)
 {
     d3d11Buffer_->GetDesc(dst);
-}
-
-CRCID3D11Buffer::CRCID3D11Buffer()
-{
-#ifndef NDEBUG
-    CRC::Cout("ID3D11Buffer created.");
-#endif
 }
 
 CRCID3D11Buffer::~CRCID3D11Buffer()
@@ -272,7 +283,7 @@ CRCID3D11Buffer::~CRCID3D11Buffer()
 #endif
 }
 
-HRESULT CRCID3D11Buffer::GetType(UINT &rcType)
+HRESULT CRCID3D11Buffer::GetResourceType(UINT &rcType)
 {
     rcType = 0;
     return S_OK;

@@ -2,6 +2,7 @@
 
 #include "CRC_config.h"
 #include "CRC_factory.h"
+#include "CRC_device_context.cuh"
 
 #include <d3d11.h>
 #include <wrl/client.h>
@@ -10,11 +11,11 @@
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
 
-class CRC_API CRC_BUFFER_DESC;
-class CRC_API CRC_TEXTURE2D_DESC;
-class CRC_API CRC_SHADER_RESOURCE_VIEW_DESC;
-class CRC_API CRC_RENDER_TARGET_VIEW_DESC;
-class CRC_API CRC_DEPTH_STENCIL_VIEW_DESC;
+class CRC_BUFFER_DESC;
+class CRC_TEXTURE2D_DESC;
+class CRC_SHADER_RESOURCE_VIEW_DESC;
+class CRC_RENDER_TARGET_VIEW_DESC;
+class CRC_DEPTH_STENCIL_VIEW_DESC;
 
 class CRC_API CRC_DEVICE_DESC : public IDESC
 {
@@ -51,6 +52,8 @@ public:
     (
         CRC_DEPTH_STENCIL_VIEW_DESC& desc, std::unique_ptr<ICRCContainable>& dsv
     ) = 0;
+
+    virtual std::unique_ptr<ICRCDeviceContext>& GetImmediateContext() = 0;
 };
 
 class CRC_API CRCDeviceFactoryL0_0 : public ICRCFactory
@@ -65,6 +68,8 @@ class CRC_API CRCDevice : public ICRCDevice, public ICRCContainable
 private:
     Microsoft::WRL::ComPtr<ID3D11Device>& d3d11Device;
 
+    std::unique_ptr<ICRCDeviceContext> immediateContext = nullptr;
+
     const std::unique_ptr<ICRCFactory> bufferFactory = nullptr;
     const std::unique_ptr<ICRCFactory> texture2DFactory = nullptr;
 
@@ -76,6 +81,7 @@ public:
     CRCDevice
     (
         Microsoft::WRL::ComPtr<ID3D11Device>& d3d11Device,
+        std::unique_ptr<ICRCDeviceContext> immediateContext,
         std::unique_ptr<ICRCFactory> bufferFactory, 
         std::unique_ptr<ICRCFactory> texture2DFactory,
         std::unique_ptr<ICRCFactory> srvFactory,
@@ -92,4 +98,6 @@ public:
     HRESULT CreateShaderResourceView(CRC_SHADER_RESOURCE_VIEW_DESC& desc,std::unique_ptr<ICRCContainable>& srv) override;
     HRESULT CreateRenderTargetView(CRC_RENDER_TARGET_VIEW_DESC& desc, std::unique_ptr<ICRCContainable>& rtv) override;
     HRESULT CreateDepthStencilView(CRC_DEPTH_STENCIL_VIEW_DESC& desc, std::unique_ptr<ICRCContainable>& dsv) override;
+
+    std::unique_ptr<ICRCDeviceContext>& GetImmediateContext() override { return immediateContext; }
 };

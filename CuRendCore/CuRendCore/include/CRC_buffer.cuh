@@ -44,7 +44,7 @@ class CRC_API CRCBuffer
 {
 private:
     D3D11_BUFFER_DESC desc_ = {};
-    UINT rcType_ = 0;
+    UINT resType_ = 0;
 
     void* dPtr_ = nullptr;
     void* hPtr_ = nullptr;
@@ -57,7 +57,7 @@ public:
     virtual ~CRCBuffer() override;
 
     // ICRCResource
-    virtual HRESULT GetType(UINT& rcType) override;
+    virtual HRESULT GetResourceType(UINT& rcType) override;
 
     // ICRCBuffer
     virtual const void GetDesc(D3D11_BUFFER_DESC* dst) override;
@@ -88,15 +88,16 @@ class CRC_API CRCID3D11Buffer
 {
 private:
     Microsoft::WRL::ComPtr<ID3D11Buffer> d3d11Buffer_;
+    UINT resType_ = 0;
 
 public:
-    CRCID3D11Buffer();
     virtual ~CRCID3D11Buffer() override;
 
     virtual Microsoft::WRL::ComPtr<ID3D11Buffer>& Get() { return d3d11Buffer_; }
+    virtual void SetResourceType(UINT& resType) { resType_ = resType; }
 
     // ICRCResource
-    virtual HRESULT GetType(UINT& rcType) override;
+    virtual HRESULT GetResourceType(UINT& resType) override;
 
     // ICRCBuffer
     virtual const void GetDesc(D3D11_BUFFER_DESC* dst) override;

@@ -180,8 +180,7 @@ CRC_API void CRC::GetCpuGpuRWFlags
 CRC_API bool CRC::NeedsWrite(const UINT &rcType)
 {
     bool needsWrite = false;
-    needsWrite = (rcType & (UINT)CRC_RESOURCE_TYPE::BUFFER_CPU_W) ? true : false;
-    needsWrite = (rcType & (UINT)CRC_RESOURCE_TYPE::TEXTURE2D_CPU_W) ? true : false;
+    needsWrite = (rcType & (UINT)CRC_RESOURCE_TYPE::CPU_W) ? true : false;
 
     return needsWrite;
 }
@@ -195,10 +194,12 @@ CRC_API UINT CRC::GetCRCResourceType(const D3D11_BUFFER_DESC &desc)
     GetCpuGpuRWFlags(cpuR, cpuW, gpuR, gpuW, desc.Usage, desc.CPUAccessFlags);
 
     UINT type = 0;
-    type |= cpuR ? (UINT)CRC_RESOURCE_TYPE::BUFFER_CPU_R : 0;
-    type |= cpuW ? (UINT)CRC_RESOURCE_TYPE::BUFFER_CPU_W : 0;
-    type |= gpuR ? (UINT)CRC_RESOURCE_TYPE::BUFFER_GPU_R : 0;
-    type |= gpuW ? (UINT)CRC_RESOURCE_TYPE::BUFFER_GPU_W : 0;
+    type |= cpuR ? (UINT)CRC_RESOURCE_TYPE::CPU_R : 0;
+    type |= cpuW ? (UINT)CRC_RESOURCE_TYPE::CPU_W : 0;
+    type |= gpuR ? (UINT)CRC_RESOURCE_TYPE::GPU_R : 0;
+    type |= gpuW ? (UINT)CRC_RESOURCE_TYPE::GPU_W : 0;
+
+    type |= (UINT)CRC_RESOURCE_TYPE::BUFFER;
 
     return type;
 }
@@ -212,10 +213,12 @@ UINT CRC::GetCRCResourceType(const D3D11_TEXTURE2D_DESC &desc)
     GetCpuGpuRWFlags(cpuR, cpuW, gpuR, gpuW, desc.Usage, desc.CPUAccessFlags);
 
     UINT type = 0;
-    type |= cpuR ? (UINT)CRC_RESOURCE_TYPE::TEXTURE2D_CPU_R : 0;
-    type |= cpuW ? (UINT)CRC_RESOURCE_TYPE::TEXTURE2D_CPU_W : 0;
-    type |= gpuR ? (UINT)CRC_RESOURCE_TYPE::TEXTURE2D_GPU_R : 0;
-    type |= gpuW ? (UINT)CRC_RESOURCE_TYPE::TEXTURE2D_GPU_W : 0;
+    type |= cpuR ? (UINT)CRC_RESOURCE_TYPE::CPU_R : 0;
+    type |= cpuW ? (UINT)CRC_RESOURCE_TYPE::CPU_W : 0;
+    type |= gpuR ? (UINT)CRC_RESOURCE_TYPE::GPU_R : 0;
+    type |= gpuW ? (UINT)CRC_RESOURCE_TYPE::GPU_W : 0;
+
+    type |= (UINT)CRC_RESOURCE_TYPE::TEXTURE2D;
 
     return type;
 }
@@ -223,14 +226,17 @@ UINT CRC::GetCRCResourceType(const D3D11_TEXTURE2D_DESC &desc)
 CRC_API std::string CRC::GetCRCResourceTypeString(const UINT &rcType)
 {
     std::string type = "";
-    type += (rcType & (UINT)CRC_RESOURCE_TYPE::BUFFER_CPU_R) ? "CPU_R " : "";
-    type += (rcType & (UINT)CRC_RESOURCE_TYPE::BUFFER_CPU_W) ? "CPU_W " : "";
-    type += (rcType & (UINT)CRC_RESOURCE_TYPE::BUFFER_GPU_R) ? "GPU_R " : "";
-    type += (rcType & (UINT)CRC_RESOURCE_TYPE::BUFFER_GPU_W) ? "GPU_W " : "";
-    type += (rcType & (UINT)CRC_RESOURCE_TYPE::TEXTURE2D_CPU_R) ? "CPU_R " : "";
-    type += (rcType & (UINT)CRC_RESOURCE_TYPE::TEXTURE2D_CPU_W) ? "CPU_W " : "";
-    type += (rcType & (UINT)CRC_RESOURCE_TYPE::TEXTURE2D_GPU_R) ? "GPU_R " : "";
-    type += (rcType & (UINT)CRC_RESOURCE_TYPE::TEXTURE2D_GPU_W) ? "GPU_W " : "";
+    type += (rcType & (UINT)CRC_RESOURCE_TYPE::UNKNOWN) ? "UNKNOWN " : "";
+    type += (rcType & (UINT)CRC_RESOURCE_TYPE::CRC_RESOURCE) ? "CRC_RESOURCE " : "";
+    type += (rcType & (UINT)CRC_RESOURCE_TYPE::D3D11_RESOURCE) ? "D3D11_RESOURCE " : "";
+
+    type += (rcType & (UINT)CRC_RESOURCE_TYPE::BUFFER) ? "BUFFER " : "";
+    type += (rcType & (UINT)CRC_RESOURCE_TYPE::TEXTURE2D) ? "TEXTURE2D " : "";
+
+    type += (rcType & (UINT)CRC_RESOURCE_TYPE::CPU_R) ? "CPU_R " : "";
+    type += (rcType & (UINT)CRC_RESOURCE_TYPE::CPU_W) ? "CPU_W " : "";
+    type += (rcType & (UINT)CRC_RESOURCE_TYPE::GPU_R) ? "GPU_R " : "";
+    type += (rcType & (UINT)CRC_RESOURCE_TYPE::GPU_W) ? "GPU_W " : "";
 
     return type;
 }

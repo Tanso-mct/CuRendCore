@@ -46,7 +46,7 @@ class CRC_API CRCTexture2D
 {
 private:
     D3D11_TEXTURE2D_DESC desc_ = {};
-    UINT rcType_ = 0;
+    UINT resType_ = 0;
 
     cudaArray* cudaArray_ = nullptr;
     void* hPtr_ = nullptr;
@@ -61,7 +61,7 @@ public:
     ~CRCTexture2D() override;
 
     // ICRCResource
-    virtual HRESULT GetType(UINT& rcType) override;
+    virtual HRESULT GetResourceType(UINT& rcType) override;
 
     // ICRCTexture2D
     virtual const void GetDesc(D3D11_TEXTURE2D_DESC* dst) override;
@@ -86,7 +86,7 @@ class CRC_API CRCCudaResource
 {
 private:
     D3D11_TEXTURE2D_DESC desc_ = {};
-    UINT rcType_ = 0;
+    UINT resType_ = 0;
 
     cudaArray* cudaArray_ = nullptr;
     void* hPtr_ = nullptr;
@@ -101,7 +101,7 @@ public:
     ~CRCCudaResource() override;
 
     // ICRCResource
-    virtual HRESULT GetType(UINT& rcType) override;
+    virtual HRESULT GetResourceType(UINT& rcType) override;
 
     // ICRCTexture2D
     virtual const void GetDesc(D3D11_TEXTURE2D_DESC* dst) override;
@@ -133,15 +133,16 @@ class CRC_API CRCID3D11Texture2D
 {
 private:
     Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11Texture2D_;
+    UINT resType_ = 0;
 
 public:
-    CRCID3D11Texture2D() = default;
     ~CRCID3D11Texture2D() override;
 
     virtual Microsoft::WRL::ComPtr<ID3D11Texture2D>& Get() { return d3d11Texture2D_; }
+    virtual void SetResourceType(UINT& resType) { resType_ = resType; }
 
     // ICRCResource
-    virtual HRESULT GetType(UINT& rcType) override;
+    virtual HRESULT GetResourceType(UINT& resType) override;
 
     // ICRCTexture2D
     virtual const void GetDesc(D3D11_TEXTURE2D_DESC* dst) override;
