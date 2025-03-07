@@ -160,6 +160,51 @@ void CRCBuffer::HostFree()
     hPtr_ = nullptr;
 }
 
+HRESULT CRCBuffer::SendHostToDevice()
+{
+    if (!dPtr_)
+    {
+#ifndef NDEBUG
+        CRC::CoutWarning("Buffer device memory not allocated.");
+#endif
+        return E_FAIL;
+    }
+
+    if (!hPtr_)
+    {
+#ifndef NDEBUG
+        CRC::CoutWarning("Buffer host memory not allocated.");
+#endif
+        return E_FAIL;
+    }
+
+    CRC::CheckCuda(cudaMemcpy(dPtr_, hPtr_, byteWidth_, cudaMemcpyHostToDevice));
+
+    return S_OK;
+}
+
+HRESULT CRCBuffer::SendDeviceToHost()
+{
+    if (!dPtr_)
+    {
+#ifndef NDEBUG
+        CRC::CoutWarning("Buffer device memory not allocated.");
+#endif
+        return E_FAIL;
+    }
+
+    if (!hPtr_)
+    {
+#ifndef NDEBUG
+        CRC::CoutWarning("Buffer host memory not allocated.");
+#endif
+        return E_FAIL;
+    }
+
+    CRC::CheckCuda(cudaMemcpy(hPtr_, dPtr_, byteWidth_, cudaMemcpyDeviceToHost));
+    return S_OK;
+}
+
 std::unique_ptr<ICRCContainable> CRCID3D11BufferFactoryL0_0::Create(IDESC &desc) const
 {
     CRC_BUFFER_DESC* bufferDesc = CRC::As<CRC_BUFFER_DESC>(&desc);

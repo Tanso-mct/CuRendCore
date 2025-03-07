@@ -30,12 +30,8 @@ class CRC_API ICRCTexture2D
 public:
     virtual ~ICRCTexture2D() = default;
     virtual const void GetDesc(D3D11_TEXTURE2D_DESC* dst) = 0;
-    virtual const UINT& GetByteWidth() { return 0; }
-    virtual cudaArray* const GetCudaArray() { return nullptr; }
-    virtual void* const GetHostPtr() { return nullptr; }
-
-    virtual const cudaSurfaceObject_t& GetSurfaceObject() { return 0; }
-    virtual const cudaTextureObject_t& GetTextureObject() { return 0; }
+    virtual const cudaSurfaceObject_t& GetSurfaceObject() = 0;
+    virtual const cudaTextureObject_t& GetTextureObject() = 0;
 };
 
 class CRC_API CRCTexture2DFactoryL0_0 : public ICRCFactory
@@ -69,9 +65,6 @@ public:
 
     // ICRCTexture2D
     virtual const void GetDesc(D3D11_TEXTURE2D_DESC* dst) override;
-    virtual const UINT& GetByteWidth() override { return byteWidth_; }
-    virtual cudaArray* const GetCudaArray() override { return cudaArray_; }
-    virtual void* const GetHostPtr() override { return hPtr_; }
     virtual const cudaSurfaceObject_t& GetSurfaceObject() override { return surfaceObject_; }
     virtual const cudaTextureObject_t& GetTextureObject() override { return textureObject_; }
     
@@ -80,6 +73,12 @@ public:
     virtual void Free() override;
     virtual void HostMalloc(UINT byteWidth) override;
     virtual void HostFree() override;
+
+    virtual const UINT& GetByteWidth() override { return byteWidth_; }
+    virtual void* const GetHostPtr() override { return hPtr_; }
+
+    virtual HRESULT SendHostToDevice() override;
+    virtual HRESULT SendDeviceToHost() override;
 };
 
 class CRC_API CRCCudaResource 
@@ -106,9 +105,6 @@ public:
 
     // ICRCTexture2D
     virtual const void GetDesc(D3D11_TEXTURE2D_DESC* dst) override;
-    virtual const UINT& GetByteWidth() override { return byteWidth_; }
-    virtual cudaArray* const GetCudaArray() override { return cudaArray_; }
-    virtual void* const GetHostPtr() override { return hPtr_; }
     virtual const cudaSurfaceObject_t& GetSurfaceObject() override { return surfaceObject_; }
     virtual const cudaTextureObject_t& GetTextureObject() override { return textureObject_; }
 
@@ -117,6 +113,12 @@ public:
     virtual void Unassign() override;
     virtual void HostMalloc(UINT byteWidth) override;
     virtual void HostFree() override;
+
+    virtual const UINT& GetByteWidth() override { return byteWidth_; }
+    virtual void* const GetHostPtr() override { return hPtr_; }
+
+    virtual HRESULT SendHostToDevice() override;
+    virtual HRESULT SendDeviceToHost() override;
 };
 
 class CRC_API CRCID3D11Texture2DFactoryL0_0 : public ICRCFactory
@@ -136,11 +138,13 @@ public:
     CRCID3D11Texture2D() = default;
     ~CRCID3D11Texture2D() override;
 
+    virtual Microsoft::WRL::ComPtr<ID3D11Texture2D>& Get() { return d3d11Texture2D_; }
+
     // ICRCResource
     virtual HRESULT GetType(UINT& rcType) override;
 
     // ICRCTexture2D
     virtual const void GetDesc(D3D11_TEXTURE2D_DESC* dst) override;
-
-    virtual Microsoft::WRL::ComPtr<ID3D11Texture2D>& Get() { return d3d11Texture2D_; }
+    virtual const cudaSurfaceObject_t& GetSurfaceObject() override { return -1; }
+    virtual const cudaTextureObject_t& GetTextureObject() override { return -1; }
 };

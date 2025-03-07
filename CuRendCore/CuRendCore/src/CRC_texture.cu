@@ -197,6 +197,60 @@ void CRCTexture2D::HostFree()
 #endif
 }
 
+HRESULT CRCTexture2D::SendHostToDevice()
+{
+    if (!cudaArray_)
+    {
+#ifndef NDEBUG
+        CRC::CoutError("Texture2D device memory not allocated.");
+#endif
+        return E_FAIL;
+    }
+
+    if (!hPtr_)
+    {
+#ifndef NDEBUG
+        CRC::CoutError("Texture2D host memory not allocated.");
+#endif
+        return E_FAIL;
+    }
+
+    CRC::CheckCuda(cudaMemcpy2DToArray
+    (
+        cudaArray_, 0, 0, hPtr_, desc_.Width * CRC::GetBytesPerPixel(desc_.Format),
+        desc_.Width * CRC::GetBytesPerPixel(desc_.Format), desc_.Height, cudaMemcpyHostToDevice
+    ));
+
+    return S_OK;
+}
+
+HRESULT CRCTexture2D::SendDeviceToHost()
+{
+    if (!cudaArray_)
+    {
+#ifndef NDEBUG
+        CRC::CoutError("Texture2D device memory not allocated.");
+#endif
+        return E_FAIL;
+    }
+
+    if (!hPtr_)
+    {
+#ifndef NDEBUG
+        CRC::CoutError("Texture2D host memory not allocated.");
+#endif
+        return E_FAIL;
+    }
+
+    CRC::CheckCuda(cudaMemcpy2DFromArray
+    (
+        hPtr_, desc_.Width * CRC::GetBytesPerPixel(desc_.Format), cudaArray_, 0, 0,
+        desc_.Width * CRC::GetBytesPerPixel(desc_.Format), desc_.Height, cudaMemcpyDeviceToHost
+    ));
+
+    return S_OK;
+}
+
 CRCCudaResource::CRCCudaResource(D3D11_TEXTURE2D_DESC &desc)
 {
     desc_ = desc;
@@ -335,6 +389,60 @@ void CRCCudaResource::HostFree()
 #ifndef NDEBUG
     CRC::Cout("CudaResource host memory free.");
 #endif
+}
+
+HRESULT CRCCudaResource::SendHostToDevice()
+{
+    if (!cudaArray_)
+    {
+#ifndef NDEBUG
+        CRC::CoutError("Texture2D device memory not allocated.");
+#endif
+        return E_FAIL;
+    }
+
+    if (!hPtr_)
+    {
+#ifndef NDEBUG
+        CRC::CoutError("Texture2D host memory not allocated.");
+#endif
+        return E_FAIL;
+    }
+
+    CRC::CheckCuda(cudaMemcpy2DToArray
+    (
+        cudaArray_, 0, 0, hPtr_, desc_.Width * CRC::GetBytesPerPixel(desc_.Format),
+        desc_.Width * CRC::GetBytesPerPixel(desc_.Format), desc_.Height, cudaMemcpyHostToDevice
+    ));
+
+    return S_OK;
+}
+
+HRESULT CRCCudaResource::SendDeviceToHost()
+{
+    if (!cudaArray_)
+    {
+#ifndef NDEBUG
+        CRC::CoutError("Texture2D device memory not allocated.");
+#endif
+        return E_FAIL;
+    }
+
+    if (!hPtr_)
+    {
+#ifndef NDEBUG
+        CRC::CoutError("Texture2D host memory not allocated.");
+#endif
+        return E_FAIL;
+    }
+
+    CRC::CheckCuda(cudaMemcpy2DFromArray
+    (
+        hPtr_, desc_.Width * CRC::GetBytesPerPixel(desc_.Format), cudaArray_, 0, 0,
+        desc_.Width * CRC::GetBytesPerPixel(desc_.Format), desc_.Height, cudaMemcpyDeviceToHost
+    ));
+
+    return S_OK;
 }
 
 std::unique_ptr<ICRCContainable> CRCID3D11Texture2DFactoryL0_0::Create(IDESC &desc) const
