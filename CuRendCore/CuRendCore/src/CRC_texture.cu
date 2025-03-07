@@ -21,18 +21,34 @@ std::unique_ptr<ICRCContainable> CRCTexture2DFactoryL0_0::Create(IDESC &desc) co
 CRCTexture2D::CRCTexture2D(CRC_TEXTURE2D_DESC& desc)
 {
     D3D11_TEXTURE2D_DESC& src = desc.desc_;
-    byteWidth_ = CRC::GetBytesPerPixel(src.Format) * src.Width * src.Height;
 
     desc_ = src;
     rcType_ = CRC::GetCRCResourceType(src);
 
-    Malloc(byteWidth_);
-    if (desc.initialData_.pSysMem)
+    if (rcType_ & (UINT)CRC_RESOURCE_TYPE::TEXTURE2D_GPU_R || rcType_ & (UINT)CRC_RESOURCE_TYPE::TEXTURE2D_GPU_W)
     {
-        CRC::CheckCuda(cudaMemcpy
-        (
-            cudaArray_, desc.initialData_.pSysMem, byteWidth_, cudaMemcpyHostToDevice
-        ));
+        Malloc(CRC::GetBytesPerPixel(src.Format) * src.Width * src.Height);
+        if (desc.initialData_.pSysMem)
+        {
+            CRC::CheckCuda(cudaMemcpy2DToArray
+            (
+                cudaArray_, 0, 0, desc.initialData_.pSysMem, desc_.Width * CRC::GetBytesPerPixel(desc_.Format),
+                desc_.Width * CRC::GetBytesPerPixel(desc_.Format), desc_.Height, cudaMemcpyHostToDevice
+            ));
+        }
+    }
+
+    if (rcType_ & (UINT)CRC_RESOURCE_TYPE::TEXTURE2D_CPU_R || rcType_ & (UINT)CRC_RESOURCE_TYPE::TEXTURE2D_CPU_W)
+    {
+        HostMalloc(CRC::GetBytesPerPixel(src.Format) * src.Width * src.Height);
+        if (desc.initialData_.pSysMem)
+        {
+            CRC::CheckCuda(cudaMemcpy2DFromArray
+            (
+                hPtr_, desc_.Width * CRC::GetBytesPerPixel(desc_.Format), cudaArray_, 0, 0,
+                desc_.Width * CRC::GetBytesPerPixel(desc_.Format), desc_.Height, cudaMemcpyDeviceToHost
+            ));
+        }
     }
 
 #ifndef NDEBUG
@@ -48,6 +64,7 @@ CRCTexture2D::CRCTexture2D(CRC_TEXTURE2D_DESC& desc)
 CRCTexture2D::~CRCTexture2D()
 {
     if (cudaArray_) Free();
+    if (hPtr_) HostFree();
 
 #ifndef NDEBUG
     CRC::Cout("Texture2D destroyed.");
@@ -136,6 +153,50 @@ void CRCTexture2D::Free()
 #endif
 }
 
+void CRCTexture2D::HostMalloc(UINT byteWidth)
+{
+    if (hPtr_)
+    {
+#ifndef NDEBUG
+        CRC::CoutError("Texture2D host memory already allocated.");
+#endif
+        throw std::runtime_error("Texture2D host memory already allocated.");
+    }
+
+    byteWidth_ = byteWidth;
+    CRC::CheckCuda(cudaMallocHost(&hPtr_, byteWidth_));
+
+#ifndef NDEBUG
+    CRC::Cout
+    (
+        "Texture2D host memory allocated.", "\n",
+        "ByteWidth :", byteWidth_, "\n",
+        "Width :", desc_.Width, "\n",
+        "Height :", desc_.Height
+    );
+#endif
+}
+
+void CRCTexture2D::HostFree()
+{
+    if (!hPtr_)
+    {
+#ifndef NDEBUG
+        CRC::CoutError("Texture2D host memory not allocated.");
+#endif
+        throw std::runtime_error("Texture2D host memory not allocated.");
+    }
+
+    byteWidth_ = 0;
+
+    CRC::CheckCuda(cudaFreeHost(hPtr_));
+    hPtr_ = nullptr;
+
+#ifndef NDEBUG
+    CRC::Cout("Texture2D host memory free.");
+#endif
+}
+
 CRCCudaResource::CRCCudaResource(D3D11_TEXTURE2D_DESC &desc)
 {
     desc_ = desc;
@@ -154,6 +215,7 @@ CRCCudaResource::CRCCudaResource(D3D11_TEXTURE2D_DESC &desc)
 CRCCudaResource::~CRCCudaResource()
 {
     if (cudaArray_) Unassign();
+    if (hPtr_) HostFree();
 
 #ifndef NDEBUG
     CRC::Cout("Texture2D destroyed.");
@@ -229,6 +291,50 @@ void CRCCudaResource::Unassign()
     cudaArray_ = nullptr;
     surfaceObject_ = 0;
     textureObject_ = 0;
+}
+
+void CRCCudaResource::HostMalloc(UINT byteWidth)
+{
+    if (hPtr_)
+    {
+#ifndef NDEBUG
+        CRC::CoutError("CudaResource host memory already allocated.");
+#endif
+        throw std::runtime_error("CudaResource host memory already allocated.");
+    }
+
+    byteWidth_ = byteWidth;
+    CRC::CheckCuda(cudaMallocHost(&hPtr_, byteWidth_));
+
+#ifndef NDEBUG
+    CRC::Cout
+    (
+        "CudaResource host memory allocated.", "\n",
+        "ByteWidth :", byteWidth_, "\n",
+        "Width :", desc_.Width, "\n",
+        "Height :", desc_.Height
+    );
+#endif
+}
+
+void CRCCudaResource::HostFree()
+{
+    if (!hPtr_)
+    {
+#ifndef NDEBUG
+        CRC::CoutError("CudaResource host memory not allocated.");
+#endif
+        throw std::runtime_error("CudaResource host memory not allocated.");
+    }
+
+    byteWidth_ = 0;
+
+    CRC::CheckCuda(cudaFreeHost(hPtr_));
+    hPtr_ = nullptr;
+
+#ifndef NDEBUG
+    CRC::Cout("CudaResource host memory free.");
+#endif
 }
 
 std::unique_ptr<ICRCContainable> CRCID3D11Texture2DFactoryL0_0::Create(IDESC &desc) const

@@ -120,6 +120,7 @@ TEST(CuRendCore, CreateTexture2D)
     textureDesc.SampleDesc.Count = 1;
     textureDesc.Usage = D3D11_USAGE_DEFAULT;
     textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+    textureDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
     std::unique_ptr<ICRCContainable> texture = factory.Create(desc);
 
     EXPECT_NE(texture.get(), nullptr);
@@ -188,6 +189,7 @@ TEST(CuRendCore, CreateID3D11Texture2D)
         textureDesc.SampleDesc.Count = 1;
         textureDesc.Usage = D3D11_USAGE_DEFAULT;
         textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+        textureDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
         texture = factory.Create(desc);
     }

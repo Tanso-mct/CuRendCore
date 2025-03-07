@@ -126,7 +126,7 @@ public:
     virtual void ClearRenderTargetView
     ( 
         _In_ ID3D11RenderTargetView *renderTargetView,
-        _In_ const float colorRGBA[ 4 ]
+        _In_ const float colorRGBA[4]
     ) = 0;
 
     virtual void ClearDepthStencilView

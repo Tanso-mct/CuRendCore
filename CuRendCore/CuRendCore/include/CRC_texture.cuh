@@ -30,6 +30,9 @@ class CRC_API ICRCTexture2D
 public:
     virtual ~ICRCTexture2D() = default;
     virtual const void GetDesc(D3D11_TEXTURE2D_DESC* dst) = 0;
+    virtual const UINT& GetByteWidth() { return 0; }
+    virtual cudaArray* const GetCudaArray() { return nullptr; }
+    virtual void* const GetHostPtr() { return nullptr; }
 
     virtual const cudaSurfaceObject_t& GetSurfaceObject() { return 0; }
     virtual const cudaTextureObject_t& GetTextureObject() { return 0; }
@@ -50,6 +53,7 @@ private:
     UINT rcType_ = 0;
 
     cudaArray* cudaArray_ = nullptr;
+    void* hPtr_ = nullptr;
     cudaSurfaceObject_t surfaceObject_ = 0;
     cudaTextureObject_t textureObject_ = 0;
     UINT byteWidth_ = 0;
@@ -65,12 +69,17 @@ public:
 
     // ICRCTexture2D
     virtual const void GetDesc(D3D11_TEXTURE2D_DESC* dst) override;
+    virtual const UINT& GetByteWidth() override { return byteWidth_; }
+    virtual cudaArray* const GetCudaArray() override { return cudaArray_; }
+    virtual void* const GetHostPtr() override { return hPtr_; }
     virtual const cudaSurfaceObject_t& GetSurfaceObject() override { return surfaceObject_; }
     virtual const cudaTextureObject_t& GetTextureObject() override { return textureObject_; }
     
     // ICRCMemory
     virtual void Malloc(UINT byteWidth) override;
     virtual void Free() override;
+    virtual void HostMalloc(UINT byteWidth) override;
+    virtual void HostFree() override;
 };
 
 class CRC_API CRCCudaResource 
@@ -81,6 +90,7 @@ private:
     UINT rcType_ = 0;
 
     cudaArray* cudaArray_ = nullptr;
+    void* hPtr_ = nullptr;
     cudaSurfaceObject_t surfaceObject_ = 0;
     cudaTextureObject_t textureObject_ = 0;
     UINT byteWidth_ = 0;
@@ -96,12 +106,17 @@ public:
 
     // ICRCTexture2D
     virtual const void GetDesc(D3D11_TEXTURE2D_DESC* dst) override;
+    virtual const UINT& GetByteWidth() override { return byteWidth_; }
+    virtual cudaArray* const GetCudaArray() override { return cudaArray_; }
+    virtual void* const GetHostPtr() override { return hPtr_; }
     virtual const cudaSurfaceObject_t& GetSurfaceObject() override { return surfaceObject_; }
     virtual const cudaTextureObject_t& GetTextureObject() override { return textureObject_; }
 
     // ICRCMemory
     virtual void Assign(void* const mem, UINT byteWidth) override;
     virtual void Unassign() override;
+    virtual void HostMalloc(UINT byteWidth) override;
+    virtual void HostFree() override;
 };
 
 class CRC_API CRCID3D11Texture2DFactoryL0_0 : public ICRCFactory

@@ -29,7 +29,9 @@ class CRC_API ICRCBuffer
 public:
     virtual ~ICRCBuffer() = default;
     virtual const void GetDesc(D3D11_BUFFER_DESC* dst) = 0;
-    virtual void* const GetMem() = 0;
+    virtual const UINT& GetByteWidth() { return 0; }
+    virtual void* const GetDevicePtr() { return nullptr; }
+    virtual void* const GetHostPtr() { return nullptr; }
 };
 
 class CRC_API CRCBufferFactoryL0_0 : public ICRCFactory
@@ -46,7 +48,8 @@ private:
     D3D11_BUFFER_DESC desc_ = {};
     UINT rcType_ = 0;
 
-    void* memPtr_ = nullptr;
+    void* dPtr_ = nullptr;
+    void* hPtr_ = nullptr;
     UINT byteWidth_ = 0;
 
 public:
@@ -60,11 +63,15 @@ public:
 
     // ICRCBuffer
     virtual const void GetDesc(D3D11_BUFFER_DESC* dst) override;
-    virtual void* const GetMem() override { return reinterpret_cast<void*>(memPtr_); }
+    virtual const UINT& GetByteWidth() override { return byteWidth_; }
+    virtual void* const GetDevicePtr() override { return dPtr_; }
+    virtual void* const GetHostPtr() override { return hPtr_; }
 
     // ICRCMemory
     virtual void Malloc(UINT byteWidth) override;
     virtual void Free() override;
+    virtual void HostMalloc(UINT byteWidth) override;
+    virtual void HostFree() override;
 };
 
 class CRC_API CRCID3D11BufferFactoryL0_0 : public ICRCFactory
@@ -89,7 +96,6 @@ public:
 
     // ICRCBuffer
     virtual const void GetDesc(D3D11_BUFFER_DESC* dst) override;
-    virtual void* const GetMem() override { return nullptr; }
 
     virtual Microsoft::WRL::ComPtr<ID3D11Buffer>& Get() { return d3d11Buffer_; }
 };

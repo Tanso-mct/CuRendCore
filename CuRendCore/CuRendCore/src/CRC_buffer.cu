@@ -25,13 +25,28 @@ CRCBuffer::CRCBuffer(CRC_BUFFER_DESC &desc)
     desc_ = src;
     rcType_ = CRC::GetCRCResourceType(src);
 
-    Malloc(src.ByteWidth);
-    if (desc.initialData_.pSysMem)
+    if (rcType_ & (UINT)CRC_RESOURCE_TYPE::BUFFER_GPU_R || rcType_ & (UINT)CRC_RESOURCE_TYPE::BUFFER_GPU_W)
     {
-        CRC::CheckCuda(cudaMemcpy
-        (
-            memPtr_, desc.initialData_.pSysMem, byteWidth_, cudaMemcpyHostToDevice
-        ));
+        Malloc(src.ByteWidth);
+        if (desc.initialData_.pSysMem)
+        {
+            CRC::CheckCuda(cudaMemcpy
+            (
+                dPtr_, desc.initialData_.pSysMem, byteWidth_, cudaMemcpyHostToDevice
+            ));
+        }
+    }
+
+    if (rcType_ & (UINT)CRC_RESOURCE_TYPE::BUFFER_CPU_R || rcType_ & (UINT)CRC_RESOURCE_TYPE::BUFFER_CPU_W)
+    {
+        HostMalloc(src.ByteWidth);
+        if (desc.initialData_.pSysMem)
+        {
+            CRC::CheckCuda(cudaMemcpy
+            (
+                hPtr_, desc.initialData_.pSysMem, byteWidth_, cudaMemcpyHostToHost
+            ));
+        }
     }
 
 #ifndef NDEBUG
@@ -46,7 +61,8 @@ CRCBuffer::CRCBuffer(CRC_BUFFER_DESC &desc)
 
 CRCBuffer::~CRCBuffer()
 {
-    if (memPtr_) Free();
+    if (dPtr_) Free();
+    if (hPtr_) HostFree();
 
 #ifndef NDEBUG
     CRC::Cout("Buffer destroyed.");
@@ -66,7 +82,7 @@ const void CRCBuffer::GetDesc(D3D11_BUFFER_DESC *dst)
 
 void CRCBuffer::Malloc(UINT byteWidth)
 {
-    if (memPtr_)
+    if (dPtr_)
     {
 #ifndef NDEBUG
         CRC::CoutError("Buffer device memory already allocated.");
@@ -75,7 +91,7 @@ void CRCBuffer::Malloc(UINT byteWidth)
     }
 
     byteWidth_ = byteWidth;
-    CRC::CheckCuda(cudaMalloc(&memPtr_, byteWidth_));
+    CRC::CheckCuda(cudaMalloc(&dPtr_, byteWidth_));
 
 #ifndef NDEBUG
     CRC::Cout
@@ -88,7 +104,7 @@ void CRCBuffer::Malloc(UINT byteWidth)
 
 void CRCBuffer::Free()
 {
-    if (!memPtr_)
+    if (!dPtr_)
     {
 #ifndef NDEBUG
         CRC::CoutError("Buffer device memory not allocated.");
@@ -98,12 +114,50 @@ void CRCBuffer::Free()
 
     byteWidth_ = 0;
 
-    CRC::CheckCuda(cudaFree(memPtr_));
-    memPtr_ = nullptr;
+    CRC::CheckCuda(cudaFree(dPtr_));
+    dPtr_ = nullptr;
 
 #ifndef NDEBUG
     CRC::Cout("Buffer device memory free.");
 #endif
+}
+
+void CRCBuffer::HostMalloc(UINT byteWidth)
+{
+    if (hPtr_)
+    {
+#ifndef NDEBUG
+        CRC::CoutError("Buffer host memory already allocated.");
+#endif
+        throw std::runtime_error("Buffer host memory already allocated.");
+    }
+
+    byteWidth_ = byteWidth;
+    CRC::CheckCuda(cudaMallocHost(&hPtr_, byteWidth_));
+
+#ifndef NDEBUG
+    CRC::Cout
+    (
+        "Buffer host memory allocated.", "\n",
+        "ByteWidth :", byteWidth_
+    );
+#endif
+}
+
+void CRCBuffer::HostFree()
+{
+    if (!hPtr_)
+    {
+#ifndef NDEBUG
+        CRC::CoutError("Buffer host memory not allocated.");
+#endif
+        throw std::runtime_error("Buffer host memory not allocated.");
+    }
+
+    byteWidth_ = 0;
+
+    CRC::CheckCuda(cudaFreeHost(hPtr_));
+    hPtr_ = nullptr;
 }
 
 std::unique_ptr<ICRCContainable> CRCID3D11BufferFactoryL0_0::Create(IDESC &desc) const

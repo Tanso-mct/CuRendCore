@@ -20,6 +20,9 @@ public:
     virtual void Malloc(UINT byteWidth);
     virtual void Free();
 
+    virtual void HostMalloc(UINT byteWidth);
+    virtual void HostFree();
+
     virtual void Assign(void* const mem, UINT byteWidth);
     virtual void Unassign();
 };
