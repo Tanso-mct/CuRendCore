@@ -1,7 +1,7 @@
 ﻿#include "pch.h"
 #include "CuRendCore/include/CuRendCore.h"
 
-static LRESULT CALLBACK WindowProc_ViewTest(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+static LRESULT CALLBACK WindowProc_DeviceContextTest(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
     switch (msg)
     {
@@ -16,7 +16,7 @@ static LRESULT CALLBACK WindowProc_ViewTest(HWND hWnd, UINT msg, WPARAM wParam, 
     return 0;
 }
 
-TEST(CuRendCore_view_test, CreateShaderResourceView)
+TEST(CuRendCore_device_context, GetImmediateContext)
 {
     std::unique_ptr<ICRCContainable> windowAttr;
     {
@@ -25,9 +25,9 @@ TEST(CuRendCore_view_test, CreateShaderResourceView)
 
         // Create window attributes.
         CRC_WINDOW_DESC desc = {};
-        desc.wcex_.lpszClassName = L"CreateShaderResourceView";
-        desc.wcex_.lpfnWndProc = WindowProc_ViewTest;
-        desc.name_ = L"CreateShaderResourceView";
+        desc.wcex_.lpszClassName = L"GetImmediateContext";
+        desc.wcex_.lpfnWndProc = WindowProc_DeviceContextTest;
+        desc.name_ = L"GetImmediateContext";
         desc.hInstance = GetModuleHandle(NULL);
         windowAttr = windowFactory.Create(desc);
     }
@@ -60,48 +60,28 @@ TEST(CuRendCore_view_test, CreateShaderResourceView)
         dxgiDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
 
         CRC::CreateD3D11DeviceAndSwapChain(swapChainDesc, d3d11Device, d3d11SwapChain);
-
-        ASSERT_NE(d3d11Device.Get(), nullptr);
-        ASSERT_NE(d3d11SwapChain.Get(), nullptr);
     }
 
-    std::unique_ptr<ICRCContainable> texture;
+    std::unique_ptr<ICRCContainable> crcDevice;
     {
-        CRCTexture2DFactoryL0_0 factory;
-        CRC_TEXTURE2D_DESC desc(d3d11Device);
+        CRC_DEVICE_DESC desc(d3d11Device);
 
-        D3D11_TEXTURE2D_DESC& textureDesc = desc.desc_;
-        textureDesc.Width = 1920;
-        textureDesc.Height = 1080;
-        textureDesc.MipLevels = 1;
-        textureDesc.ArraySize = 1;
-        textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-        textureDesc.SampleDesc.Count = 1;
-        textureDesc.Usage = D3D11_USAGE_DEFAULT;
-        textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-        texture = factory.Create(desc);
+        CRCDeviceFactoryL0_0 deviceFactory;
+        crcDevice = deviceFactory.Create(desc);
 
-        ASSERT_NE(texture.get(), nullptr);
+        ASSERT_NE(crcDevice.get(), nullptr);
     }
 
-    std::unique_ptr<ICRCContainable> shaderResourceView;
     {
-        CRCShaderResourceViewFactoryL0_0 factory;
-        CRC_SHADER_RESOURCE_VIEW_DESC desc(d3d11Device, texture);
+        CRCTransCastUnique<ICRCDevice, ICRCContainable> device(crcDevice);
+        ASSERT_NE(device(), nullptr);
 
-        D3D11_SHADER_RESOURCE_VIEW_DESC& srvDesc = desc.desc_;
-        srvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-        srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-        srvDesc.Texture2D.MostDetailedMip = 0;
-        srvDesc.Texture2D.MipLevels = 1;
-
-        shaderResourceView = factory.Create(desc);
+        std::unique_ptr<ICRCDeviceContext>& immediateContext = device()->GetImmediateContext();
+        ASSERT_NE(immediateContext, nullptr);
     }
-
-    EXPECT_NE(shaderResourceView.get(), nullptr);
 }
 
-TEST(CuRendCore_view_test, CreateD3D11ShaderResourceView)
+TEST(CuRendCore_device_context, GetD3D11ImmediateContext)
 {
     std::unique_ptr<ICRCContainable> windowAttr;
     {
@@ -110,9 +90,9 @@ TEST(CuRendCore_view_test, CreateD3D11ShaderResourceView)
 
         // Create window attributes.
         CRC_WINDOW_DESC desc = {};
-        desc.wcex_.lpszClassName = L"CreateD3D11ShaderResourceView";
-        desc.wcex_.lpfnWndProc = WindowProc_ViewTest;
-        desc.name_ = L"CreateD3D11ShaderResourceView";
+        desc.wcex_.lpszClassName = L"GetD3D11ImmediateContext";
+        desc.wcex_.lpfnWndProc = WindowProc_DeviceContextTest;
+        desc.name_ = L"GetD3D11ImmediateContext";
         desc.hInstance = GetModuleHandle(NULL);
         windowAttr = windowFactory.Create(desc);
     }
@@ -145,49 +125,29 @@ TEST(CuRendCore_view_test, CreateD3D11ShaderResourceView)
         dxgiDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
 
         CRC::CreateD3D11DeviceAndSwapChain(swapChainDesc, d3d11Device, d3d11SwapChain);
-
-        ASSERT_NE(d3d11Device.Get(), nullptr);
-        ASSERT_NE(d3d11SwapChain.Get(), nullptr);
     }
 
-    std::unique_ptr<ICRCContainable> texture;
+    std::unique_ptr<ICRCContainable> crcDevice;
     {
-        CRCID3D11Texture2DFactoryL0_0 factory;
-        CRC_TEXTURE2D_DESC desc(d3d11Device);
+        CRC_DEVICE_DESC desc(d3d11Device);
+        desc.renderMode_ = CRC_RENDER_MODE::D3D11;
 
-        D3D11_TEXTURE2D_DESC& textureDesc = desc.desc_;
-        textureDesc.Width = 1920;
-        textureDesc.Height = 1080;
-        textureDesc.MipLevels = 1;
-        textureDesc.ArraySize = 1;
-        textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-        textureDesc.SampleDesc.Count = 1;
-        textureDesc.Usage = D3D11_USAGE_DEFAULT;
-        textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+        CRCDeviceFactoryL0_0 deviceFactory;
+        crcDevice = deviceFactory.Create(desc);
 
-        texture = factory.Create(desc);
-
-        ASSERT_NE(texture.get(), nullptr);
+        ASSERT_NE(crcDevice.get(), nullptr);
     }
 
-    std::unique_ptr<ICRCContainable> shaderResourceView;
     {
-        CRCID3D11ShaderResourceViewFactoryL0_0 factory;
-        CRC_SHADER_RESOURCE_VIEW_DESC desc(d3d11Device, texture);
+        CRCTransCastUnique<ICRCDevice, ICRCContainable> device(crcDevice);
+        ASSERT_NE(device(), nullptr);
 
-        D3D11_SHADER_RESOURCE_VIEW_DESC& srvDesc = desc.desc_;
-        srvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-        srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-        srvDesc.Texture2D.MostDetailedMip = 0;
-        srvDesc.Texture2D.MipLevels = 1;
-
-        shaderResourceView = factory.Create(desc);
+        std::unique_ptr<ICRCDeviceContext>& immediateContext = device()->GetImmediateContext();
+        ASSERT_NE(immediateContext, nullptr);
     }
-
-    EXPECT_NE(shaderResourceView.get(), nullptr);
 }
 
-TEST(CuRendCore_view_test, CreateRenderTargetView)
+TEST(CuRendCore_device_context, ImmediateContextMapAndUnmap)
 {
     std::unique_ptr<ICRCContainable> windowAttr;
     {
@@ -196,9 +156,9 @@ TEST(CuRendCore_view_test, CreateRenderTargetView)
 
         // Create window attributes.
         CRC_WINDOW_DESC desc = {};
-        desc.wcex_.lpszClassName = L"CreateRenderTargetView";
-        desc.wcex_.lpfnWndProc = WindowProc_ViewTest;
-        desc.name_ = L"CreateRenderTargetView";
+        desc.wcex_.lpszClassName = L"ImmediateContextMapAndUnmap";
+        desc.wcex_.lpfnWndProc = WindowProc_DeviceContextTest;
+        desc.name_ = L"ImmediateContextMapAndUnmap";
         desc.hInstance = GetModuleHandle(NULL);
         windowAttr = windowFactory.Create(desc);
     }
@@ -231,47 +191,54 @@ TEST(CuRendCore_view_test, CreateRenderTargetView)
         dxgiDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
 
         CRC::CreateD3D11DeviceAndSwapChain(swapChainDesc, d3d11Device, d3d11SwapChain);
-
-        ASSERT_NE(d3d11Device.Get(), nullptr);
-        ASSERT_NE(d3d11SwapChain.Get(), nullptr);
     }
 
-    std::unique_ptr<ICRCContainable> texture;
+    std::unique_ptr<ICRCContainable> crcDevice;
     {
-        CRCTexture2DFactoryL0_0 factory;
-        CRC_TEXTURE2D_DESC desc(d3d11Device);
+        CRC_DEVICE_DESC desc(d3d11Device);
 
-        D3D11_TEXTURE2D_DESC& textureDesc = desc.desc_;
-        textureDesc.Width = 1920;
-        textureDesc.Height = 1080;
-        textureDesc.MipLevels = 1;
-        textureDesc.ArraySize = 1;
-        textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-        textureDesc.SampleDesc.Count = 1;
-        textureDesc.Usage = D3D11_USAGE_DEFAULT;
-        textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET;
-        texture = factory.Create(desc);
+        CRCDeviceFactoryL0_0 deviceFactory;
+        crcDevice = deviceFactory.Create(desc);
 
-        ASSERT_NE(texture.get(), nullptr);
+        ASSERT_NE(crcDevice.get(), nullptr);
     }
 
-    std::unique_ptr<ICRCContainable> renderTargetView;
+    std::unique_ptr<ICRCContainable> buffer;
     {
-        CRCRenderTargetViewFactoryL0_0 factory;
-        CRC_RENDER_TARGET_VIEW_DESC desc(d3d11Device, texture);
+        CRCBufferFactoryL0_0 factory;
+        CRC_BUFFER_DESC desc(d3d11Device);
 
-        D3D11_RENDER_TARGET_VIEW_DESC& rtvDesc = desc.desc_;
-        rtvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-        rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
-        rtvDesc.Texture2D.MipSlice = 0;
+        D3D11_BUFFER_DESC& bufferDesc = desc.desc_;
+        bufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
+        bufferDesc.ByteWidth = 1024;
+        bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+        bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+        bufferDesc.MiscFlags = 0;
+        bufferDesc.StructureByteStride = 0;
 
-        renderTargetView = factory.Create(desc);
+        buffer = factory.Create(desc);
+
+        ASSERT_NE(buffer.get(), nullptr);
     }
 
-    EXPECT_NE(renderTargetView.get(), nullptr);
+    {
+        CRCTransCastUnique<ICRCDevice, ICRCContainable> device(crcDevice);
+        ASSERT_NE(device(), nullptr);
+
+        std::unique_ptr<ICRCDeviceContext>& immediateContext = device()->GetImmediateContext();
+        ASSERT_NE(immediateContext, nullptr);
+
+        D3D11_MAPPED_SUBRESOURCE mappedResource = { 0 };
+        immediateContext->Map(buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+        ASSERT_NE(mappedResource.pData, nullptr);
+
+        // Cast mappedResource.pData or otherwise rewrite the data.
+
+        immediateContext->Unmap(buffer, 0);
+    }
 }
 
-TEST(CuRendCore_view_test, CreateD3D11RenderTargetView)
+TEST(CuRendCore_device_context, D3D11ImmediateContextMapAndUnmap)
 {
     std::unique_ptr<ICRCContainable> windowAttr;
     {
@@ -280,9 +247,9 @@ TEST(CuRendCore_view_test, CreateD3D11RenderTargetView)
 
         // Create window attributes.
         CRC_WINDOW_DESC desc = {};
-        desc.wcex_.lpszClassName = L"CreateD3D11RenderTargetView";
-        desc.wcex_.lpfnWndProc = WindowProc_ViewTest;
-        desc.name_ = L"CreateD3D11RenderTargetView";
+        desc.wcex_.lpszClassName = L"D3D11ImmediateContextMapAndUnmap";
+        desc.wcex_.lpfnWndProc = WindowProc_DeviceContextTest;
+        desc.name_ = L"D3D11ImmediateContextMapAndUnmap";
         desc.hInstance = GetModuleHandle(NULL);
         windowAttr = windowFactory.Create(desc);
     }
@@ -315,48 +282,55 @@ TEST(CuRendCore_view_test, CreateD3D11RenderTargetView)
         dxgiDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
 
         CRC::CreateD3D11DeviceAndSwapChain(swapChainDesc, d3d11Device, d3d11SwapChain);
-
-        ASSERT_NE(d3d11Device.Get(), nullptr);
-        ASSERT_NE(d3d11SwapChain.Get(), nullptr);
     }
 
-    std::unique_ptr<ICRCContainable> texture;
+    std::unique_ptr<ICRCContainable> crcDevice;
     {
-        CRCID3D11Texture2DFactoryL0_0 factory;
-        CRC_TEXTURE2D_DESC desc(d3d11Device);
+        CRC_DEVICE_DESC desc(d3d11Device);
+        desc.renderMode_ = CRC_RENDER_MODE::D3D11;
 
-        D3D11_TEXTURE2D_DESC& textureDesc = desc.desc_;
-        textureDesc.Width = 1920;
-        textureDesc.Height = 1080;
-        textureDesc.MipLevels = 1;
-        textureDesc.ArraySize = 1;
-        textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-        textureDesc.SampleDesc.Count = 1;
-        textureDesc.Usage = D3D11_USAGE_DEFAULT;
-        textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET;
+        CRCDeviceFactoryL0_0 deviceFactory;
+        crcDevice = deviceFactory.Create(desc);
 
-        texture = factory.Create(desc);
-
-        ASSERT_NE(texture.get(), nullptr);
+        ASSERT_NE(crcDevice.get(), nullptr);
     }
 
-    std::unique_ptr<ICRCContainable> renderTargetView;
+    std::unique_ptr<ICRCContainable> buffer;
     {
-        CRCID3D11RenderTargetViewFactoryL0_0 factory;
-        CRC_RENDER_TARGET_VIEW_DESC desc(d3d11Device, texture);
+        CRCID3D11BufferFactoryL0_0 factory;
+        CRC_BUFFER_DESC desc(d3d11Device);
 
-        D3D11_RENDER_TARGET_VIEW_DESC& rtvDesc = desc.desc_;
-        rtvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-        rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
-        rtvDesc.Texture2D.MipSlice = 0;
+        D3D11_BUFFER_DESC& bufferDesc = desc.desc_;
+        bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+        bufferDesc.ByteWidth = 1024;
+        bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+        bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+        bufferDesc.MiscFlags = 0;
+        bufferDesc.StructureByteStride = 0;
 
-        renderTargetView = factory.Create(desc);
+        buffer = factory.Create(desc);
+
+        ASSERT_NE(buffer.get(), nullptr);
     }
 
-    EXPECT_NE(renderTargetView.get(), nullptr);
+    {
+        CRCTransCastUnique<ICRCDevice, ICRCContainable> device(crcDevice);
+        ASSERT_NE(device(), nullptr);
+
+        std::unique_ptr<ICRCDeviceContext>& immediateContext = device()->GetImmediateContext();
+        ASSERT_NE(immediateContext, nullptr);
+
+        D3D11_MAPPED_SUBRESOURCE mappedResource = { 0 };
+        immediateContext->Map(buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+        ASSERT_NE(mappedResource.pData, nullptr);
+
+        // Cast mappedResource.pData or otherwise rewrite the data.
+
+        immediateContext->Unmap(buffer, 0);
+    }
 }
 
-TEST(CuRendCore_view_test, CreateDepthStencilView)
+TEST(CuRendCore_device_context, ImmediateContextUpdateSubresource)
 {
     std::unique_ptr<ICRCContainable> windowAttr;
     {
@@ -365,9 +339,9 @@ TEST(CuRendCore_view_test, CreateDepthStencilView)
 
         // Create window attributes.
         CRC_WINDOW_DESC desc = {};
-        desc.wcex_.lpszClassName = L"CreateDepthStencilView";
-        desc.wcex_.lpfnWndProc = WindowProc_ViewTest;
-        desc.name_ = L"CreateDepthStencilView";
+        desc.wcex_.lpszClassName = L"ImmediateContextUpdateSubresource";
+        desc.wcex_.lpfnWndProc = WindowProc_DeviceContextTest;
+        desc.name_ = L"ImmediateContextUpdateSubresource";
         desc.hInstance = GetModuleHandle(NULL);
         windowAttr = windowFactory.Create(desc);
     }
@@ -400,47 +374,50 @@ TEST(CuRendCore_view_test, CreateDepthStencilView)
         dxgiDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
 
         CRC::CreateD3D11DeviceAndSwapChain(swapChainDesc, d3d11Device, d3d11SwapChain);
-
-        ASSERT_NE(d3d11Device.Get(), nullptr);
-        ASSERT_NE(d3d11SwapChain.Get(), nullptr);
     }
 
-    std::unique_ptr<ICRCContainable> texture;
+    std::unique_ptr<ICRCContainable> crcDevice;
     {
-        CRCTexture2DFactoryL0_0 factory;
-        CRC_TEXTURE2D_DESC desc(d3d11Device);
+        CRC_DEVICE_DESC desc(d3d11Device);
 
-        D3D11_TEXTURE2D_DESC& textureDesc = desc.desc_;
-        textureDesc.Width = 1920;
-        textureDesc.Height = 1080;
-        textureDesc.MipLevels = 1;
-        textureDesc.ArraySize = 1;
-        textureDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-        textureDesc.SampleDesc.Count = 1;
-        textureDesc.Usage = D3D11_USAGE_DEFAULT;
-        textureDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-        texture = factory.Create(desc);
+        CRCDeviceFactoryL0_0 deviceFactory;
+        crcDevice = deviceFactory.Create(desc);
 
-        ASSERT_NE(texture.get(), nullptr);
+        ASSERT_NE(crcDevice.get(), nullptr);
     }
 
-    std::unique_ptr<ICRCContainable> depthStencilView;
+    std::unique_ptr<ICRCContainable> buffer;
     {
-        CRCDepthStencilViewFactoryL0_0 factory;
-        CRC_DEPTH_STENCIL_VIEW_DESC desc(d3d11Device, texture);
+        CRCBufferFactoryL0_0 factory;
+        CRC_BUFFER_DESC desc(d3d11Device);
 
-        D3D11_DEPTH_STENCIL_VIEW_DESC& dsvDesc = desc.desc_;
-        dsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-        dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
-        dsvDesc.Texture2D.MipSlice = 0;
+        D3D11_BUFFER_DESC& bufferDesc = desc.desc_;
+        bufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
+        bufferDesc.ByteWidth = 1024;
+        bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+        bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+        bufferDesc.MiscFlags = 0;
+        bufferDesc.StructureByteStride = 0;
 
-        depthStencilView = factory.Create(desc);
+        buffer = factory.Create(desc);
+
+        ASSERT_NE(buffer.get(), nullptr);
     }
 
-    EXPECT_NE(depthStencilView.get(), nullptr);
+    {
+        CRCTransCastUnique<ICRCDevice, ICRCContainable> device(crcDevice);
+        ASSERT_NE(device(), nullptr);
+
+        std::unique_ptr<ICRCDeviceContext>& immediateContext = device()->GetImmediateContext();
+        ASSERT_NE(immediateContext, nullptr);
+
+        void* data = nullptr;
+        UINT dataSize = 0;
+        immediateContext->UpdateSubresource(buffer, data, dataSize);
+    }
 }
 
-TEST(CuRendCore_view_test, CreateD3D11DepthStencilView)
+TEST(CuRendCore_device_context, D3D11ImmediateContextUpdateSubresource)
 {
     std::unique_ptr<ICRCContainable> windowAttr;
     {
@@ -449,9 +426,9 @@ TEST(CuRendCore_view_test, CreateD3D11DepthStencilView)
 
         // Create window attributes.
         CRC_WINDOW_DESC desc = {};
-        desc.wcex_.lpszClassName = L"CreateD3D11DepthStencilView";
-        desc.wcex_.lpfnWndProc = WindowProc_ViewTest;
-        desc.name_ = L"CreateD3D11DepthStencilView";
+        desc.wcex_.lpszClassName = L"D3D11ImmediateContextUpdateSubresource";
+        desc.wcex_.lpfnWndProc = WindowProc_DeviceContextTest;
+        desc.name_ = L"D3D11ImmediateContextUpdateSubresource";
         desc.hInstance = GetModuleHandle(NULL);
         windowAttr = windowFactory.Create(desc);
     }
@@ -484,43 +461,47 @@ TEST(CuRendCore_view_test, CreateD3D11DepthStencilView)
         dxgiDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
 
         CRC::CreateD3D11DeviceAndSwapChain(swapChainDesc, d3d11Device, d3d11SwapChain);
-
-        ASSERT_NE(d3d11Device.Get(), nullptr);
-        ASSERT_NE(d3d11SwapChain.Get(), nullptr);
     }
 
-    std::unique_ptr<ICRCContainable> texture;
+    std::unique_ptr<ICRCContainable> crcDevice;
     {
-        CRCID3D11Texture2DFactoryL0_0 factory;
-        CRC_TEXTURE2D_DESC desc(d3d11Device);
+        CRC_DEVICE_DESC desc(d3d11Device);
+        desc.renderMode_ = CRC_RENDER_MODE::D3D11;
 
-        D3D11_TEXTURE2D_DESC& textureDesc = desc.desc_;
-        textureDesc.Width = 1920;
-        textureDesc.Height = 1080;
-        textureDesc.MipLevels = 1;
-        textureDesc.ArraySize = 1;
-        textureDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-        textureDesc.SampleDesc.Count = 1;
-        textureDesc.Usage = D3D11_USAGE_DEFAULT;
-        textureDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+        CRCDeviceFactoryL0_0 deviceFactory;
+        crcDevice = deviceFactory.Create(desc);
 
-        texture = factory.Create(desc);
-
-        ASSERT_NE(texture.get(), nullptr);
+        ASSERT_NE(crcDevice.get(), nullptr);
     }
 
-    std::unique_ptr<ICRCContainable> depthStencilView;
+    std::unique_ptr<ICRCContainable> buffer;
     {
-        CRCID3D11DepthStencilViewFactoryL0_0 factory;
-        CRC_DEPTH_STENCIL_VIEW_DESC desc(d3d11Device, texture);
+        CRCID3D11BufferFactoryL0_0 factory;
+        CRC_BUFFER_DESC desc(d3d11Device);
 
-        D3D11_DEPTH_STENCIL_VIEW_DESC& dsvDesc = desc.desc_;
-        dsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-        dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
-        dsvDesc.Texture2D.MipSlice = 0;
+        D3D11_BUFFER_DESC& bufferDesc = desc.desc_;
+        bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+        bufferDesc.ByteWidth = 1024;
+        bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+        bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+        bufferDesc.MiscFlags = 0;
+        bufferDesc.StructureByteStride = 0;
 
-        depthStencilView = factory.Create(desc);
+        buffer = factory.Create(desc);
+
+        ASSERT_NE(buffer.get(), nullptr);
     }
 
-    EXPECT_NE(depthStencilView.get(), nullptr);
+    {
+        CRCTransCastUnique<ICRCDevice, ICRCContainable> device(crcDevice);
+        ASSERT_NE(device(), nullptr);
+
+        std::unique_ptr<ICRCDeviceContext>& immediateContext = device()->GetImmediateContext();
+        ASSERT_NE(immediateContext, nullptr);
+
+        void* data = nullptr;
+        UINT dataSize = 0;
+        immediateContext->UpdateSubresource(buffer, data, dataSize);
+    }
 }
+

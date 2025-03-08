@@ -70,10 +70,15 @@ public:
     virtual void HostFree() override;
 
     virtual const UINT& GetByteWidth() override { return byteWidth_; }
-    virtual void* const GetHostPtr() override { return hPtr_; }
+    virtual const UINT& GetRowPitch() override { return 0; }
+    virtual const UINT& GetDepthPitch() override { return 0; }
+    virtual void* const GetHostPtr() override;
 
     virtual HRESULT SendHostToDevice() override;
+    virtual HRESULT SendHostToDevice(const void *src, UINT srcByteWidth) override;
     virtual HRESULT SendDeviceToHost() override;
+
+    virtual bool IsCpuAccessible() override;
 };
 
 class CRC_API CRCID3D11BufferFactoryL0_0 : public ICRCFactory
@@ -83,8 +88,16 @@ public:
     virtual std::unique_ptr<ICRCContainable> Create(IDESC& desc) const override;
 };
 
+class CRC_API ICRCID3D11Buffer
+{
+public:
+    virtual ~ICRCID3D11Buffer() = default;
+    virtual Microsoft::WRL::ComPtr<ID3D11Buffer>& Get() = 0;
+    virtual void SetResourceType(UINT& resType) = 0;
+};
+
 class CRC_API CRCID3D11Buffer 
-: public ICRCContainable, public ICRCResource, public ICRCBuffer
+: public ICRCContainable, public ICRCResource, public ICRCID3D11Resource, public ICRCBuffer, public ICRCID3D11Buffer
 {
 private:
     Microsoft::WRL::ComPtr<ID3D11Buffer> d3d11Buffer_;
@@ -93,13 +106,17 @@ private:
 public:
     virtual ~CRCID3D11Buffer() override;
 
-    virtual Microsoft::WRL::ComPtr<ID3D11Buffer>& Get() { return d3d11Buffer_; }
-    virtual void SetResourceType(UINT& resType) { resType_ = resType; }
-
     // ICRCResource
     virtual HRESULT GetResourceType(UINT& resType) override;
+
+    // ICRCID3D11Resource
+    virtual Microsoft::WRL::ComPtr<ID3D11Resource> GetResource() override;
 
     // ICRCBuffer
     virtual const void GetDesc(D3D11_BUFFER_DESC* dst) override;
     virtual void* const GetDevicePtr() override { return nullptr; }
+
+    // ICRCID3D11Buffer
+    virtual Microsoft::WRL::ComPtr<ID3D11Buffer>& Get() override { return d3d11Buffer_; }
+    virtual void SetResourceType(UINT& resType) override { resType_ = resType; }
 };

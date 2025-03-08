@@ -16,7 +16,7 @@ static LRESULT CALLBACK WindowProc_DeviceTest(HWND hWnd, UINT msg, WPARAM wParam
     return 0;
 }
 
-TEST(CuRendCore, CreateAndShowWindow) 
+TEST(CuRendCore_device_test, CreateAndShowWindow) 
 {
     // Create window factory.
     CRCWindowFactory windowFactory;
@@ -39,7 +39,7 @@ TEST(CuRendCore, CreateAndShowWindow)
     }
 }
 
-TEST(CuRendCore, CreateD3D11DeviceAndSwapChain) 
+TEST(CuRendCore_device_test, CreateD3D11DeviceAndSwapChain) 
 {
     // Create window factory.
     CRCWindowFactory windowFactory;
@@ -86,7 +86,7 @@ TEST(CuRendCore, CreateD3D11DeviceAndSwapChain)
     }
 }
 
-TEST(CuRendCore, CreateCRCDevice)
+TEST(CuRendCore_device_test, CreateCRCDevice)
 {
     // Create window factory.
     CRCWindowFactory windowFactory;
@@ -140,7 +140,7 @@ TEST(CuRendCore, CreateCRCDevice)
     EXPECT_NE(crcDevice.get(), nullptr);
 }
 
-TEST(CuRendCore, CreateCRCID3D11Device)
+TEST(CuRendCore_device_test, CreateCRCID3D11Device)
 {
     // Create window factory.
     CRCWindowFactory windowFactory;
@@ -195,7 +195,7 @@ TEST(CuRendCore, CreateCRCID3D11Device)
     EXPECT_NE(crcDevice.get(), nullptr);
 }
 
-TEST(CuRendCore, CreateCRCSwapChain)
+TEST(CuRendCore_device_test, CreateCRCSwapChain)
 {
     // Create window factory.
     CRCWindowFactory windowFactory;
@@ -250,7 +250,7 @@ TEST(CuRendCore, CreateCRCSwapChain)
     EXPECT_NE(swapChainAttr.get(), nullptr);
 }
 
-TEST(CuRendCore, CreateCRCID3D11SwapChain)
+TEST(CuRendCore_device_test, CreateCRCID3D11SwapChain)
 {
     // Create window factory.
     CRCWindowFactory windowFactory;
@@ -305,7 +305,7 @@ TEST(CuRendCore, CreateCRCID3D11SwapChain)
     EXPECT_NE(swapChainAttr.get(), nullptr);
 }
 
-TEST(CuRendCore, CreateCRCDeviceAndSwapChain)
+TEST(CuRendCore_device_test, CreateCRCDeviceAndSwapChain)
 {
     // Create window factory.
     CRCWindowFactory windowFactory;
@@ -365,7 +365,7 @@ TEST(CuRendCore, CreateCRCDeviceAndSwapChain)
     EXPECT_NE(crcSwapChain.get(), nullptr);
 }
 
-TEST(CuRendCore, CreateCRCID3D11DeviceAndSwapChain)
+TEST(CuRendCore_device_test, CreateCRCID3D11DeviceAndSwapChain)
 {
     // Create window factory.
     CRCWindowFactory windowFactory;
@@ -427,7 +427,7 @@ TEST(CuRendCore, CreateCRCID3D11DeviceAndSwapChain)
     EXPECT_NE(crcSwapChain.get(), nullptr);
 }
 
-TEST(CuRendCore, GetSwapChainBuffer)
+TEST(CuRendCore_device_test, GetSwapChainBuffer)
 {
     // Create window factory.
     CRCWindowFactory windowFactory;
@@ -488,7 +488,7 @@ TEST(CuRendCore, GetSwapChainBuffer)
     EXPECT_NE(backBuffer, nullptr);
 }
 
-TEST(CuRendCore, GetD3D11SwapChainBuffer)
+TEST(CuRendCore_device_test, GetD3D11SwapChainBuffer)
 {
     // Create window factory.
     CRCWindowFactory windowFactory;
@@ -549,7 +549,7 @@ TEST(CuRendCore, GetD3D11SwapChainBuffer)
     EXPECT_NE(backBuffer, nullptr);
 }
 
-TEST(CuRendCore, PresentSwapChain)
+TEST(CuRendCore_device_test, PresentSwapChain)
 {
     // Create window factory.
     CRCWindowFactory windowFactory;
@@ -611,7 +611,7 @@ TEST(CuRendCore, PresentSwapChain)
     }
 }
 
-TEST(CuRendCore, PresentD3D11SwapChain)
+TEST(CuRendCore_device_test, PresentD3D11SwapChain)
 {
     // Create window factory.
     CRCWindowFactory windowFactory;
@@ -673,7 +673,7 @@ TEST(CuRendCore, PresentD3D11SwapChain)
     }
 }
 
-TEST(CuRendCore, ResizeSwapChain)
+TEST(CuRendCore_device_test, ResizeSwapChain)
 {
     // Create window factory.
     CRCWindowFactory windowFactory;
@@ -735,7 +735,7 @@ TEST(CuRendCore, ResizeSwapChain)
     }
 }
 
-TEST(CuRendCore, ResizeD3D11SwapChain)
+TEST(CuRendCore_device_test, ResizeD3D11SwapChain)
 {
     // Create window factory.
     CRCWindowFactory windowFactory;

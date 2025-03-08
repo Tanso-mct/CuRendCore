@@ -198,6 +198,26 @@ void CRCTexture2D::HostFree()
 #endif
 }
 
+const UINT &CRCTexture2D::GetRowPitch()
+{
+    return desc_.Width * CRC::GetBytesPerPixel(desc_.Format);
+}
+
+void *const CRCTexture2D::GetHostPtr()
+{
+    if (resType_ & (UINT)CRC_RESOURCE_TYPE::CPU_R || resType_ & (UINT)CRC_RESOURCE_TYPE::CPU_W)
+    {
+        return hPtr_;
+    }
+    else
+    {
+#ifndef NDEBUG
+        CRC::CoutWarning("This texture2d is not CPU readable or writable.");
+#endif
+        return nullptr;
+    }
+}
+
 HRESULT CRCTexture2D::SendHostToDevice()
 {
     if (!cudaArray_)
@@ -216,11 +236,58 @@ HRESULT CRCTexture2D::SendHostToDevice()
         return E_FAIL;
     }
 
-    CRC::CheckCuda(cudaMemcpy2DToArray
-    (
-        cudaArray_, 0, 0, hPtr_, desc_.Width * CRC::GetBytesPerPixel(desc_.Format),
-        desc_.Width * CRC::GetBytesPerPixel(desc_.Format), desc_.Height, cudaMemcpyHostToDevice
-    ));
+    if (resType_ & (UINT)CRC_RESOURCE_TYPE::CPU_R || resType_ & (UINT)CRC_RESOURCE_TYPE::CPU_W)
+    {
+        CRC::CheckCuda(cudaMemcpy2DToArray
+        (
+            cudaArray_, 0, 0, hPtr_, desc_.Width * CRC::GetBytesPerPixel(desc_.Format),
+            desc_.Width * CRC::GetBytesPerPixel(desc_.Format), desc_.Height, cudaMemcpyHostToDevice
+        ));
+    }
+    else
+    {
+#ifndef NDEBUG
+        CRC::CoutWarning("This texture2d is not CPU readable or writable.");
+#endif
+        return E_FAIL;
+    }
+
+    return S_OK;
+}
+
+HRESULT CRCTexture2D::SendHostToDevice(const void *src, UINT srcByteWidth)
+{
+    if (!cudaArray_)
+    {
+#ifndef NDEBUG
+        CRC::CoutError("Texture2D device memory not allocated.");
+#endif
+        return E_FAIL;
+    }
+
+    if (resType_ & (UINT)CRC_RESOURCE_TYPE::CPU_R || resType_ & (UINT)CRC_RESOURCE_TYPE::CPU_W)
+    {
+        if (srcByteWidth > byteWidth_)
+        {
+#ifndef NDEBUG
+            CRC::CoutError("Failed to send host to device. Source byte width is larger than destination.");
+#endif
+            return E_FAIL;
+        }
+
+        CRC::CheckCuda(cudaMemcpy2DToArray
+        (
+            cudaArray_, 0, 0, src, desc_.Width * CRC::GetBytesPerPixel(desc_.Format),
+            desc_.Width * CRC::GetBytesPerPixel(desc_.Format), desc_.Height, cudaMemcpyHostToDevice
+        ));
+    }
+    else
+    {
+#ifndef NDEBUG
+        CRC::CoutWarning("This texture2d is not CPU readable or writable.");
+#endif
+        return E_FAIL;
+    }
 
     return S_OK;
 }
@@ -243,13 +310,28 @@ HRESULT CRCTexture2D::SendDeviceToHost()
         return E_FAIL;
     }
 
-    CRC::CheckCuda(cudaMemcpy2DFromArray
-    (
-        hPtr_, desc_.Width * CRC::GetBytesPerPixel(desc_.Format), cudaArray_, 0, 0,
-        desc_.Width * CRC::GetBytesPerPixel(desc_.Format), desc_.Height, cudaMemcpyDeviceToHost
-    ));
+    if (resType_ & (UINT)CRC_RESOURCE_TYPE::CPU_R || resType_ & (UINT)CRC_RESOURCE_TYPE::CPU_W)
+    {
+        CRC::CheckCuda(cudaMemcpy2DFromArray
+        (
+            hPtr_, desc_.Width * CRC::GetBytesPerPixel(desc_.Format), cudaArray_, 0, 0,
+            desc_.Width * CRC::GetBytesPerPixel(desc_.Format), desc_.Height, cudaMemcpyDeviceToHost
+        ));
+    }
+    else
+    {
+#ifndef NDEBUG
+        CRC::CoutWarning("This texture2d is not CPU readable or writable.");
+#endif
+        return E_FAIL;
+    }
 
     return S_OK;
+}
+
+bool CRCTexture2D::IsCpuAccessible()
+{
+    return resType_ & (UINT)CRC_RESOURCE_TYPE::CPU_R || resType_ & (UINT)CRC_RESOURCE_TYPE::CPU_W;
 }
 
 CRCCudaResource::CRCCudaResource(D3D11_TEXTURE2D_DESC &desc)
@@ -398,12 +480,32 @@ void CRCCudaResource::HostFree()
 #endif
 }
 
+const UINT &CRCCudaResource::GetRowPitch()
+{
+    return desc_.Width * CRC::GetBytesPerPixel(desc_.Format);
+}
+
+void *const CRCCudaResource::GetHostPtr()
+{
+    if (resType_ & (UINT)CRC_RESOURCE_TYPE::CPU_R || resType_ & (UINT)CRC_RESOURCE_TYPE::CPU_W)
+    {
+        return hPtr_;
+    }
+    else
+    {
+#ifndef NDEBUG
+        CRC::CoutWarning("This CudaResource is not CPU readable or writable.");
+#endif
+        return nullptr;
+    }
+}
+
 HRESULT CRCCudaResource::SendHostToDevice()
 {
     if (!cudaArray_)
     {
 #ifndef NDEBUG
-        CRC::CoutError("Texture2D device memory not allocated.");
+        CRC::CoutWarning("Texture2D device memory not allocated.");
 #endif
         return E_FAIL;
     }
@@ -411,16 +513,63 @@ HRESULT CRCCudaResource::SendHostToDevice()
     if (!hPtr_)
     {
 #ifndef NDEBUG
-        CRC::CoutError("Texture2D host memory not allocated.");
+        CRC::CoutWarning("Texture2D host memory not allocated.");
 #endif
         return E_FAIL;
     }
 
-    CRC::CheckCuda(cudaMemcpy2DToArray
-    (
-        cudaArray_, 0, 0, hPtr_, desc_.Width * CRC::GetBytesPerPixel(desc_.Format),
-        desc_.Width * CRC::GetBytesPerPixel(desc_.Format), desc_.Height, cudaMemcpyHostToDevice
-    ));
+    if (resType_ & (UINT)CRC_RESOURCE_TYPE::CPU_R || resType_ & (UINT)CRC_RESOURCE_TYPE::CPU_W)
+    {
+        CRC::CheckCuda(cudaMemcpy2DToArray
+        (
+            cudaArray_, 0, 0, hPtr_, desc_.Width * CRC::GetBytesPerPixel(desc_.Format),
+            desc_.Width * CRC::GetBytesPerPixel(desc_.Format), desc_.Height, cudaMemcpyHostToDevice
+        ));
+    }
+    else
+    {
+#ifndef NDEBUG
+        CRC::CoutWarning("This CudaResource is not CPU readable or writable.");
+#endif
+        return E_FAIL;
+    }
+
+    return S_OK;
+}
+
+HRESULT CRCCudaResource::SendHostToDevice(const void *src, UINT srcByteWidth)
+{
+    if (!cudaArray_)
+    {
+#ifndef NDEBUG
+        CRC::CoutWarning("Texture2D device memory not allocated.");
+#endif
+        return E_FAIL;
+    }
+
+    if (resType_ & (UINT)CRC_RESOURCE_TYPE::CPU_R || resType_ & (UINT)CRC_RESOURCE_TYPE::CPU_W)
+    {
+        if (srcByteWidth > byteWidth_)
+        {
+#ifndef NDEBUG
+            CRC::CoutWarning("Failed to send host to device. Source byte width is larger than destination.");
+#endif
+            return E_FAIL;
+        }
+
+        CRC::CheckCuda(cudaMemcpy2DToArray
+        (
+            cudaArray_, 0, 0, src, desc_.Width * CRC::GetBytesPerPixel(desc_.Format),
+            desc_.Width * CRC::GetBytesPerPixel(desc_.Format), desc_.Height, cudaMemcpyHostToDevice
+        ));
+    }
+    else
+    {
+#ifndef NDEBUG
+        CRC::CoutWarning("This CudaResource is not CPU readable or writable.");
+#endif
+        return E_FAIL;
+    }
 
     return S_OK;
 }
@@ -430,7 +579,7 @@ HRESULT CRCCudaResource::SendDeviceToHost()
     if (!cudaArray_)
     {
 #ifndef NDEBUG
-        CRC::CoutError("Texture2D device memory not allocated.");
+        CRC::CoutWarning("Texture2D device memory not allocated.");
 #endif
         return E_FAIL;
     }
@@ -438,18 +587,33 @@ HRESULT CRCCudaResource::SendDeviceToHost()
     if (!hPtr_)
     {
 #ifndef NDEBUG
-        CRC::CoutError("Texture2D host memory not allocated.");
+        CRC::CoutWarning("Texture2D host memory not allocated.");
 #endif
         return E_FAIL;
     }
 
-    CRC::CheckCuda(cudaMemcpy2DFromArray
-    (
-        hPtr_, desc_.Width * CRC::GetBytesPerPixel(desc_.Format), cudaArray_, 0, 0,
-        desc_.Width * CRC::GetBytesPerPixel(desc_.Format), desc_.Height, cudaMemcpyDeviceToHost
-    ));
+    if (resType_ & (UINT)CRC_RESOURCE_TYPE::CPU_R || resType_ & (UINT)CRC_RESOURCE_TYPE::CPU_W)
+    {
+        CRC::CheckCuda(cudaMemcpy2DFromArray
+        (
+            hPtr_, desc_.Width * CRC::GetBytesPerPixel(desc_.Format), cudaArray_, 0, 0,
+            desc_.Width * CRC::GetBytesPerPixel(desc_.Format), desc_.Height, cudaMemcpyDeviceToHost
+        ));
+    }
+    else
+    {
+#ifndef NDEBUG
+        CRC::CoutWarning("This CudaResource is not CPU readable or writable.");
+#endif
+        return E_FAIL;
+    }
 
     return S_OK;
+}
+
+bool CRCCudaResource::IsCpuAccessible()
+{
+    return resType_ & (UINT)CRC_RESOURCE_TYPE::CPU_R || resType_ & (UINT)CRC_RESOURCE_TYPE::CPU_W;
 }
 
 std::unique_ptr<ICRCContainable> CRCID3D11Texture2DFactoryL0_0::Create(IDESC &desc) const
@@ -528,6 +692,13 @@ HRESULT CRCID3D11Texture2D::GetResourceType(UINT &resType)
 {
     resType = resType_;
     return S_OK;
+}
+
+Microsoft::WRL::ComPtr<ID3D11Resource> CRCID3D11Texture2D::GetResource()
+{
+    Microsoft::WRL::ComPtr<ID3D11Resource> resource;
+    d3d11Texture2D_.As(&resource);
+    return resource;
 }
 
 const void CRCID3D11Texture2D::GetDesc(D3D11_TEXTURE2D_DESC *dst)

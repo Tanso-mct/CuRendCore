@@ -1,7 +1,11 @@
 ﻿#include "CRC_pch.h"
 #include "CRC_funcs.cuh"
 
+#include "CRC_container.h"
 #include "CRC_resource.cuh"
+#include "CRC_memory.cuh"
+#include "CRC_buffer.cuh"
+#include "CRC_texture.cuh"
 #include "CRC_device_context.cuh"
 
 CRCImmediateContext::CRCImmediateContext()
@@ -20,31 +24,127 @@ CRCImmediateContext::~CRCImmediateContext()
 
 HRESULT CRCImmediateContext::Map
 (
-    std::unique_ptr<ICRCResource> &resource, 
+    std::unique_ptr<ICRCContainable> &resource, 
     UINT subresource, 
     D3D11_MAP mapType, 
     UINT mapFlags, 
     D3D11_MAPPED_SUBRESOURCE *mappedResource
 ){
-    UINT resType = 0;
-    resource->GetResourceType(resType);
+    {
+        CRCTransCastUnique<ICRCMemory, ICRCContainable> memory(resource);
+        if (!memory())
+        {
+#ifndef NDEBUG
+            CRC::CoutWarning
+            (
+                "Failed to map resource.",
+                "This resource is not CRC resource."
+            );
+#endif
+            return E_FAIL;
+        }
 
-    return E_NOTIMPL;
+        if (!memory()->IsCpuAccessible())
+        {
+#ifndef NDEBUG
+            CRC::CoutWarning
+            (
+                "Failed to map resource.",
+                "This resource is not CPU accessible."
+            );
+#endif
+            return E_FAIL;
+        }
+
+        memory()->SendDeviceToHost();
+        mappedResource->pData = memory()->GetHostPtr();
+        mappedResource->RowPitch = memory()->GetRowPitch();
+        mappedResource->DepthPitch = memory()->GetDepthPitch();
+    }
+
+    return S_OK;
 }
 
 void CRCImmediateContext::Unmap
 (
-    std::unique_ptr<ICRCResource> &resource, 
+    std::unique_ptr<ICRCContainable> &resource, 
     UINT subresource
 ){
+    {
+        CRCTransCastUnique<ICRCMemory, ICRCContainable> memory(resource);
+        if (!memory())
+        {
+#ifndef NDEBUG
+            CRC::CoutWarning
+            (
+                "Failed to unmap resource.",
+                "This resource is not CRC resource."
+            );
+#endif
+            return;
+        }
+
+        if (!memory()->IsCpuAccessible())
+        {
+#ifndef NDEBUG
+            CRC::CoutWarning
+            (
+                "Failed to unmap resource.",
+                "This resource is not CPU accessible."
+            );
+#endif
+            return;
+        }
+
+        HRESULT hr = memory()->SendHostToDevice();
+        if (FAILED(hr))
+        {
+#ifndef NDEBUG
+            CRC::CoutWarning
+            (
+                "Failed to unmap resource.",
+                "SendHostToDevice failed."
+            );
+#endif
+            return;
+        }
+    }
 }
 
 void CRCImmediateContext::UpdateSubresource
 (
-    std::unique_ptr<ICRCResource> &dst, 
+    std::unique_ptr<ICRCContainable> &dst, 
     const void *src, 
     UINT srcByteWidth
 ){
+    {
+        CRCTransCastUnique<ICRCMemory, ICRCContainable> memory(dst);
+        if (!memory())
+        {
+#ifndef NDEBUG
+            CRC::CoutWarning
+            (
+                "Failed to update subresource.",
+                "This resource is not CRC resource."
+            );
+#endif
+            return;
+        }
+
+        if (!memory()->IsCpuAccessible())
+        {
+#ifndef NDEBUG
+            CRC::CoutWarning
+            (
+                "Failed to update subresource.",
+                "This resource is not CPU accessible."
+            );
+#endif
+            return;
+        }
+
+        memory()->SendHostToDevice(src, srcByteWidth);
+    }
 }
 
 CRCID3D11Context::CRCID3D11Context(ID3D11DeviceContext** d3d11DeviceContext)
@@ -64,26 +164,89 @@ CRCID3D11Context::~CRCID3D11Context()
 
 HRESULT CRCID3D11Context::Map
 (
-    std::unique_ptr<ICRCResource> &resource, 
+    std::unique_ptr<ICRCContainable> &resource, 
     UINT subresource, 
     D3D11_MAP mapType, 
     UINT mapFlags, 
     D3D11_MAPPED_SUBRESOURCE *mappedResource
 ){
-    return E_NOTIMPL;
+    {
+        CRCTransCastUnique<ICRCID3D11Resource, ICRCContainable> d3d11Resource(resource);
+        if (!d3d11Resource())
+        {
+#ifndef NDEBUG
+            CRC::CoutWarning
+            (
+                "Failed to map resource.",
+                "This resource is not ID3D11 resource."
+            );
+#endif
+            return E_FAIL;
+        }
+
+        HRESULT hr = d3d11DeviceContext->Map
+        (
+            d3d11Resource()->GetResource().Get(), subresource, mapType, mapFlags, mappedResource
+        );
+        if (FAILED(hr))
+        {
+#ifndef NDEBUG
+            CRC::CoutWarning
+            (
+                "Failed to map resource.",
+                "D3D11DeviceContext Map failed."
+            );
+#endif
+            return hr;
+        }
+    }
+
+    return S_OK;
 }
 
 void CRCID3D11Context::Unmap
 (
-    std::unique_ptr<ICRCResource> &resource, 
+    std::unique_ptr<ICRCContainable> &resource, 
     UINT subresource
 ){
+    {
+        CRCTransCastUnique<ICRCID3D11Resource, ICRCContainable> d3d11Resource(resource);
+        if (!d3d11Resource())
+        {
+#ifndef NDEBUG
+            CRC::CoutWarning
+            (
+                "Failed to unmap resource.",
+                "This resource is not ID3D11 resource."
+            );
+#endif
+            return;
+        }
+
+        d3d11DeviceContext->Unmap(d3d11Resource()->GetResource().Get(), subresource);
+    }
 }
 
 void CRCID3D11Context::UpdateSubresource
 (
-    std::unique_ptr<ICRCResource> &dst, 
+    std::unique_ptr<ICRCContainable> &dst, 
     const void *src, 
     UINT srcByteWidth
 ){
+    {
+        CRCTransCastUnique<ICRCID3D11Resource, ICRCContainable> d3d11Resource(dst);
+        if (!d3d11Resource())
+        {
+#ifndef NDEBUG
+            CRC::CoutWarning
+            (
+                "Failed to update subresource.",
+                "This resource is not ID3D11 resource."
+            );
+#endif
+            return;
+        }
+
+        d3d11DeviceContext->UpdateSubresource(d3d11Resource()->GetResource().Get(), 0, nullptr, src, 0, 0);
+    }
 }

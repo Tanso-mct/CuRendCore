@@ -16,7 +16,7 @@ static LRESULT CALLBACK WindowProc_ResourceTest(HWND hWnd, UINT msg, WPARAM wPar
     return 0;
 }
 
-TEST(CuRendCore, CreateBuffer)
+TEST(CuRendCore_resource_test, CreateBuffer)
 {
     Microsoft::WRL::ComPtr<ID3D11Device> device;
 
@@ -36,7 +36,7 @@ TEST(CuRendCore, CreateBuffer)
     EXPECT_NE(buffer.get(), nullptr);
 }
 
-TEST(CuRendCore, CreateID3D11Buffer)
+TEST(CuRendCore_resource_test, CreateID3D11Buffer)
 {
     // Create window factory.
     CRCWindowFactory windowFactory;
@@ -104,7 +104,7 @@ TEST(CuRendCore, CreateID3D11Buffer)
     EXPECT_NE(buffer.get(), nullptr);
 }
 
-TEST(CuRendCore, CreateTexture2D)
+TEST(CuRendCore_resource_test, CreateTexture2D)
 {
     Microsoft::WRL::ComPtr<ID3D11Device> device;
 
@@ -126,7 +126,7 @@ TEST(CuRendCore, CreateTexture2D)
     EXPECT_NE(texture.get(), nullptr);
 }
 
-TEST(CuRendCore, CreateID3D11Texture2D)
+TEST(CuRendCore_resource_test, CreateID3D11Texture2D)
 {
     // Create window factory.
     CRCWindowFactory windowFactory;

@@ -161,6 +161,21 @@ void CRCBuffer::HostFree()
     hPtr_ = nullptr;
 }
 
+void *const CRCBuffer::GetHostPtr()
+{
+    if (resType_ & (UINT)CRC_RESOURCE_TYPE::CPU_R || resType_ & (UINT)CRC_RESOURCE_TYPE::CPU_W)
+    {
+        return hPtr_;
+    }
+    else
+    {
+#ifndef NDEBUG
+        CRC::CoutWarning("This buffer is not CPU readable or writable.");
+#endif
+        return nullptr;
+    }
+}
+
 HRESULT CRCBuffer::SendHostToDevice()
 {
     if (!dPtr_)
@@ -179,7 +194,50 @@ HRESULT CRCBuffer::SendHostToDevice()
         return E_FAIL;
     }
 
-    CRC::CheckCuda(cudaMemcpy(dPtr_, hPtr_, byteWidth_, cudaMemcpyHostToDevice));
+    if (resType_ & (UINT)CRC_RESOURCE_TYPE::CPU_R || resType_ & (UINT)CRC_RESOURCE_TYPE::CPU_W)
+    {
+        CRC::CheckCuda(cudaMemcpy(dPtr_, hPtr_, byteWidth_, cudaMemcpyHostToDevice));
+    }
+    else
+    {
+#ifndef NDEBUG
+        CRC::CoutWarning("This buffer is not CPU readable or writable.");
+#endif
+        return E_FAIL;
+    }
+
+    return S_OK;
+}
+
+HRESULT CRCBuffer::SendHostToDevice(const void *src, UINT srcByteWidth)
+{
+    if (!dPtr_)
+    {
+#ifndef NDEBUG
+        CRC::CoutWarning("Buffer device memory not allocated.");
+#endif
+        return E_FAIL;
+    }
+
+    if (resType_ & (UINT)CRC_RESOURCE_TYPE::CPU_R || resType_ & (UINT)CRC_RESOURCE_TYPE::CPU_W)
+    {
+        if (srcByteWidth > byteWidth_)
+        {
+#ifndef NDEBUG
+            CRC::CoutWarning("Source byte width is larger than buffer byte width.");
+#endif
+            return E_FAIL;
+        }
+
+        CRC::CheckCuda(cudaMemcpy(dPtr_, src, srcByteWidth, cudaMemcpyHostToDevice));
+    }
+    else
+    {
+#ifndef NDEBUG
+        CRC::CoutWarning("This buffer is not CPU readable or writable.");
+#endif
+        return E_FAIL;
+    }
 
     return S_OK;
 }
@@ -202,8 +260,24 @@ HRESULT CRCBuffer::SendDeviceToHost()
         return E_FAIL;
     }
 
-    CRC::CheckCuda(cudaMemcpy(hPtr_, dPtr_, byteWidth_, cudaMemcpyDeviceToHost));
+    if (resType_ & (UINT)CRC_RESOURCE_TYPE::CPU_R || resType_ & (UINT)CRC_RESOURCE_TYPE::CPU_W)
+    {
+        CRC::CheckCuda(cudaMemcpy(hPtr_, dPtr_, byteWidth_, cudaMemcpyDeviceToHost));
+    }
+    else
+    {
+#ifndef NDEBUG
+        CRC::CoutWarning("This buffer is not CPU readable or writable.");
+#endif
+        return E_FAIL;
+    }
+
     return S_OK;
+}
+
+bool CRCBuffer::IsCpuAccessible()
+{
+    return resType_ & (UINT)CRC_RESOURCE_TYPE::CPU_R || resType_ & (UINT)CRC_RESOURCE_TYPE::CPU_W;
 }
 
 std::unique_ptr<ICRCContainable> CRCID3D11BufferFactoryL0_0::Create(IDESC &desc) const
@@ -287,4 +361,11 @@ HRESULT CRCID3D11Buffer::GetResourceType(UINT &rcType)
 {
     rcType = 0;
     return S_OK;
+}
+
+Microsoft::WRL::ComPtr<ID3D11Resource> CRCID3D11Buffer::GetResource()
+{
+    Microsoft::WRL::ComPtr<ID3D11Resource> resource;
+    d3d11Buffer_.As(&resource);
+    return resource;
 }

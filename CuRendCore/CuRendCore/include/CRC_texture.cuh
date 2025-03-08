@@ -58,7 +58,7 @@ public:
     CRCTexture2D() = delete;
 
     CRCTexture2D(CRC_TEXTURE2D_DESC& desc);
-    ~CRCTexture2D() override;
+    virtual ~CRCTexture2D() override;
 
     // ICRCResource
     virtual HRESULT GetResourceType(UINT& rcType) override;
@@ -75,10 +75,15 @@ public:
     virtual void HostFree() override;
 
     virtual const UINT& GetByteWidth() override { return byteWidth_; }
-    virtual void* const GetHostPtr() override { return hPtr_; }
+    virtual const UINT& GetRowPitch() override;
+    virtual const UINT& GetDepthPitch() override { return 0; }
+    virtual void* const GetHostPtr() override;
 
     virtual HRESULT SendHostToDevice() override;
+    virtual HRESULT SendHostToDevice(const void *src, UINT srcByteWidth) override;
     virtual HRESULT SendDeviceToHost() override;
+
+    virtual bool IsCpuAccessible() override;
 };
 
 class CRC_API CRCCudaResource 
@@ -98,7 +103,7 @@ public:
     CRCCudaResource() = delete;
 
     CRCCudaResource(D3D11_TEXTURE2D_DESC& desc);
-    ~CRCCudaResource() override;
+    virtual ~CRCCudaResource() override;
 
     // ICRCResource
     virtual HRESULT GetResourceType(UINT& rcType) override;
@@ -115,10 +120,15 @@ public:
     virtual void HostFree() override;
 
     virtual const UINT& GetByteWidth() override { return byteWidth_; }
-    virtual void* const GetHostPtr() override { return hPtr_; }
+    virtual const UINT& GetRowPitch() override;
+    virtual const UINT& GetDepthPitch() override { return 0; }
+    virtual void* const GetHostPtr() override;
 
     virtual HRESULT SendHostToDevice() override;
+    virtual HRESULT SendHostToDevice(const void *src, UINT srcByteWidth) override;
     virtual HRESULT SendDeviceToHost() override;
+
+    virtual bool IsCpuAccessible() override;
 };
 
 class CRC_API CRCID3D11Texture2DFactoryL0_0 : public ICRCFactory
@@ -128,24 +138,36 @@ public:
     virtual std::unique_ptr<ICRCContainable> Create(IDESC& desc) const override;
 };
 
+class CRC_API ICRCID3D11Texture2D
+{
+public:
+    virtual ~ICRCID3D11Texture2D() = default;
+    virtual Microsoft::WRL::ComPtr<ID3D11Texture2D>& Get() = 0;
+    virtual void SetResourceType(UINT& resType) = 0;
+};
+
 class CRC_API CRCID3D11Texture2D 
-: public ICRCContainable, public ICRCResource, public ICRCTexture2D
+: public ICRCContainable, public ICRCResource, public ICRCID3D11Resource, public ICRCTexture2D, public ICRCID3D11Texture2D
 {
 private:
     Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11Texture2D_;
     UINT resType_ = 0;
 
 public:
-    ~CRCID3D11Texture2D() override;
-
-    virtual Microsoft::WRL::ComPtr<ID3D11Texture2D>& Get() { return d3d11Texture2D_; }
-    virtual void SetResourceType(UINT& resType) { resType_ = resType; }
+    virtual ~CRCID3D11Texture2D() override;
 
     // ICRCResource
     virtual HRESULT GetResourceType(UINT& resType) override;
+
+    // ICRCID3D11Resource
+    virtual Microsoft::WRL::ComPtr<ID3D11Resource> GetResource() override;
 
     // ICRCTexture2D
     virtual const void GetDesc(D3D11_TEXTURE2D_DESC* dst) override;
     virtual const cudaSurfaceObject_t& GetSurfaceObject() override { return -1; }
     virtual const cudaTextureObject_t& GetTextureObject() override { return -1; }
+
+    // ICRCID3D11Texture2D
+    virtual Microsoft::WRL::ComPtr<ID3D11Texture2D>& Get() override { return d3d11Texture2D_; }
+    virtual void SetResourceType(UINT& resType) override { resType_ = resType; }
 };

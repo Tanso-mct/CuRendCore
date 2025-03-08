@@ -9,10 +9,9 @@
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
 
-class ICRCResource;
-class ICRCBuffer;
-
 #include <memory>
+
+class ICRCContainable;
 
 class CRC_API ICRCDeviceContext
 {
@@ -71,7 +70,7 @@ public:
     
     virtual HRESULT Map
     ( 
-        std::unique_ptr<ICRCResource>& resource,
+        std::unique_ptr<ICRCContainable>& resource,
         UINT subresource,
         D3D11_MAP mapType,
         UINT mapFlags,
@@ -80,13 +79,13 @@ public:
     
     virtual void Unmap
     ( 
-        std::unique_ptr<ICRCResource>& resource,
+        std::unique_ptr<ICRCContainable>& resource,
         UINT subresource
     ) = 0;
 
     virtual void UpdateSubresource
     ( 
-        std::unique_ptr<ICRCResource>& dst,
+        std::unique_ptr<ICRCContainable>& dst,
         const void *src, UINT srcByteWidth
     ) = 0;
     
@@ -147,7 +146,7 @@ public:
     // ICRCDeviceContext
     virtual HRESULT Map
     ( 
-        std::unique_ptr<ICRCResource>& resource,
+        std::unique_ptr<ICRCContainable>& resource,
         UINT subresource,
         D3D11_MAP mapType,
         UINT mapFlags,
@@ -156,13 +155,13 @@ public:
     
     virtual void Unmap
     ( 
-        std::unique_ptr<ICRCResource>& resource,
+        std::unique_ptr<ICRCContainable>& resource,
         UINT subresource
     ) override;
 
     virtual void UpdateSubresource
     ( 
-        std::unique_ptr<ICRCResource>& dst,
+        std::unique_ptr<ICRCContainable>& dst,
         const void *src, UINT srcByteWidth
     ) override;
 };
@@ -179,7 +178,7 @@ public:
     // ICRCDeviceContext
     virtual HRESULT Map
     ( 
-        std::unique_ptr<ICRCResource>& resource,
+        std::unique_ptr<ICRCContainable>& resource,
         UINT subresource,
         D3D11_MAP mapType,
         UINT mapFlags,
@@ -188,13 +187,13 @@ public:
     
     virtual void Unmap
     ( 
-        std::unique_ptr<ICRCResource>& resource,
+        std::unique_ptr<ICRCContainable>& resource,
         UINT subresource
     ) override;
 
     virtual void UpdateSubresource
     ( 
-        std::unique_ptr<ICRCResource>& dst,
+        std::unique_ptr<ICRCContainable>& dst,
         const void *src, UINT srcByteWidth
     ) override;
 };

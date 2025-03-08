@@ -24,9 +24,14 @@ public:
     virtual void Assign(void* const mem, UINT byteWidth);
     virtual void Unassign();
 
-    virtual const UINT& GetByteWidth();
-    virtual void* const GetHostPtr();
+    virtual const UINT& GetByteWidth() = 0;
+    virtual const UINT& GetRowPitch() = 0;
+    virtual const UINT& GetDepthPitch() = 0;
+    virtual void* const GetHostPtr() = 0;
 
-    virtual HRESULT SendHostToDevice();
-    virtual HRESULT SendDeviceToHost();
+    virtual HRESULT SendHostToDevice() = 0;
+    virtual HRESULT SendHostToDevice(const void *src, UINT srcByteWidth) = 0;
+    virtual HRESULT SendDeviceToHost() = 0;
+
+    virtual bool IsCpuAccessible() = 0;
 };

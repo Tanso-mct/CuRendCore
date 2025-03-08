@@ -31,3 +31,10 @@ public:
     virtual ~ICRCResource() = default;
     virtual HRESULT GetResourceType(UINT& rcType) = 0;
 };
+
+class CRC_API ICRCID3D11Resource
+{
+public:
+    virtual ~ICRCID3D11Resource() = default;
+    virtual Microsoft::WRL::ComPtr<ID3D11Resource> GetResource() = 0;
+};
