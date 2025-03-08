@@ -30,7 +30,7 @@ std::unique_ptr<ICRCContainable> CRCRenderTargetViewFactoryL0_0::Create(IDESC &d
     }
 
     {
-        CRCTransCastUniqueItoI<CRCTexture2D, ICRCTexture2D, ICRCContainable> texture(rtvDesc->resource_);
+        CRCTransCastUnique<ICRCTexture2D, ICRCContainable> texture(rtvDesc->resource_);
         if (!texture())
         {
 #ifndef NDEBUG

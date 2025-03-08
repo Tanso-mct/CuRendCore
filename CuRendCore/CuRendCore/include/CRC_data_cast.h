@@ -36,38 +36,12 @@ public:
     CRCTransCastUnique(std::unique_ptr<S>& src) : src_(src)
     {
         D* dstPtr = dynamic_cast<D*>(src.get());
-        if (dstPtr) casted_ = std::unique_ptr<D>(static_cast<D*>(src.release()));
+        if (dstPtr) casted_.reset(dynamic_cast<D*>(src.release()));
     }
 
     ~CRCTransCastUnique()
     {
-        src_ = std::move(casted_);
-    }
-
-    std::unique_ptr<D>& operator()() 
-    {
-        return casted_;
-    }
-};
-
-template <typename PARENT, typename D, typename S>
-class CRC_API CRCTransCastUniqueItoI
-{
-private:
-    std::unique_ptr<S>& src_;
-    std::unique_ptr<D> casted_ = nullptr;
-
-public:
-    CRCTransCastUniqueItoI(std::unique_ptr<S>& src) : src_(src)
-    {
-        PARENT* parentPtr = dynamic_cast<PARENT*>(src.get());
-        if (parentPtr) casted_ = std::unique_ptr<PARENT>(static_cast<PARENT*>(src.release()));
-    }
-
-    ~CRCTransCastUniqueItoI()
-    {
-        PARENT* parentPtr = dynamic_cast<PARENT*>(casted_.get());
-        if (parentPtr) src_ = std::unique_ptr<PARENT>(static_cast<PARENT*>(casted_.release()));
+        src_.reset(dynamic_cast<S*>(casted_.release()));
     }
 
     std::unique_ptr<D>& operator()() 

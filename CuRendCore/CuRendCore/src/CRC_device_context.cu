@@ -1,6 +1,7 @@
 ﻿#include "CRC_pch.h"
 #include "CRC_funcs.cuh"
 
+#include "CRC_resource.cuh"
 #include "CRC_device_context.cuh"
 
 CRCImmediateContext::CRCImmediateContext()
@@ -25,6 +26,9 @@ HRESULT CRCImmediateContext::Map
     UINT mapFlags, 
     D3D11_MAPPED_SUBRESOURCE *mappedResource
 ){
+    UINT resType = 0;
+    resource->GetResourceType(resType);
+
     return E_NOTIMPL;
 }
 

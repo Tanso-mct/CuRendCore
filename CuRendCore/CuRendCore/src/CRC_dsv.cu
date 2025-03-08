@@ -30,7 +30,7 @@ std::unique_ptr<ICRCContainable> CRCDepthStencilViewFactoryL0_0::Create(IDESC &d
     }
 
     {
-        CRCTransCastUniqueItoI<CRCTexture2D, ICRCTexture2D, ICRCContainable> texture(dsvDesc->resource_);
+        CRCTransCastUnique<ICRCTexture2D, ICRCContainable> texture(dsvDesc->resource_);
         if (!texture())
         {
 #ifndef NDEBUG
