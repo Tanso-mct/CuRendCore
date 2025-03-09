@@ -34,7 +34,7 @@ TEST(CuRendCore_device_context, GetImmediateContext)
 
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11Device;
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
-    CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11SwapChain);
+    CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
         CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
@@ -99,7 +99,7 @@ TEST(CuRendCore_device_context, GetD3D11ImmediateContext)
 
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11Device;
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
-    CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11SwapChain);
+    CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
         CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
@@ -165,7 +165,7 @@ TEST(CuRendCore_device_context, ImmediateContextMapAndUnmap)
 
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11Device;
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
-    CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11SwapChain);
+    CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
         CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
@@ -256,7 +256,7 @@ TEST(CuRendCore_device_context, D3D11ImmediateContextMapAndUnmap)
 
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11Device;
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
-    CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11SwapChain);
+    CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
         CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
@@ -348,7 +348,7 @@ TEST(CuRendCore_device_context, ImmediateContextUpdateSubresource)
 
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11Device;
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
-    CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11SwapChain);
+    CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
         CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
@@ -435,7 +435,7 @@ TEST(CuRendCore_device_context, D3D11ImmediateContextUpdateSubresource)
 
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11Device;
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
-    CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11SwapChain);
+    CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
         CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);

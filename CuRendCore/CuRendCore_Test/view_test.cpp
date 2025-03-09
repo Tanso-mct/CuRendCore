@@ -34,7 +34,7 @@ TEST(CuRendCore_view_test, CreateShaderResourceView)
 
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11Device;
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
-    CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11SwapChain);
+    CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
         CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
@@ -119,7 +119,7 @@ TEST(CuRendCore_view_test, CreateD3D11ShaderResourceView)
 
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11Device;
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
-    CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11SwapChain);
+    CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
         CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
@@ -205,7 +205,7 @@ TEST(CuRendCore_view_test, CreateRenderTargetView)
 
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11Device;
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
-    CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11SwapChain);
+    CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
         CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
@@ -289,7 +289,7 @@ TEST(CuRendCore_view_test, CreateD3D11RenderTargetView)
 
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11Device;
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
-    CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11SwapChain);
+    CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
         CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
@@ -374,7 +374,7 @@ TEST(CuRendCore_view_test, CreateDepthStencilView)
 
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11Device;
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
-    CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11SwapChain);
+    CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
         CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
@@ -458,7 +458,7 @@ TEST(CuRendCore_view_test, CreateD3D11DepthStencilView)
 
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11Device;
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
-    CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11SwapChain);
+    CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
         CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);

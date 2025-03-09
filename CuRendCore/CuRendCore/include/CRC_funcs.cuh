@@ -149,7 +149,8 @@ CRC_API void UnregisterCudaResource(cudaGraphicsResource_t& cudaResource);
 CRC_API void UnregisterCudaResourcesAtSwapChain
 (
     std::vector<cudaGraphicsResource_t>& cudaResources, 
-    Microsoft::WRL::ComPtr<IDXGISwapChain>& d3d11SwapChain, UINT& frameIndex, const UINT& bufferCount
+    Microsoft::WRL::ComPtr<ID3D11Device>& d3d11Device, Microsoft::WRL::ComPtr<IDXGISwapChain>& d3d11SwapChain, 
+    UINT& frameIndex, const UINT& bufferCount, const bool& presentExecuted
 );
 
 CRC_API void MapCudaResource(cudaGraphicsResource_t& cudaResource, cudaStream_t stream = 0);
@@ -165,5 +166,7 @@ CRC_API ICRCTexture2D* CreatePtTexture2DFromCudaResource
 (
     cudaGraphicsResource_t& cudaResource, D3D11_TEXTURE2D_DESC& desc
 );
+
+CRC_API void WaitForD3DGpuToFinish(Microsoft::WRL::ComPtr<ID3D11Device>& d3d11Device);
 
 }

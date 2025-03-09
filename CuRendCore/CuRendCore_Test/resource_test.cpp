@@ -54,7 +54,7 @@ TEST(CuRendCore_resource_test, CreateID3D11Buffer)
 
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11Device;
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
-    CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11SwapChain);
+    CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
         CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
@@ -144,7 +144,7 @@ TEST(CuRendCore_resource_test, CreateID3D11Texture2D)
 
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11Device;
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
-    CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11SwapChain);
+    CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
         CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);

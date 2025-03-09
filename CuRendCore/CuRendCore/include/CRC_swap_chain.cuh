@@ -19,9 +19,13 @@ private:
     DXGI_SWAP_CHAIN_DESC desc_ = {};
 
 public:
-    CRC_SWAP_CHAIN_DESC(Microsoft::WRL::ComPtr<IDXGISwapChain>& d3d11SwapChain) : d3d11SwapChain_(d3d11SwapChain) {}
+    CRC_SWAP_CHAIN_DESC
+    (
+        Microsoft::WRL::ComPtr<ID3D11Device>& d3d11Device, Microsoft::WRL::ComPtr<IDXGISwapChain>& d3d11SwapChain
+    ) : d3d11Device_(d3d11Device), d3d11SwapChain_(d3d11SwapChain) {}
     ~CRC_SWAP_CHAIN_DESC() override = default;
 
+    Microsoft::WRL::ComPtr<ID3D11Device>& d3d11Device_;
     Microsoft::WRL::ComPtr<IDXGISwapChain>& d3d11SwapChain_;
     DXGI_SWAP_CHAIN_DESC& GetDxgiDesc() { return desc_; }
 };
@@ -53,11 +57,13 @@ public:
 class CRC_API CRCSwapChain : public ICRCContainable, public ICRCSwapChain
 {
 private:
+Microsoft::WRL::ComPtr<ID3D11Device>& d3d11Device_;
     Microsoft::WRL::ComPtr<IDXGISwapChain>& d3d11SwapChain_;
 
     UINT bufferCount_;
     DXGI_RATIONAL refreshRate_;
     UINT frameIndex_ = 0;
+    bool presentExecuted_ = false;
 
     std::vector<cudaGraphicsResource_t> cudaResources_;
     std::vector<ICRCTexture2D*> backSurfaces_;
@@ -67,6 +73,7 @@ private:
 public:
     CRCSwapChain
     (
+        Microsoft::WRL::ComPtr<ID3D11Device>& d3d11Device,
         Microsoft::WRL::ComPtr<IDXGISwapChain>& d3d11SwapChain,
         const DXGI_SWAP_CHAIN_DESC& desc
     );

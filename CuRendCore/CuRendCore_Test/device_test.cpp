@@ -1,6 +1,9 @@
 #include "pch.h"
 #include "CuRendCore/include/CuRendCore.h"
 
+#include <thread>
+#include <chrono>
+
 static LRESULT CALLBACK WindowProc_DeviceTest(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
     switch (msg)
@@ -54,7 +57,7 @@ TEST(CuRendCore_device_test, CreateD3D11DeviceAndSwapChain)
 
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11Device;
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
-    CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11SwapChain);
+    CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
         CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
@@ -101,7 +104,7 @@ TEST(CuRendCore_device_test, CreateCRCDevice)
 
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11Device;
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
-    CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11SwapChain);
+    CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
         CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
@@ -155,7 +158,7 @@ TEST(CuRendCore_device_test, CreateCRCID3D11Device)
 
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11Device;
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
-    CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11SwapChain);
+    CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
         CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
@@ -210,7 +213,7 @@ TEST(CuRendCore_device_test, CreateCRCSwapChain)
 
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11Device;
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
-    CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11SwapChain);
+    CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
         CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
@@ -221,7 +224,7 @@ TEST(CuRendCore_device_test, CreateCRCSwapChain)
 
         DXGI_SWAP_CHAIN_DESC& dxgiDesc = swapChainDesc.GetDxgiDesc();
         ZeroMemory(&dxgiDesc, sizeof(DXGI_SWAP_CHAIN_DESC));
-        dxgiDesc.BufferCount = 2;
+        dxgiDesc.BufferCount = 3;
         dxgiDesc.BufferDesc.Width = 0;
         dxgiDesc.BufferDesc.Height = 0;
         dxgiDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -265,7 +268,7 @@ TEST(CuRendCore_device_test, CreateCRCID3D11SwapChain)
 
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11Device;
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
-    CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11SwapChain);
+    CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
         CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
@@ -276,7 +279,7 @@ TEST(CuRendCore_device_test, CreateCRCID3D11SwapChain)
 
         DXGI_SWAP_CHAIN_DESC& dxgiDesc = swapChainDesc.GetDxgiDesc();
         ZeroMemory(&dxgiDesc, sizeof(DXGI_SWAP_CHAIN_DESC));
-        dxgiDesc.BufferCount = 2;
+        dxgiDesc.BufferCount = 3;
         dxgiDesc.BufferDesc.Width = 0;
         dxgiDesc.BufferDesc.Height = 0;
         dxgiDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -320,7 +323,7 @@ TEST(CuRendCore_device_test, CreateCRCDeviceAndSwapChain)
 
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11Device;
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
-    CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11SwapChain);
+    CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
         CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
@@ -331,7 +334,7 @@ TEST(CuRendCore_device_test, CreateCRCDeviceAndSwapChain)
 
         DXGI_SWAP_CHAIN_DESC& dxgiDesc = swapChainDesc.GetDxgiDesc();
         ZeroMemory(&dxgiDesc, sizeof(DXGI_SWAP_CHAIN_DESC));
-        dxgiDesc.BufferCount = 2;
+        dxgiDesc.BufferCount = 3;
         dxgiDesc.BufferDesc.Width = 0;
         dxgiDesc.BufferDesc.Height = 0;
         dxgiDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -380,7 +383,7 @@ TEST(CuRendCore_device_test, CreateCRCID3D11DeviceAndSwapChain)
 
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11Device;
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
-    CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11SwapChain);
+    CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
         CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
@@ -391,7 +394,7 @@ TEST(CuRendCore_device_test, CreateCRCID3D11DeviceAndSwapChain)
 
         DXGI_SWAP_CHAIN_DESC& dxgiDesc = swapChainDesc.GetDxgiDesc();
         ZeroMemory(&dxgiDesc, sizeof(DXGI_SWAP_CHAIN_DESC));
-        dxgiDesc.BufferCount = 2;
+        dxgiDesc.BufferCount = 3;
         dxgiDesc.BufferDesc.Width = 0;
         dxgiDesc.BufferDesc.Height = 0;
         dxgiDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -442,7 +445,7 @@ TEST(CuRendCore_device_test, GetSwapChainBuffer)
 
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11Device;
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
-    CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11SwapChain);
+    CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
         CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
@@ -453,7 +456,7 @@ TEST(CuRendCore_device_test, GetSwapChainBuffer)
 
         DXGI_SWAP_CHAIN_DESC& dxgiDesc = swapChainDesc.GetDxgiDesc();
         ZeroMemory(&dxgiDesc, sizeof(DXGI_SWAP_CHAIN_DESC));
-        dxgiDesc.BufferCount = 2;
+        dxgiDesc.BufferCount = 3;
         dxgiDesc.BufferDesc.Width = 0;
         dxgiDesc.BufferDesc.Height = 0;
         dxgiDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -503,7 +506,7 @@ TEST(CuRendCore_device_test, GetD3D11SwapChainBuffer)
 
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11Device;
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
-    CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11SwapChain);
+    CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
         CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
@@ -514,7 +517,7 @@ TEST(CuRendCore_device_test, GetD3D11SwapChainBuffer)
 
         DXGI_SWAP_CHAIN_DESC& dxgiDesc = swapChainDesc.GetDxgiDesc();
         ZeroMemory(&dxgiDesc, sizeof(DXGI_SWAP_CHAIN_DESC));
-        dxgiDesc.BufferCount = 2;
+        dxgiDesc.BufferCount = 3;
         dxgiDesc.BufferDesc.Width = 0;
         dxgiDesc.BufferDesc.Height = 0;
         dxgiDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -564,7 +567,7 @@ TEST(CuRendCore_device_test, PresentSwapChain)
 
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11Device;
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
-    CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11SwapChain);
+    CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
         CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
@@ -575,7 +578,7 @@ TEST(CuRendCore_device_test, PresentSwapChain)
 
         DXGI_SWAP_CHAIN_DESC& dxgiDesc = swapChainDesc.GetDxgiDesc();
         ZeroMemory(&dxgiDesc, sizeof(DXGI_SWAP_CHAIN_DESC));
-        dxgiDesc.BufferCount = 2;
+        dxgiDesc.BufferCount = 3;
         dxgiDesc.BufferDesc.Width = 0;
         dxgiDesc.BufferDesc.Height = 0;
         dxgiDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -608,6 +611,9 @@ TEST(CuRendCore_device_test, PresentSwapChain)
 
         HRESULT hr = swapChain()->Present(0, 0);
         EXPECT_EQ(hr, S_OK);
+
+        hr = swapChain()->Present(0, 0);
+        EXPECT_EQ(hr, S_OK);
     }
 }
 
@@ -626,7 +632,7 @@ TEST(CuRendCore_device_test, PresentD3D11SwapChain)
 
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11Device;
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
-    CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11SwapChain);
+    CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
         CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
@@ -688,7 +694,7 @@ TEST(CuRendCore_device_test, ResizeSwapChain)
 
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11Device;
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
-    CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11SwapChain);
+    CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
         CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
@@ -730,7 +736,7 @@ TEST(CuRendCore_device_test, ResizeSwapChain)
         CRCTransCastUnique<CRCSwapChain, ICRCContainable> swapChain(crcSwapChain);
         swapChain()->GetBuffer(0, backBuffer);
 
-        HRESULT hr = swapChain()->ResizeBuffers(2, 1920, 1080, DXGI_FORMAT_R8G8B8A8_UNORM, 0);
+        HRESULT hr = swapChain()->ResizeBuffers(3, 1920, 1080, DXGI_FORMAT_R8G8B8A8_UNORM, 0);
         EXPECT_EQ(hr, S_OK);
     }
 }
@@ -750,7 +756,7 @@ TEST(CuRendCore_device_test, ResizeD3D11SwapChain)
 
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11Device;
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
-    CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11SwapChain);
+    CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
         CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
@@ -794,7 +800,7 @@ TEST(CuRendCore_device_test, ResizeD3D11SwapChain)
 
         CRC::As<CRCID3D11Texture2D>(backBuffer)->Get()->Release();
 
-        HRESULT hr = swapChain()->ResizeBuffers(2, 1920, 1080, DXGI_FORMAT_R8G8B8A8_UNORM, 0); 
+        HRESULT hr = swapChain()->ResizeBuffers(3, 1920, 1080, DXGI_FORMAT_R8G8B8A8_UNORM, 0); 
         EXPECT_EQ(hr, S_OK);
     }
 }
