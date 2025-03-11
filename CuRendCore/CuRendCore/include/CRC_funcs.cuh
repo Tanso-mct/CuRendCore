@@ -138,19 +138,37 @@ CRC_API void RegisterCudaResource
 
 CRC_API void UnregisterCudaResources(std::vector<cudaGraphicsResource_t>& cudaResources);
 CRC_API void UnregisterCudaResource(cudaGraphicsResource_t& cudaResource);
+CRC_API void UnregisterCudaResource
+(
+    cudaGraphicsResource_t& cudaResource, Microsoft::WRL::ComPtr<ID3D11Device>& d3d11Device
+);
 
 /**
- * @brief Un registers all CUDA resources from the swap chain.
+ * Un registers CUDA resources from the swap chain.
  * At this time, if SwapChain has been presented at least once, unregistering the buffer 
  * that will become the next display buffer directly will cause windows to freeze, 
  * so unregister after presenting and shifting the buffer.
  * The error is probably due to the fact that it is tied to RenderTarget, etc.
  */
-CRC_API void UnregisterCudaResourcesAtSwapChain
+CRC_API void UnregisterSwapChain3Presented
 (
     std::vector<cudaGraphicsResource_t>& cudaResources, 
     Microsoft::WRL::ComPtr<ID3D11Device>& d3d11Device, Microsoft::WRL::ComPtr<IDXGISwapChain>& d3d11SwapChain, 
-    UINT& frameIndex, const UINT& bufferCount, const bool& presentExecuted
+    UINT& frameIndex
+);
+
+CRC_API void UnregisterSwapChain2Presented
+(
+    std::vector<cudaGraphicsResource_t>& cudaResources, 
+    Microsoft::WRL::ComPtr<ID3D11Device>& d3d11Device, Microsoft::WRL::ComPtr<IDXGISwapChain>& d3d11SwapChain, 
+    UINT& frameIndex
+);
+
+CRC_API void UnregisterSwapChainNotPresented
+(
+    std::vector<cudaGraphicsResource_t>& cudaResources, 
+    Microsoft::WRL::ComPtr<ID3D11Device>& d3d11Device, Microsoft::WRL::ComPtr<IDXGISwapChain>& d3d11SwapChain, 
+    UINT& frameIndex
 );
 
 CRC_API void MapCudaResource(cudaGraphicsResource_t& cudaResource, cudaStream_t stream = 0);
@@ -168,5 +186,11 @@ CRC_API ICRCTexture2D* CreatePtTexture2DFromCudaResource
 );
 
 CRC_API void WaitForD3DGpuToFinish(Microsoft::WRL::ComPtr<ID3D11Device>& d3d11Device);
+
+CRC_API void PresentD3D11SwapChain
+(
+    Microsoft::WRL::ComPtr<IDXGISwapChain>& d3d11SwapChain, UINT syncInterval, UINT flags,
+    const UINT& bufferCount, UINT& frameIndex
+);
 
 }

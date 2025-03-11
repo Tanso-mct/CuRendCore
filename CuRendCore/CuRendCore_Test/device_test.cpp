@@ -552,16 +552,78 @@ TEST(CuRendCore_device_test, GetD3D11SwapChainBuffer)
     EXPECT_NE(backBuffer, nullptr);
 }
 
-TEST(CuRendCore_device_test, PresentSwapChain)
+TEST(CuRendCore_device_test, PresentSwapChain2)
 {
     // Create window factory.
     CRCWindowFactory windowFactory;
 
     // Create window attributes.
     CRC_WINDOW_DESC desc = {};
-    desc.wcex_.lpszClassName = L"PresentSwapChain";
+    desc.wcex_.lpszClassName = L"PresentSwapChain2";
     desc.wcex_.lpfnWndProc = WindowProc_DeviceTest;
-    desc.name_ = L"PresentSwapChain";
+    desc.name_ = L"PresentSwapChain2";
+    desc.hInstance = GetModuleHandle(NULL);
+    std::unique_ptr<ICRCContainable> windowAttr = windowFactory.Create(desc);
+
+    Microsoft::WRL::ComPtr<ID3D11Device> d3d11Device;
+    Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
+    CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
+    {
+        CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(windowAttr);
+        ASSERT_NE(window(), nullptr);
+
+        // Show window.
+        HRESULT hr = CRC::ShowWindowCRC(window()->hWnd_);
+        ASSERT_EQ(hr, S_OK);
+
+        DXGI_SWAP_CHAIN_DESC& dxgiDesc = swapChainDesc.GetDxgiDesc();
+        ZeroMemory(&dxgiDesc, sizeof(DXGI_SWAP_CHAIN_DESC));
+        dxgiDesc.BufferCount = 2;
+        dxgiDesc.BufferDesc.Width = 0;
+        dxgiDesc.BufferDesc.Height = 0;
+        dxgiDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+        dxgiDesc.BufferDesc.RefreshRate.Numerator = 60;
+        dxgiDesc.BufferDesc.RefreshRate.Denominator = 1;
+        dxgiDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
+        dxgiDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+        dxgiDesc.OutputWindow = window()->hWnd_;
+        dxgiDesc.SampleDesc.Count = 1;
+        dxgiDesc.SampleDesc.Quality = 0;
+        dxgiDesc.Windowed = TRUE;
+        dxgiDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
+
+        CRC::CreateD3D11DeviceAndSwapChain(swapChainDesc, d3d11Device, d3d11SwapChain);
+    }
+
+    d3d11SwapChain->GetDesc(&swapChainDesc.GetDxgiDesc());
+
+    // Create CRC swap chain.
+    std::unique_ptr<ICRCContainable> crcSwapChain;
+    {
+        CRCSwapChainFactoryL0_0 swapChainFactory;
+        crcSwapChain = swapChainFactory.Create(swapChainDesc);
+    }
+
+    ICRCTexture2D* backBuffer = nullptr;
+    {
+        CRCTransCastUnique<CRCSwapChain, ICRCContainable> swapChain(crcSwapChain);
+        swapChain()->GetBuffer(0, backBuffer);
+
+        HRESULT hr = swapChain()->Present(0, 0);
+        EXPECT_EQ(hr, S_OK);
+    }
+}
+
+TEST(CuRendCore_device_test, PresentSwapChain3)
+{
+    // Create window factory.
+    CRCWindowFactory windowFactory;
+
+    // Create window attributes.
+    CRC_WINDOW_DESC desc = {};
+    desc.wcex_.lpszClassName = L"PresentSwapChain3";
+    desc.wcex_.lpfnWndProc = WindowProc_DeviceTest;
+    desc.name_ = L"PresentSwapChain3";
     desc.hInstance = GetModuleHandle(NULL);
     std::unique_ptr<ICRCContainable> windowAttr = windowFactory.Create(desc);
 
@@ -617,16 +679,16 @@ TEST(CuRendCore_device_test, PresentSwapChain)
     }
 }
 
-TEST(CuRendCore_device_test, PresentD3D11SwapChain)
+TEST(CuRendCore_device_test, PresentD3D11SwapChain2)
 {
     // Create window factory.
     CRCWindowFactory windowFactory;
 
     // Create window attributes.
     CRC_WINDOW_DESC desc = {};
-    desc.wcex_.lpszClassName = L"PresentD3D11SwapChain";
+    desc.wcex_.lpszClassName = L"PresentD3D11SwapChain2";
     desc.wcex_.lpfnWndProc = WindowProc_DeviceTest;
-    desc.name_ = L"PresentD3D11SwapChain";
+    desc.name_ = L"PresentD3D11SwapChain2";
     desc.hInstance = GetModuleHandle(NULL);
     std::unique_ptr<ICRCContainable> windowAttr = windowFactory.Create(desc);
 
@@ -644,6 +706,68 @@ TEST(CuRendCore_device_test, PresentD3D11SwapChain)
         DXGI_SWAP_CHAIN_DESC& dxgiDesc = swapChainDesc.GetDxgiDesc();
         ZeroMemory(&dxgiDesc, sizeof(DXGI_SWAP_CHAIN_DESC));
         dxgiDesc.BufferCount = 2;
+        dxgiDesc.BufferDesc.Width = 0;
+        dxgiDesc.BufferDesc.Height = 0;
+        dxgiDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+        dxgiDesc.BufferDesc.RefreshRate.Numerator = 60;
+        dxgiDesc.BufferDesc.RefreshRate.Denominator = 1;
+        dxgiDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
+        dxgiDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+        dxgiDesc.OutputWindow = window()->hWnd_;
+        dxgiDesc.SampleDesc.Count = 1;
+        dxgiDesc.SampleDesc.Quality = 0;
+        dxgiDesc.Windowed = TRUE;
+        dxgiDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
+
+        CRC::CreateD3D11DeviceAndSwapChain(swapChainDesc, d3d11Device, d3d11SwapChain);
+    }
+
+    d3d11SwapChain->GetDesc(&swapChainDesc.GetDxgiDesc());
+
+    // Create CRC swap chain.
+    std::unique_ptr<ICRCContainable> crcSwapChain;
+    {
+        CRCIDXGISwapChainFactoryL0_0 swapChainFactory;
+        crcSwapChain = swapChainFactory.Create(swapChainDesc);
+    }
+
+    ICRCTexture2D* backBuffer = nullptr;
+    {
+        CRCTransCastUnique<CRCIDXGISwapChain, ICRCContainable> swapChain(crcSwapChain);
+        swapChain()->GetBuffer(0, backBuffer);
+
+        HRESULT hr = swapChain()->Present(0, 0);
+        EXPECT_EQ(hr, S_OK);
+    }
+}
+
+TEST(CuRendCore_device_test, PresentD3D11SwapChain3)
+{
+    // Create window factory.
+    CRCWindowFactory windowFactory;
+
+    // Create window attributes.
+    CRC_WINDOW_DESC desc = {};
+    desc.wcex_.lpszClassName = L"PresentD3D11SwapChain3";
+    desc.wcex_.lpfnWndProc = WindowProc_DeviceTest;
+    desc.name_ = L"PresentD3D11SwapChain3";
+    desc.hInstance = GetModuleHandle(NULL);
+    std::unique_ptr<ICRCContainable> windowAttr = windowFactory.Create(desc);
+
+    Microsoft::WRL::ComPtr<ID3D11Device> d3d11Device;
+    Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
+    CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
+    {
+        CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(windowAttr);
+        ASSERT_NE(window(), nullptr);
+
+        // Show window.
+        HRESULT hr = CRC::ShowWindowCRC(window()->hWnd_);
+        ASSERT_EQ(hr, S_OK);
+
+        DXGI_SWAP_CHAIN_DESC& dxgiDesc = swapChainDesc.GetDxgiDesc();
+        ZeroMemory(&dxgiDesc, sizeof(DXGI_SWAP_CHAIN_DESC));
+        dxgiDesc.BufferCount = 3;
         dxgiDesc.BufferDesc.Width = 0;
         dxgiDesc.BufferDesc.Height = 0;
         dxgiDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -705,7 +829,7 @@ TEST(CuRendCore_device_test, ResizeSwapChain)
 
         DXGI_SWAP_CHAIN_DESC& dxgiDesc = swapChainDesc.GetDxgiDesc();
         ZeroMemory(&dxgiDesc, sizeof(DXGI_SWAP_CHAIN_DESC));
-        dxgiDesc.BufferCount = 2;
+        dxgiDesc.BufferCount = 3;
         dxgiDesc.BufferDesc.Width = 0;
         dxgiDesc.BufferDesc.Height = 0;
         dxgiDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -767,7 +891,7 @@ TEST(CuRendCore_device_test, ResizeD3D11SwapChain)
 
         DXGI_SWAP_CHAIN_DESC& dxgiDesc = swapChainDesc.GetDxgiDesc();
         ZeroMemory(&dxgiDesc, sizeof(DXGI_SWAP_CHAIN_DESC));
-        dxgiDesc.BufferCount = 2;
+        dxgiDesc.BufferCount = 3;
         dxgiDesc.BufferDesc.Width = 0;
         dxgiDesc.BufferDesc.Height = 0;
         dxgiDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;

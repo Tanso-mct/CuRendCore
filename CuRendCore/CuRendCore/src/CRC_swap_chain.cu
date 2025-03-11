@@ -31,6 +31,14 @@ CRCSwapChain::CRCSwapChain
 : d3d11Device_(d3d11Device), d3d11SwapChain_(d3d11SwapChain)
 , bufferCount_(desc.BufferCount), refreshRate_(desc.BufferDesc.RefreshRate)
 {
+    if (!(bufferCount_ == 2 || bufferCount_ == 3))
+    {
+#ifndef NDEBUG
+        CRC::CoutWarning("Failed to create swap chain. Buffer count is not 2 or 3.");
+#endif
+        return;
+    }
+
     CRC::RegisterCudaResources
     (
         cudaResources_, cudaGraphicsRegisterFlagsSurfaceLoadStore,
@@ -73,25 +81,37 @@ CRCSwapChain::CRCSwapChain
 
 CRCSwapChain::~CRCSwapChain()
 {
-    HRESULT hr = d3d11Device_->GetDeviceRemovedReason();
-
     CRC::UnmapCudaResource(cudaResources_[frameIndex_]);
-
-    hr = d3d11Device_->GetDeviceRemovedReason();
-
     for (int i = 0; i < bufferCount_; i++)
     {
         delete backSurfaces_[i];
         backSurfaces_[i] = nullptr;
     }
 
-    hr = d3d11Device_->GetDeviceRemovedReason();
-
-    CRC::UnregisterCudaResourcesAtSwapChain
-    (
-        cudaResources_, d3d11Device_, d3d11SwapChain_, 
-        frameIndex_, bufferCount_, presentExecuted_
-    );
+    if (!presentExecuted_)
+    {
+        CRC::UnregisterSwapChainNotPresented
+        (
+            cudaResources_, d3d11Device_, d3d11SwapChain_, frameIndex_
+        );
+    }
+    else
+    {
+        if (bufferCount_ == 2)
+        {
+            CRC::UnregisterSwapChain2Presented
+            (
+                cudaResources_, d3d11Device_, d3d11SwapChain_, frameIndex_
+            );
+        }
+        else if (bufferCount_ == 3)
+        {
+            CRC::UnregisterSwapChain3Presented
+            (
+                cudaResources_, d3d11Device_, d3d11SwapChain_, frameIndex_
+            );
+        }
+    }
     cudaResources_.clear();
 
     backBuffer_ = nullptr;
@@ -113,18 +133,36 @@ HRESULT CRCSwapChain::ResizeBuffers
     UINT bufferCount, UINT width, UINT height, DXGI_FORMAT newFormat, UINT swapChainFlags
 ){
     CRC::UnmapCudaResource(cudaResources_[frameIndex_]);
-
     for (int i = 0; i < bufferCount_; i++)
     {
         delete backSurfaces_[i];
         backSurfaces_[i] = nullptr;
     }
 
-    CRC::UnregisterCudaResourcesAtSwapChain
-    (
-        cudaResources_, d3d11Device_, d3d11SwapChain_, 
-        frameIndex_, bufferCount_, presentExecuted_
-    );
+    if (!presentExecuted_)
+    {
+        CRC::UnregisterSwapChainNotPresented
+        (
+            cudaResources_, d3d11Device_, d3d11SwapChain_, frameIndex_
+        );
+    }
+    else
+    {
+        if (bufferCount_ == 2)
+        {
+            CRC::UnregisterSwapChain2Presented
+            (
+                cudaResources_, d3d11Device_, d3d11SwapChain_, frameIndex_
+            );
+        }
+        else if (bufferCount_ == 3)
+        {
+            CRC::UnregisterSwapChain3Presented
+            (
+                cudaResources_, d3d11Device_, d3d11SwapChain_, frameIndex_
+            );
+        }
+    }
     cudaResources_.clear();
 
     HRESULT hr = d3d11SwapChain_->ResizeBuffers(bufferCount, width, height, newFormat, swapChainFlags);
@@ -185,11 +223,11 @@ HRESULT CRCSwapChain::Present(UINT syncInterval, UINT flags)
     }
 
     frameIndex_ = (frameIndex_ + 1) % bufferCount_;
+    if (!presentExecuted_) presentExecuted_ = true;
 
     CRC::MapCudaResource(cudaResources_[frameIndex_]);
     backBuffer_ = backSurfaces_[frameIndex_];
 
-    presentExecuted_ = true;
     return S_OK;
 }
 

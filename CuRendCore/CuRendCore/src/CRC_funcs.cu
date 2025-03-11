@@ -52,9 +52,16 @@ CRC_API HRESULT CRC::CreateD3D11DeviceAndSwapChain
         );
     }
 
+    if (FAILED(hr))
+    {
 #ifndef NDEBUG
-    if (FAILED(hr)) CoutError("Failed to create D3D11 device and swap chain.");
-    else Cout("Created D3D11 device and swap chain.");
+        CoutError("Failed to create D3D11 device and swap chain.");
+#endif
+        throw std::runtime_error("Failed to create D3D11 device and swap chain.");
+    }
+
+#ifndef NDEBUG
+    Cout("Created D3D11 device and swap chain.");
 #endif
 
     return hr;
@@ -326,252 +333,102 @@ void CRC::UnregisterCudaResource(cudaGraphicsResource_t &cudaResource)
 #endif
 }
 
-namespace
-{
-
-void UnregisterTargetBufferAndPresent
+CRC_API void CRC::UnregisterCudaResource
 (
-    std::vector<cudaGraphicsResource_t> &cudaResources,
-    Microsoft::WRL::ComPtr<ID3D11Device>& d3d11Device, Microsoft::WRL::ComPtr<IDXGISwapChain> &d3d11SwapChain, 
-    const UINT& targetIndex, UINT& frameIndex, const UINT& bufferCount
+    cudaGraphicsResource_t &cudaResource, Microsoft::WRL::ComPtr<ID3D11Device> &d3d11Device
 ){
-    CRC::CheckCuda(cudaGraphicsUnregisterResource(cudaResources[targetIndex]));
+    CRC::CheckCuda(cudaGraphicsUnregisterResource(cudaResource));
     HRESULT hr = d3d11Device->GetDeviceRemovedReason();
-
-    hr = d3d11SwapChain->Present(0, 0);
-    CRC::WaitForD3DGpuToFinish(d3d11Device);
     if (FAILED(hr))
     {
 #ifndef NDEBUG
-        CRC::CoutError("Failed to unregister CUDA resources.", "IDXGISwapChain Present failed.");
+        CRC::CoutError("Failed to unregister CUDA resource.");
 #endif
-        throw std::runtime_error
-        (
-            "Failed to unregister CUDA resources. IDXGISwapChain Present failed."
-        );
+        throw std::runtime_error("Failed to unregister CUDA resource.");
     }
-    frameIndex = (frameIndex + 1) % bufferCount;
 }
 
-}
-
-void CRC::UnregisterCudaResourcesAtSwapChain
+CRC_API void CRC::UnregisterSwapChain3Presented
 (
     std::vector<cudaGraphicsResource_t> &cudaResources, 
-    Microsoft::WRL::ComPtr<ID3D11Device>& d3d11Device, Microsoft::WRL::ComPtr<IDXGISwapChain> &d3d11SwapChain, 
-    UINT &frameIndex, const UINT& bufferCount, const bool& presentExecuted
+    Microsoft::WRL::ComPtr<ID3D11Device> &d3d11Device, Microsoft::WRL::ComPtr<IDXGISwapChain> &d3d11SwapChain, 
+    UINT &frameIndex
 ){
+    UINT bufferCount = cudaResources.size();
+    if (bufferCount != 3)
+    {
+#ifndef NDEBUG
+        CRC::CoutError("This function is only for 3 buffer swap chains.");
+#endif
+        throw std::runtime_error("This function is only for 3 buffer swap chains.");
+    }
 
-//     HRESULT hr = d3d11SwapChain->Present(0, 0);
-//     frameIndex = (frameIndex + 1) % bufferCount;
-//     targetIndex = (frameIndex + 1) % bufferCount;
-//     CRC::CheckCuda(cudaGraphicsUnregisterResource(cudaResources[targetIndex]));
-
-//     hr = d3d11Device->GetDeviceRemovedReason();
-
-//     hr = d3d11SwapChain->Present(0, 0);
-//     CRC::WaitForD3DGpuToFinish(d3d11Device);
-//     if (FAILED(hr))
-//     {
-// #ifndef NDEBUG
-//         CRC::CoutError("Failed to unregister CUDA resources in swap chain.", "IDXGISwapChain Present failed.");
-// #endif
-//         throw std::runtime_error
-//         (
-//             "Failed to unregister CUDA resources in swap chain. IDXGISwapChain Present failed."
-//         );
-//     }
-
-//     hr = d3d11Device->GetDeviceRemovedReason();
-//     frameIndex = (frameIndex + 1) % bufferCount;
-
-//     targetIndex = (frameIndex + 2) % bufferCount;
-//     CRC::CheckCuda(cudaGraphicsUnregisterResource(cudaResources[targetIndex]));
-
-//     hr = d3d11Device->GetDeviceRemovedReason();
-
-//     hr = d3d11SwapChain->Present(0, 0);
-//     CRC::WaitForD3DGpuToFinish(d3d11Device);
-//     if (FAILED(hr))
-//     {
-// #ifndef NDEBUG
-//         CRC::CoutError("Failed to unregister CUDA resources in swap chain.", "IDXGISwapChain Present failed.");
-// #endif
-//         throw std::runtime_error
-//         (
-//             "Failed to unregister CUDA resources in swap chain. IDXGISwapChain Present failed."
-//         );
-//     }
-
-    UINT targetIndex = 0;
     HRESULT hr = S_OK;
 
-    if (!presentExecuted)
-    {
-        for (int i = 0; i < cudaResources.size(); ++i) 
-        {
-            if (i == frameIndex) continue;
-            CRC::CheckCuda(cudaGraphicsUnregisterResource(cudaResources[i]));
-            hr = d3d11Device->GetDeviceRemovedReason();
-        }
+    UINT targetIndex = (frameIndex + 1) % bufferCount;
+    CRC::UnregisterCudaResource(cudaResources[targetIndex], d3d11Device);
 
-        hr = d3d11SwapChain->Present(0, 0);
-        CRC::WaitForD3DGpuToFinish(d3d11Device);
-        if (FAILED(hr))
-        {
+    CRC::PresentD3D11SwapChain(d3d11SwapChain, 0, 0, bufferCount, frameIndex);
+
+    targetIndex = (frameIndex + 2) % bufferCount;
+    CRC::UnregisterCudaResource(cudaResources[targetIndex], d3d11Device);
+
+    targetIndex = (frameIndex + 1) % bufferCount;
+    CRC::UnregisterCudaResource(cudaResources[targetIndex], d3d11Device);
+
 #ifndef NDEBUG
-            CRC::CoutError("Failed to present swap chain.");
+    Cout("Unregistered CUDA resources in swap chain.");
 #endif
-            throw std::runtime_error("Failed to present swap chain.");
-        }
+}
 
-        CRC::CheckCuda(cudaGraphicsUnregisterResource(cudaResources[frameIndex]));
-        hr = d3d11Device->GetDeviceRemovedReason();
-
-        frameIndex = (frameIndex + 1) % bufferCount;        
-    }
-    else if (bufferCount == 2)
+CRC_API void CRC::UnregisterSwapChain2Presented
+(
+    std::vector<cudaGraphicsResource_t> &cudaResources, 
+    Microsoft::WRL::ComPtr<ID3D11Device> &d3d11Device, Microsoft::WRL::ComPtr<IDXGISwapChain> &d3d11SwapChain, 
+    UINT &frameIndex
+){
+    UINT bufferCount = cudaResources.size();
+    if (bufferCount != 2)
     {
-        targetIndex = (frameIndex + 1) % bufferCount;
-        ::UnregisterTargetBufferAndPresent
-        (
-            cudaResources, d3d11Device, d3d11SwapChain, 
-            targetIndex, frameIndex, bufferCount
-        );
-
-        targetIndex = (frameIndex + 1) % bufferCount;
-        CRC::CheckCuda(cudaGraphicsUnregisterResource(cudaResources[targetIndex]));
-        hr = d3d11Device->GetDeviceRemovedReason();
-    }
-    else if (bufferCount == 3)
-    {
-        targetIndex = (frameIndex + 1) % bufferCount;
-        ::UnregisterTargetBufferAndPresent
-        (
-            cudaResources, d3d11Device, d3d11SwapChain, 
-            targetIndex, frameIndex, bufferCount
-        );
-
-        targetIndex = (frameIndex - 1) % bufferCount;
-        ::UnregisterTargetBufferAndPresent
-        (
-            cudaResources, d3d11Device, d3d11SwapChain, 
-            targetIndex, frameIndex, bufferCount
-        );
-
-        hr = d3d11SwapChain->Present(0, 0);
-        CRC::WaitForD3DGpuToFinish(d3d11Device);
-        if (FAILED(hr))
-        {
 #ifndef NDEBUG
-            CRC::CoutError("Failed to present swap chain.");
+        CRC::CoutError("This function is only for 2 buffer swap chains.");
 #endif
-            throw std::runtime_error("Failed to present swap chain.");
-        }
-        frameIndex = (frameIndex + 1) % bufferCount;
-
-        // targetIndex = (frameIndex + 1) % bufferCount;
-        // CRC::CheckCuda(cudaGraphicsUnregisterResource(cudaResources[targetIndex]));
-        // hr = d3d11Device->GetDeviceRemovedReason();
+        throw std::runtime_error("This function is only for 2 buffer swap chains.");
     }
 
-//     if (presentExecuted)
-//     {
-//         targetIndex = (frameIndex + 1) % bufferCount;
-//         CRC::CheckCuda(cudaGraphicsUnregisterResource(cudaResources[targetIndex]));
+    HRESULT hr = S_OK;
 
-//         hr = d3d11Device->GetDeviceRemovedReason();
+    UINT targetIndex = (frameIndex + 1) % bufferCount;
+    CRC::UnregisterCudaResource(cudaResources[targetIndex], d3d11Device);
 
-//         hr = d3d11SwapChain->Present(0, 0);
-//         CRC::WaitForD3DGpuToFinish(d3d11Device);
-//         if (FAILED(hr))
-//         {
-// #ifndef NDEBUG
-//             CRC::CoutError("Failed to unregister CUDA resources in swap chain.", "IDXGISwapChain Present failed.");
-// #endif
-//             throw std::runtime_error
-//             (
-//                 "Failed to unregister CUDA resources in swap chain. IDXGISwapChain Present failed."
-//             );
-//         }
+    CRC::PresentD3D11SwapChain(d3d11SwapChain, 0, 0, bufferCount, frameIndex);
 
-//         hr = d3d11Device->GetDeviceRemovedReason();
-//         frameIndex = (frameIndex + 1) % bufferCount;
-//     }
+    targetIndex = (frameIndex + 1) % bufferCount;
+    CRC::UnregisterCudaResource(cudaResources[targetIndex], d3d11Device);
 
-//     if (presentExecuted && bufferCount == 3)
-//     {
-        
-//         targetIndex = (frameIndex + 2) % bufferCount;
-//         CRC::CheckCuda(cudaGraphicsUnregisterResource(cudaResources[targetIndex]));
+#ifndef NDEBUG
+    Cout("Unregistered CUDA resources in swap chain.");
+#endif
+}
 
-//         hr = d3d11Device->GetDeviceRemovedReason();
+CRC_API void CRC::UnregisterSwapChainNotPresented
+(
+    std::vector<cudaGraphicsResource_t> &cudaResources, 
+    Microsoft::WRL::ComPtr<ID3D11Device> &d3d11Device, Microsoft::WRL::ComPtr<IDXGISwapChain> &d3d11SwapChain, 
+    UINT &frameIndex
+){
+    HRESULT hr = S_OK;
+    for (int i = 0; i < cudaResources.size(); ++i) 
+    {
+        if (i == frameIndex) continue;
+        CRC::UnregisterCudaResource(cudaResources[i], d3d11Device);
+    }
 
-//         hr = d3d11SwapChain->Present(0, 0);
-//         CRC::WaitForD3DGpuToFinish(d3d11Device);
-//         if (FAILED(hr))
-//         {
-// #ifndef NDEBUG
-//             CRC::CoutError("Failed to unregister CUDA resources in swap chain.", "IDXGISwapChain Present failed.");
-// #endif
-//             throw std::runtime_error
-//             (
-//                 "Failed to unregister CUDA resources in swap chain. IDXGISwapChain Present failed."
-//             );
-//         }
+    UINT targetIndex = frameIndex;
 
-//         hr = d3d11Device->GetDeviceRemovedReason();
-//         frameIndex = (frameIndex + 1) % bufferCount;
-        
-            
-//     }
-//     else if (!presentExecuted)
-//     {
-//         for (int i = 0; i < cudaResources.size(); ++i) 
-//         {
-//             if (i == frameIndex) continue;
-//             CRC::CheckCuda(cudaGraphicsUnregisterResource(cudaResources[i]));
-//             hr = d3d11Device->GetDeviceRemovedReason();
-//         }
+    CRC::PresentD3D11SwapChain(d3d11SwapChain, 0, 0, cudaResources.size(), frameIndex);
 
-//         hr = d3d11SwapChain->Present(0, 0);
-//         CRC::WaitForD3DGpuToFinish(d3d11Device);
-//         if (FAILED(hr))
-//         {
-// #ifndef NDEBUG
-//             CRC::CoutError("Failed to present swap chain.");
-// #endif
-//             throw std::runtime_error("Failed to present swap chain.");
-//         }
-
-//         CRC::CheckCuda(cudaGraphicsUnregisterResource(cudaResources[frameIndex]));
-//         hr = d3d11Device->GetDeviceRemovedReason();
-
-//         frameIndex = (frameIndex + 1) % bufferCount;
-//     }
-
-//     for (int i = 0; i < cudaResources.size(); ++i) 
-//     {
-//         if (i == frameIndex) continue;
-//         CRC::CheckCuda(cudaGraphicsUnregisterResource(cudaResources[i]));
-
-//         HRESULT hr = d3d11Device->GetDeviceRemovedReason();
-//     }
-
-//     HRESULT hr = d3d11SwapChain->Present(0, 0);
-//     if (FAILED(hr))
-//     {
-// #ifndef NDEBUG
-//         CRC::CoutError("Failed to present swap chain.");
-// #endif
-//         throw std::runtime_error("Failed to present swap chain.");
-//     }
-
-//     CRC::CheckCuda(cudaGraphicsUnregisterResource(cudaResources[frameIndex]));
-
-//     hr = d3d11Device->GetDeviceRemovedReason();
-
-//     frameIndex = (frameIndex + 1) % bufferCount;
+    CRC::UnregisterCudaResource(cudaResources[targetIndex], d3d11Device);
 
 #ifndef NDEBUG
     Cout("Unregistered CUDA resources in swap chain.");
@@ -652,4 +509,21 @@ CRC_API void CRC::WaitForD3DGpuToFinish(Microsoft::WRL::ComPtr<ID3D11Device> &d3
     }
 
     pQuery->Release();
+}
+
+CRC_API void CRC::PresentD3D11SwapChain
+(
+    Microsoft::WRL::ComPtr<IDXGISwapChain> &d3d11SwapChain, UINT syncInterval, UINT flags, 
+    const UINT &bufferCount, UINT &frameIndex
+){
+    HRESULT hr = d3d11SwapChain->Present(syncInterval, flags);
+    if (FAILED(hr))
+    {
+#ifndef NDEBUG
+        CRC::CoutError("Failed to present swap chain. IDXGISwapChain Present failed.");
+#endif
+        throw std::runtime_error("Failed to present swap chain. IDXGISwapChain Present failed.");
+    }
+
+    frameIndex = (frameIndex + 1) % bufferCount;
 }
