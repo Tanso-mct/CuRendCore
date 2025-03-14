@@ -45,6 +45,7 @@
     <CudaCompile Include="include\CRC_device_context.cuh" />
     <CudaCompile Include="include\CRC_device.cuh" />
     <CudaCompile Include="include\CRC_dsv.cuh" />
+    <ClInclude Include="include\CRC_data_cast.h" />
     <ClInclude Include="include\CRC_event_caller.h" />
     <ClInclude Include="include\CRC_factory.h" />
     <CudaCompile Include="include\CRC_funcs.cuh" />

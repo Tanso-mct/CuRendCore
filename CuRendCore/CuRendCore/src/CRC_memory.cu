@@ -3,110 +3,50 @@
 
 #include "CRC_memory.cuh"
 
-CRCHostMem::~CRCHostMem()
+void ICRCMemory::Malloc(UINT byteWidth)
 {
-    if (ptr_) Free();
+#ifndef NDEBUG
+    CRC::CoutError("ICRCMemory::Malloc(UINT byteWidth) is not implemented.");
+#endif
+    throw std::runtime_error("ICRCMemory::Malloc(UINT byteWidth) is not implemented.");
 }
 
-void CRCHostMem::Malloc(const UINT &byteWidth, const UINT &pitch, const UINT &slicePitch)
+void ICRCMemory::Free()
 {
-    if (ptr_)
-    {
 #ifndef NDEBUG
-        CRC::CoutError("Memory already allocated.");
+    CRC::CoutError("ICRCMemory::Free() is not implemented.");
 #endif
-        throw std::runtime_error("Memory already allocated.");
-    }
-
-    byteWidth_ = byteWidth;
-    pitch_ = pitch;
-    slicePitch_ = slicePitch;
-
-    CRC::CheckCuda(cudaMallocHost(&ptr_, byteWidth_));
-
-#ifndef NDEBUG
-    CRC::Cout
-    (
-        "Host memory allocated.", "\n", 
-        "ByteWidth :", byteWidth_, "\n",
-        "Pitch :", pitch_, "\n",
-        "SlicePitch :", slicePitch_
-    );
-#endif
+    throw std::runtime_error("ICRCMemory::Free() is not implemented.");
 }
 
-void CRCHostMem::Free()
+void ICRCMemory::HostMalloc(UINT byteWidth)
 {
-    if (!ptr_)
-    {
 #ifndef NDEBUG
-        CRC::CoutError("Memory not allocated.");
+    CRC::CoutError("ICRCMemory::HostMalloc(UINT byteWidth) is not implemented.");
 #endif
-        throw std::runtime_error("Memory not allocated.");
-    }
-
-    byteWidth_ = 0;
-    pitch_ = 0;
-    slicePitch_ = 0;
-
-    CRC::CheckCuda(cudaFreeHost(ptr_));
-    ptr_ = nullptr;
-
-#ifndef NDEBUG
-    CRC::Cout("Host memory free.");
-#endif
+    throw std::runtime_error("ICRCMemory::HostMalloc(UINT byteWidth) is not implemented.");
 }
 
-CRCDeviceMem::~CRCDeviceMem()
+void ICRCMemory::HostFree()
 {
-    if (ptr_) Free();
+#ifndef NDEBUG
+    CRC::CoutError("ICRCMemory::HostFree() is not implemented.");
+#endif
+    throw std::runtime_error("ICRCMemory::HostFree() is not implemented.");
 }
 
-void CRCDeviceMem::Malloc(const UINT &byteWidth, const UINT &pitch, const UINT &slicePitch)
+void ICRCMemory::Assign(void *const mem, UINT byteWidth)
 {
-    if (ptr_)
-    {
 #ifndef NDEBUG
-        CRC::CoutError("Memory already allocated.");
+    CRC::CoutError("ICRCMemory::Assign(void* const mem, UINT byteWidth) is not implemented.");
 #endif
-        throw std::runtime_error("Memory already allocated.");
-    }
-
-    byteWidth_ = byteWidth;
-    pitch_ = pitch;
-    slicePitch_ = slicePitch;
-
-    CRC::CheckCuda(cudaMalloc(&ptr_, byteWidth_));
-
-#ifndef NDEBUG
-    CRC::Cout
-    (
-        "Device memory allocated.", "\n", 
-        "ByteWidth :", byteWidth_, "\n",
-        "Pitch :", pitch_, "\n",
-        "SlicePitch :", slicePitch_
-    );
-#endif
+    throw std::runtime_error("ICRCMemory::Assign(void* const mem, UINT byteWidth) is not implemented.");
 }
 
-void CRCDeviceMem::Free()
+void ICRCMemory::Unassign()
 {
-    if (!ptr_)
-    {
 #ifndef NDEBUG
-        CRC::CoutError("Memory not allocated.");
+    CRC::CoutError("ICRCMemory::Unassign() is not implemented.");
 #endif
-        throw std::runtime_error("Memory not allocated.");
-    }
-
-    byteWidth_ = 0;
-    pitch_ = 0;
-    slicePitch_ = 0;
-
-    CRC::CheckCuda(cudaFree(ptr_));
-    ptr_ = nullptr;
-
-#ifndef NDEBUG
-    CRC::Cout("Device memory free.");
-#endif
+    throw std::runtime_error("ICRCMemory::Unassign() is not implemented.");
 }

@@ -9,6 +9,7 @@
 #include <string_view>
 #include <initializer_list>
 #include <vector>
+#include <string>
 
 #include <d3d11.h>
 #include <wrl/client.h>
@@ -26,29 +27,20 @@ class ICRCContainer;
 
 class ICRCWinMsgEvent;
 
-class ICRCDevice;
-class ICRCSwapChain;
+class ICRCFactory;
 
+class ICRCDevice;
+class CRC_DEVICE_DESC;
+
+class ICRCSwapChain;
 class CRC_SWAP_CHAIN_DESC;
+
+class ICRCTexture2D;
+
+enum class CRC_RESOURCE_TYPE : UINT;
 
 namespace CRC
 {
-
-template <typename T, typename S>
-T* As(S* source)
-{
-    T* target = dynamic_cast<T*>(source);
-    return target;
-}
-
-template <typename T, typename S>
-std::unique_ptr<T> UniqueAs(std::unique_ptr<S>& source)
-{
-    T* target = dynamic_cast<T*>(source.get());
-
-    if (target) return std::unique_ptr<T>(static_cast<T*>(source.release()));
-    else return nullptr;
-}
 
 CRC_API HRESULT ShowWindowCRC(HWND& hWnd);
 
@@ -58,7 +50,30 @@ CRC_API HRESULT CreateD3D11DeviceAndSwapChain
     Microsoft::WRL::ComPtr<ID3D11Device>& device, Microsoft::WRL::ComPtr<IDXGISwapChain>& swapChain
 );
 
-UINT GetBytesPerPixel(const DXGI_FORMAT& format);
+CRC_API HRESULT CreateCRCDeviceAndSwapChain
+(
+    CRC_DEVICE_DESC& deviceDesc, CRC_SWAP_CHAIN_DESC& swapChainDesc,
+    const ICRCFactory& deviceFactory, const ICRCFactory& swapChainFactory,
+    std::unique_ptr<ICRCContainable>& device, std::unique_ptr<ICRCContainable>& swapChain
+);
+
+CRC_API UINT GetBytesPerPixel(const DXGI_FORMAT& format);
+CRC_API D3D11_USAGE GetUsage(const DXGI_USAGE& usage);
+
+CRC_API void CreateCudaChannelDescFromDXGIFormat(cudaChannelFormatDesc& channelDesc, const DXGI_FORMAT& format);
+
+CRC_API void GetCpuGpuRWFlags
+(
+    bool& cpuRead, bool& cpuWrite, bool& gpuRead, bool& gpuWrite, 
+    const D3D11_USAGE& usage, const UINT& cpuAccessFlags
+);
+
+CRC_API bool NeedsWrite(const UINT& rcType);
+
+CRC_API UINT GetCRCResourceType(const D3D11_BUFFER_DESC& desc);
+CRC_API UINT GetCRCResourceType(const D3D11_TEXTURE2D_DESC& desc);
+
+CRC_API std::string GetCRCResourceTypeString(const UINT& rcType);
 
 struct PairHash 
 {
@@ -84,55 +99,98 @@ template <typename... Args>
 CRC_API void Cout(Args&... args)
 {
     std::cout << CRC::C_COLOR_MSG << CRC::C_TAG << CRC::C_COLOR_RESET << " ";
-    (void)std::initializer_list<int>{(std::cout << args << " ", 0)...};
-    std::cout << std::endl << CRC::C_COLOR_MSG << CRC::C_TAG_END << CRC::C_COLOR_RESET << std::endl;
+    std::initializer_list<int> ilist = {(std::cout << args << " ", 0)...};
+
+    if (ilist.size() == 1) std::cout << std::endl;
+    else std::cout << std::endl << CRC::C_COLOR_MSG << CRC::C_TAG_END << CRC::C_COLOR_RESET << std::endl;
 }
 
 template <typename... Args>
 CRC_API void CoutError(Args&... args)
 {
     std::cout << CRC::C_COLOR_ERROR << CRC::C_TAG << CRC::C_COLOR_RESET << " ";
-    (void)std::initializer_list<int>{(std::cout << args << " ", 0)...};
-    std::cout << std::endl << CRC::C_COLOR_ERROR << CRC::C_TAG_END << CRC::C_COLOR_RESET << std::endl;
+    std::initializer_list<int> ilist = {(std::cout << args << " ", 0)...};
+    
+    if (ilist.size() == 1) std::cout << std::endl;
+    else std::cout << std::endl << CRC::C_COLOR_ERROR << CRC::C_TAG_END << CRC::C_COLOR_RESET << std::endl;
 }
 
 template <typename... Args>
 CRC_API void CoutWarning(Args&... args)
 {
     std::cout << CRC::C_COLOR_WARNING << CRC::C_TAG << CRC::C_COLOR_RESET << " ";
-    (void)std::initializer_list<int>{(std::cout << args << " ", 0)...};
-    std::cout << std::endl << CRC::C_COLOR_WARNING << CRC::C_TAG_END << CRC::C_COLOR_RESET << std::endl;
+    std::initializer_list<int> ilist = {(std::cout << args << " ", 0)...};
+    
+    if (ilist.size() == 1) std::cout << std::endl;
+    else std::cout << std::endl << CRC::C_COLOR_WARNING << CRC::C_TAG_END << CRC::C_COLOR_RESET << std::endl;
 }
 
-HRESULT RegisterCudaResources
+CRC_API void RegisterCudaResources
 (
     std::vector<cudaGraphicsResource_t>& cudaResources, const cudaGraphicsRegisterFlags& flags,
     const UINT& bufferCount, IDXGISwapChain* d3d11SwapChain
 );
-HRESULT RegisterCudaResource
+CRC_API void RegisterCudaResource
 (
     cudaGraphicsResource_t& cudaResource, const cudaGraphicsRegisterFlags& flags,
     ID3D11Texture2D* d3d11Texture
 );
 
-HRESULT UnregisterCudaResources(std::vector<cudaGraphicsResource_t>& cudaResources);
-HRESULT UnregisterCudaResource(cudaGraphicsResource_t& cudaResource);
+CRC_API void UnregisterCudaResources(std::vector<cudaGraphicsResource_t>& cudaResources);
+CRC_API void UnregisterCudaResource(cudaGraphicsResource_t& cudaResource);
+CRC_API void UnregisterCudaResource
+(
+    cudaGraphicsResource_t& cudaResource, Microsoft::WRL::ComPtr<ID3D11Device>& d3d11Device
+);
 
 /**
- * @brief Un registers all CUDA resources from the swap chain.
+ * Un registers CUDA resources from the swap chain.
  * At this time, if SwapChain has been presented at least once, unregistering the buffer 
  * that will become the next display buffer directly will cause windows to freeze, 
  * so unregister after presenting and shifting the buffer.
  * The error is probably due to the fact that it is tied to RenderTarget, etc.
  */
-HRESULT UnregisterCudaResourcesAtSwapChain
+CRC_API void UnregisterSwapChain3Presented
 (
     std::vector<cudaGraphicsResource_t>& cudaResources, 
-    Microsoft::WRL::ComPtr<IDXGISwapChain>& d3d11SwapChain, UINT& frameIndex, const UINT& bufferCount
+    Microsoft::WRL::ComPtr<ID3D11Device>& d3d11Device, Microsoft::WRL::ComPtr<IDXGISwapChain>& d3d11SwapChain, 
+    UINT& frameIndex
 );
 
-HRESULT MapCudaResource(cudaGraphicsResource_t& cudaResource, cudaStream_t stream = 0);
-HRESULT UnmapCudaResource(cudaGraphicsResource_t& cudaResource, cudaStream_t stream = 0);
+CRC_API void UnregisterSwapChain2Presented
+(
+    std::vector<cudaGraphicsResource_t>& cudaResources, 
+    Microsoft::WRL::ComPtr<ID3D11Device>& d3d11Device, Microsoft::WRL::ComPtr<IDXGISwapChain>& d3d11SwapChain, 
+    UINT& frameIndex
+);
+
+CRC_API void UnregisterSwapChainNotPresented
+(
+    std::vector<cudaGraphicsResource_t>& cudaResources, 
+    Microsoft::WRL::ComPtr<ID3D11Device>& d3d11Device, Microsoft::WRL::ComPtr<IDXGISwapChain>& d3d11SwapChain, 
+    UINT& frameIndex
+);
+
+CRC_API void MapCudaResource(cudaGraphicsResource_t& cudaResource, cudaStream_t stream = 0);
+CRC_API void UnmapCudaResource(cudaGraphicsResource_t& cudaResource, cudaStream_t stream = 0);
 cudaArray_t GetCudaMappedArray(cudaGraphicsResource_t& cudaResource);
+
+CRC_API std::unique_ptr<ICRCTexture2D> CreateTexture2DFromCudaResource
+(
+    cudaGraphicsResource_t& cudaResource, D3D11_TEXTURE2D_DESC& desc
+);
+
+CRC_API ICRCTexture2D* CreatePtTexture2DFromCudaResource
+(
+    cudaGraphicsResource_t& cudaResource, D3D11_TEXTURE2D_DESC& desc
+);
+
+CRC_API void WaitForD3DGpuToFinish(Microsoft::WRL::ComPtr<ID3D11Device>& d3d11Device);
+
+CRC_API void PresentD3D11SwapChain
+(
+    Microsoft::WRL::ComPtr<IDXGISwapChain>& d3d11SwapChain, UINT syncInterval, UINT flags,
+    const UINT& bufferCount, UINT& frameIndex
+);
 
 }

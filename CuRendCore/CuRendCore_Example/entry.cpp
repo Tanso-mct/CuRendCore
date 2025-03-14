@@ -74,8 +74,13 @@ int main()
      *****************************************************************************************************************/
     HRESULT hr = S_OK;
 
-    hr = CRC::ShowWindowCRC(CRC::As<CRCWindowAttr>(container->Get(idMainWindowAttr).get())->hWnd_);
-    if (FAILED(hr)) return CRC::ERROR_SHOW_WINDOW;
+    {
+        CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(container->Get(idMainWindowAttr));
+        if (!window()) return CRC::ERROR_CAST;
+
+        hr = CRC::ShowWindowCRC(window()->hWnd_);
+        if (FAILED(hr)) return CRC::ERROR_SHOW_WINDOW;
+    }
 
     /******************************************************************************************************************
      * Create window message event set.
@@ -89,7 +94,13 @@ int main()
      *****************************************************************************************************************/
     {
         // Set key to windows message event caller.
-        HWND key = CRC::As<CRCWindowAttr>(container->Get(idMainWindowAttr).get())->hWnd_;
+        HWND key;
+        {
+            CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(container->Get(idMainWindowAttr));
+            if (!window()) return CRC::ERROR_CAST;
+
+            key = window()->hWnd_;
+        }
         WinMsgEventSet.caller_->AddKey(key);
 
         // Move container to windows message event caller.

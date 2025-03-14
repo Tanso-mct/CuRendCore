@@ -6,11 +6,17 @@
 std::unique_ptr<ICRCContainable> CRCSwapChainFactoryL0_0::Create(IDESC &desc) const
 {
     CRC_SWAP_CHAIN_DESC* swapChainDesc = CRC::As<CRC_SWAP_CHAIN_DESC>(&desc);
-    if (!swapChainDesc) return nullptr;
+    if (!swapChainDesc)
+    {
+#ifndef NDEBUG
+        CRC::CoutWarning("Failed to create swap chain from desc. Desc is not CRC_SWAP_CHAIN_DESC.");
+#endif
+    }
 
     std::unique_ptr<CRCSwapChain> swapChain = std::make_unique<CRCSwapChain>
     (
-        swapChainDesc->d3d11SwapChain_, swapChainDesc->GetDxgiDesc()
+        swapChainDesc->d3d11Device_, swapChainDesc->d3d11SwapChain_, 
+        swapChainDesc->GetDxgiDesc()
     );
 
     return swapChain;
@@ -18,45 +24,107 @@ std::unique_ptr<ICRCContainable> CRCSwapChainFactoryL0_0::Create(IDESC &desc) co
 
 CRCSwapChain::CRCSwapChain
 (
+    Microsoft::WRL::ComPtr<ID3D11Device>& d3d11Device,
     Microsoft::WRL::ComPtr<IDXGISwapChain> &d3d11SwapChain, 
     const DXGI_SWAP_CHAIN_DESC& desc
 ) 
-: d3d11SwapChain_(d3d11SwapChain)
+: d3d11Device_(d3d11Device), d3d11SwapChain_(d3d11SwapChain)
 , bufferCount_(desc.BufferCount), refreshRate_(desc.BufferDesc.RefreshRate)
 {
-    HRESULT hr = CRC::RegisterCudaResources
+    if (!(bufferCount_ == 2 || bufferCount_ == 3))
+    {
+#ifndef NDEBUG
+        CRC::CoutWarning("Failed to create swap chain. Buffer count is not 2 or 3.");
+#endif
+        return;
+    }
+
+    CRC::RegisterCudaResources
     (
-        cudaResources_, cudaGraphicsRegisterFlagsNone,
+        cudaResources_, cudaGraphicsRegisterFlagsSurfaceLoadStore,
         bufferCount_, d3d11SwapChain_.Get()
     );
-    if (FAILED(hr)) throw std::runtime_error("Failed to create CRCSwapChain by registering CUDA resources.");
 
-    hr = CRC::MapCudaResource(cudaResources_[frameIndex_]);
-    if (FAILED(hr)) throw std::runtime_error("Failed to create CRCSwapChain by mapping CUDA resources.");
+    backSurfaces_.resize(bufferCount_);
 
-    cudaArray_t backBufferArray = CRC::GetCudaMappedArray(cudaResources_[frameIndex_]);
-    if (!backBufferArray) throw std::runtime_error("Failed to create CRCSwapChain by getting CUDA mapped array.");
+    D3D11_TEXTURE2D_DESC backBufferDesc;
+    ZeroMemory(&backBufferDesc, sizeof(D3D11_TEXTURE2D_DESC));
+    backBufferDesc.Width = desc.BufferDesc.Width;
+    backBufferDesc.Height = desc.BufferDesc.Height;
+    backBufferDesc.MipLevels = 1;
+    backBufferDesc.ArraySize = 1;
+    backBufferDesc.Format = desc.BufferDesc.Format;
+    backBufferDesc.SampleDesc.Count = 1;
+    backBufferDesc.SampleDesc.Quality = 0;
+    backBufferDesc.Usage = CRC::GetUsage(desc.BufferUsage);
+    backBufferDesc.BindFlags = D3D11_BIND_RENDER_TARGET;
+    backBufferDesc.CPUAccessFlags = 0;
+    backBufferDesc.MiscFlags = 0;
 
-    backBuffer_ = std::make_unique<CRCTexture2D>();
-    backBuffer_->GetPtr() = (void*)backBufferArray;
+    for (int i = 0; i < bufferCount_; i++)
+    {
+        backSurfaces_[i] = CRC::CreatePtTexture2DFromCudaResource(cudaResources_[i], backBufferDesc);
+    }
+
+    CRC::MapCudaResource(cudaResources_[frameIndex_]);
+    backBuffer_ = backSurfaces_[frameIndex_];
+
+#ifndef NDEBUG
+    CRC::Cout
+    (
+        "Swap chain created.", "\n",
+        "Buffer count :", bufferCount_, "\n",
+        "Refresh rate :", refreshRate_.Denominator, "/", refreshRate_.Numerator
+    );
+#endif
 }
 
 CRCSwapChain::~CRCSwapChain()
 {
-    HRESULT hr = CRC::UnmapCudaResource(cudaResources_[frameIndex_]);
-    if (FAILED(hr)) throw std::runtime_error("Failed to destroy CRCSwapChain by unmapping CUDA resources.");
+    CRC::UnmapCudaResource(cudaResources_[frameIndex_]);
+    for (int i = 0; i < bufferCount_; i++)
+    {
+        delete backSurfaces_[i];
+        backSurfaces_[i] = nullptr;
+    }
 
-    CRC::UnregisterCudaResourcesAtSwapChain(cudaResources_, d3d11SwapChain_, frameIndex_, bufferCount_);
-    if (FAILED(hr)) throw std::runtime_error("Failed to destroy CRCSwapChain by unregistering CUDA resources.");
+    if (!presentExecuted_)
+    {
+        CRC::UnregisterSwapChainNotPresented
+        (
+            cudaResources_, d3d11Device_, d3d11SwapChain_, frameIndex_
+        );
+    }
+    else
+    {
+        if (bufferCount_ == 2)
+        {
+            CRC::UnregisterSwapChain2Presented
+            (
+                cudaResources_, d3d11Device_, d3d11SwapChain_, frameIndex_
+            );
+        }
+        else if (bufferCount_ == 3)
+        {
+            CRC::UnregisterSwapChain3Presented
+            (
+                cudaResources_, d3d11Device_, d3d11SwapChain_, frameIndex_
+            );
+        }
+    }
+    cudaResources_.clear();
 
-    backBuffer_->GetPtr() = nullptr;
-    backBuffer_.reset();
+    backBuffer_ = nullptr;
+
+#ifndef NDEBUG
+    CRC::Cout("Swap chain destroyed.");
+#endif
 }
 
-HRESULT CRCSwapChain::GetBuffer(UINT buffer, ICRCTexture2D *&texture)
+HRESULT CRCSwapChain::GetBuffer(UINT buffer, ICRCTexture2D*& texture)
 {
-    texture = backBuffer_.get();
-    if (!texture) return E_INVALIDARG;
+    texture = backBuffer_;
+    if (!texture) return E_FAIL;
     return S_OK;
 }
 
@@ -64,53 +132,101 @@ HRESULT CRCSwapChain::ResizeBuffers
 (
     UINT bufferCount, UINT width, UINT height, DXGI_FORMAT newFormat, UINT swapChainFlags
 ){
-    HRESULT hr = S_OK;
-    hr = CRC::UnmapCudaResource(cudaResources_[frameIndex_]);
-    if (FAILED(hr)) return hr;
+    CRC::UnmapCudaResource(cudaResources_[frameIndex_]);
+    for (int i = 0; i < bufferCount_; i++)
+    {
+        delete backSurfaces_[i];
+        backSurfaces_[i] = nullptr;
+    }
 
-    hr = CRC::UnregisterCudaResourcesAtSwapChain(cudaResources_, d3d11SwapChain_, frameIndex_, bufferCount_);
-    if (FAILED(hr)) return hr;
+    if (!presentExecuted_)
+    {
+        CRC::UnregisterSwapChainNotPresented
+        (
+            cudaResources_, d3d11Device_, d3d11SwapChain_, frameIndex_
+        );
+    }
+    else
+    {
+        if (bufferCount_ == 2)
+        {
+            CRC::UnregisterSwapChain2Presented
+            (
+                cudaResources_, d3d11Device_, d3d11SwapChain_, frameIndex_
+            );
+        }
+        else if (bufferCount_ == 3)
+        {
+            CRC::UnregisterSwapChain3Presented
+            (
+                cudaResources_, d3d11Device_, d3d11SwapChain_, frameIndex_
+            );
+        }
+    }
+    cudaResources_.clear();
 
-    hr = d3d11SwapChain_->ResizeBuffers(bufferCount, width, height, newFormat, swapChainFlags);
-    if (FAILED(hr)) return hr;
+    HRESULT hr = d3d11SwapChain_->ResizeBuffers(bufferCount, width, height, newFormat, swapChainFlags);
+    if (FAILED(hr))
+    {
+#ifndef NDEBUG
+        CRC::CoutWarning("Failed to resize buffers. IDXGISwapChain ResizeBuffers failed.");
+#endif
+    }
 
     frameIndex_ = 0;
 
-    hr = CRC::RegisterCudaResources
+    CRC::RegisterCudaResources
     (
-        cudaResources_, cudaGraphicsRegisterFlagsNone, 
+        cudaResources_, cudaGraphicsRegisterFlagsSurfaceLoadStore, 
         bufferCount, d3d11SwapChain_.Get()
     );
-    if (FAILED(hr)) return hr;
 
-    hr = CRC::MapCudaResource(cudaResources_[frameIndex_]);
-    if (FAILED(hr)) return hr;
+    backSurfaces_.resize(bufferCount);
 
-    cudaArray_t backBufferArray = CRC::GetCudaMappedArray(cudaResources_[frameIndex_]);
-    if (!backBufferArray) return E_FAIL;
+    D3D11_TEXTURE2D_DESC backBufferDesc;
+    ZeroMemory(&backBufferDesc, sizeof(D3D11_TEXTURE2D_DESC));
+    backBufferDesc.Width = width;
+    backBufferDesc.Height = height;
+    backBufferDesc.MipLevels = 1;
+    backBufferDesc.ArraySize = 1;
+    backBufferDesc.Format = newFormat;
+    backBufferDesc.SampleDesc.Count = 1;
+    backBufferDesc.SampleDesc.Quality = 0;
+    backBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+    backBufferDesc.BindFlags = D3D11_BIND_RENDER_TARGET;
+    backBufferDesc.CPUAccessFlags = 0;
+    backBufferDesc.MiscFlags = 0;
 
-    backBuffer_->GetPtr() = (void*)backBufferArray;
+    for (int i = 0; i < bufferCount; i++)
+    {
+        backSurfaces_[i] = CRC::CreatePtTexture2DFromCudaResource(cudaResources_[i], backBufferDesc);
+    }
 
-    return S_OK;
+    CRC::MapCudaResource(cudaResources_[frameIndex_]);
+    backBuffer_ = backSurfaces_[frameIndex_];
+
+    return hr;
 }
 
 HRESULT CRCSwapChain::Present(UINT syncInterval, UINT flags)
 {
-    HRESULT hr = CRC::UnmapCudaResource(cudaResources_[frameIndex_]);
-    if (FAILED(hr)) return hr;
+    CRC::UnmapCudaResource(cudaResources_[frameIndex_]);
 
-    hr = d3d11SwapChain_->Present(syncInterval, flags);
-    if (FAILED(hr)) return hr;
+    HRESULT hr = d3d11SwapChain_->Present(syncInterval, flags);
+    if (FAILED(hr))
+    {
+#ifndef NDEBUG
+        CRC::CoutWarning("Failed to present swap chain. IDXGISwapChain Present failed.");
+#endif  
+        CRC::MapCudaResource(cudaResources_[frameIndex_]);
+        return hr;
+    }
 
     frameIndex_ = (frameIndex_ + 1) % bufferCount_;
+    if (!presentExecuted_) presentExecuted_ = true;
 
-    hr = CRC::MapCudaResource(cudaResources_[frameIndex_]);
-    if (FAILED(hr)) return hr;
-
-    cudaArray_t backBufferArray = CRC::GetCudaMappedArray(cudaResources_[frameIndex_]);
-    if (!backBufferArray) return E_FAIL;
-
-    backBuffer_->GetPtr() = (void*)backBufferArray;
+    CRC::MapCudaResource(cudaResources_[frameIndex_]);
+    backBuffer_ = backSurfaces_[frameIndex_];
 
     return S_OK;
 }
@@ -123,7 +239,13 @@ HRESULT CRCSwapChain::GetDesc(DXGI_SWAP_CHAIN_DESC *pDesc)
 std::unique_ptr<ICRCContainable> CRCIDXGISwapChainFactoryL0_0::Create(IDESC &desc) const
 {
     CRC_SWAP_CHAIN_DESC* swapChainDesc = CRC::As<CRC_SWAP_CHAIN_DESC>(&desc);
-    if (!swapChainDesc) return nullptr;
+    if (!swapChainDesc)
+    {
+#ifndef NDEBUG
+        CRC::CoutWarning("Failed to create swap chain from desc. Desc is not CRC_SWAP_CHAIN_DESC.");
+#endif
+        return nullptr;
+    }
 
     std::unique_ptr<CRCIDXGISwapChain> swapChain = std::make_unique<CRCIDXGISwapChain>
     (
@@ -133,24 +255,69 @@ std::unique_ptr<ICRCContainable> CRCIDXGISwapChainFactoryL0_0::Create(IDESC &des
     return swapChain;
 }
 
+CRCIDXGISwapChain::CRCIDXGISwapChain(Microsoft::WRL::ComPtr<IDXGISwapChain>& d3d11SwapChain)
+: d3d11SwapChain_(d3d11SwapChain)
+{
+    backBuffer_ = new CRCID3D11Texture2D();
+}
+
+CRCIDXGISwapChain::~CRCIDXGISwapChain()
+{
+    delete backBuffer_;
+}
+
 HRESULT CRCIDXGISwapChain::GetBuffer(UINT buffer, ICRCTexture2D *&texture)
 {
-    CRCID3D11Texture2D* backBuffer = CRC::As<CRCID3D11Texture2D>(texture);
-    if (!backBuffer) return E_INVALIDARG;
+    if (!d3d11SwapChain_)
+    {
+#ifndef NDEBUG
+        CRC::CoutWarning("Failed to get buffer. IDXGISwapChain is nullptr.");
+#endif
+        return E_FAIL;
+    }
 
-    d3d11SwapChain_->GetBuffer(buffer, __uuidof(ID3D11Texture2D), &backBuffer->Get());
+    HRESULT hr = d3d11SwapChain_->GetBuffer
+    (
+        buffer, IID_PPV_ARGS(&CRC::As<CRCID3D11Texture2D>(backBuffer_)->Get())
+    );
+    if (FAILED(hr))
+    {
+#ifndef NDEBUG
+        CRC::CoutWarning("Failed to get buffer. IDXGISwapChain GetBuffer failed.");
+#endif
+    }
+
+    texture = backBuffer_;
+
+    return hr;
 }
 
 HRESULT CRCIDXGISwapChain::ResizeBuffers
 (
     UINT bufferCount, UINT width, UINT height, DXGI_FORMAT newFormat, UINT swapChainFlags
 ){
-    return d3d11SwapChain_->ResizeBuffers(bufferCount, width, height, newFormat, swapChainFlags);
+    HRESULT hr = d3d11SwapChain_->ResizeBuffers(bufferCount, width, height, newFormat, swapChainFlags);
+    if (FAILED(hr))
+    {
+#ifndef NDEBUG
+        CRC::CoutWarning("Failed to resize buffers. IDXGISwapChain ResizeBuffers failed.");
+#endif
+    }
+
+    return hr;
 }
 
 HRESULT CRCIDXGISwapChain::Present(UINT syncInterval, UINT flags)
 {
-    return d3d11SwapChain_->Present(syncInterval, flags);
+    HRESULT hr = d3d11SwapChain_->Present(syncInterval, flags);
+    if (FAILED(hr))
+    {
+#ifndef NDEBUG
+        CRC::CoutWarning("Failed to present swap chain. IDXGISwapChain Present failed.");
+#endif
+    }
+
+    return hr;
 }
 
 HRESULT CRCIDXGISwapChain::GetDesc(DXGI_SWAP_CHAIN_DESC *pDesc)

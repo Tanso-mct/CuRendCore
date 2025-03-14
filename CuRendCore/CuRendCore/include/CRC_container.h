@@ -5,6 +5,7 @@
 #include <memory>
 #include <vector>
 #include <Windows.h>
+#include <stdexcept>
 
 class CRC_API ICRCContainable
 {

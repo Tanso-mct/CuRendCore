@@ -14,36 +14,22 @@
 
 class CRC_API CRC_BUFFER_DESC : public IDESC
 {
-private:
-    D3D11_BUFFER_DESC desc_ = {};
-    D3D11_SUBRESOURCE_DATA initialData_ = {};
-
 public:
     CRC_BUFFER_DESC(Microsoft::WRL::ComPtr<ID3D11Device>& device) : d3d11Device_(device) {}
     ~CRC_BUFFER_DESC() override = default;
 
     Microsoft::WRL::ComPtr<ID3D11Device>& d3d11Device_;
 
-    D3D11_BUFFER_DESC& Desc() { return desc_; }
-    D3D11_SUBRESOURCE_DATA& InitialData() { return initialData_; }
-
-    UINT& ByteWidth() { return desc_.ByteWidth; }
-    D3D11_USAGE& Usage() { return desc_.Usage; }
-    UINT& BindFlags() { return desc_.BindFlags; }
-    UINT& CPUAccessFlags() { return desc_.CPUAccessFlags; }
-    UINT& MiscFlags() { return desc_.MiscFlags; }
-    UINT& StructureByteStride() { return desc_.StructureByteStride; }
-
-    const void* SysMem() { return initialData_.pSysMem; }
+    D3D11_BUFFER_DESC desc_ = {};
+    D3D11_SUBRESOURCE_DATA initialData_ = {};
 };
 
 class CRC_API ICRCBuffer
 {
 public:
     virtual ~ICRCBuffer() = default;
-
-    virtual const UINT& GetByteWidth() const = 0;
     virtual const void GetDesc(D3D11_BUFFER_DESC* dst) = 0;
+    virtual void* const GetDevicePtr() = 0;
 };
 
 class CRC_API CRCBufferFactoryL0_0 : public ICRCFactory
@@ -53,22 +39,46 @@ public:
     virtual std::unique_ptr<ICRCContainable> Create(IDESC& desc) const override;
 };
 
-class CRC_API CRCBuffer : public ICRCContainable, public ICRCCudaResource, public ICRCBuffer
+class CRC_API CRCBuffer 
+: public ICRCContainable, public ICRCResource, public ICRCBuffer, public ICRCMemory
 {
 private:
     D3D11_BUFFER_DESC desc_ = {};
-    std::unique_ptr<ICRCMem> dMem_ = nullptr;
+    UINT resType_ = 0;
+
+    void* dPtr_ = nullptr;
+    void* hPtr_ = nullptr;
+    UINT byteWidth_ = 0;
 
 public:
-    CRCBuffer();
+    CRCBuffer() = delete;
+    
     CRCBuffer(CRC_BUFFER_DESC& desc);
-    virtual ~CRCBuffer() override = default;
+    virtual ~CRCBuffer() override;
 
-    virtual void* const Get() const { return dMem_->Get();}
-    virtual void*& GetPtr() { return dMem_->GetPtr(); }
+    // ICRCResource
+    virtual HRESULT GetResourceType(UINT& rcType) override;
 
-    virtual const UINT& GetByteWidth() const override { return dMem_->GetByteWidth(); }
+    // ICRCBuffer
     virtual const void GetDesc(D3D11_BUFFER_DESC* dst) override;
+    virtual void* const GetDevicePtr() override { return dPtr_; }
+
+    // ICRCMemory
+    virtual void Malloc(UINT byteWidth) override;
+    virtual void Free() override;
+    virtual void HostMalloc(UINT byteWidth) override;
+    virtual void HostFree() override;
+
+    virtual const UINT& GetByteWidth() override { return byteWidth_; }
+    virtual const UINT& GetRowPitch() override { return 0; }
+    virtual const UINT& GetDepthPitch() override { return 0; }
+    virtual void* const GetHostPtr() override;
+
+    virtual HRESULT SendHostToDevice() override;
+    virtual HRESULT SendHostToDevice(const void *src, UINT srcByteWidth) override;
+    virtual HRESULT SendDeviceToHost() override;
+
+    virtual bool IsCpuAccessible() override;
 };
 
 class CRC_API CRCID3D11BufferFactoryL0_0 : public ICRCFactory
@@ -78,18 +88,35 @@ public:
     virtual std::unique_ptr<ICRCContainable> Create(IDESC& desc) const override;
 };
 
-class CRC_API CRCID3D11Buffer : public ICRCContainable, public ICRCD3D11Resource, public ICRCBuffer
+class CRC_API ICRCID3D11Buffer
+{
+public:
+    virtual ~ICRCID3D11Buffer() = default;
+    virtual Microsoft::WRL::ComPtr<ID3D11Buffer>& Get() = 0;
+    virtual void SetResourceType(UINT& resType) = 0;
+};
+
+class CRC_API CRCID3D11Buffer 
+: public ICRCContainable, public ICRCResource, public ICRCID3D11Resource, public ICRCBuffer, public ICRCID3D11Buffer
 {
 private:
     Microsoft::WRL::ComPtr<ID3D11Buffer> d3d11Buffer_;
+    UINT resType_ = 0;
 
 public:
-    CRCID3D11Buffer() = default;
-    virtual ~CRCID3D11Buffer() override = default;
+    virtual ~CRCID3D11Buffer() override;
 
-    virtual Microsoft::WRL::ComPtr<ID3D11Resource>& GetResource();
-    virtual Microsoft::WRL::ComPtr<ID3D11Buffer>& Get() { return d3d11Buffer_; }
+    // ICRCResource
+    virtual HRESULT GetResourceType(UINT& resType) override;
 
-    virtual const UINT& GetByteWidth() const override;
+    // ICRCID3D11Resource
+    virtual Microsoft::WRL::ComPtr<ID3D11Resource> GetResource() override;
+
+    // ICRCBuffer
     virtual const void GetDesc(D3D11_BUFFER_DESC* dst) override;
+    virtual void* const GetDevicePtr() override { return nullptr; }
+
+    // ICRCID3D11Buffer
+    virtual Microsoft::WRL::ComPtr<ID3D11Buffer>& Get() override { return d3d11Buffer_; }
+    virtual void SetResourceType(UINT& resType) override { resType_ = resType; }
 };

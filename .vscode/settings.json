@@ -105,6 +105,8 @@
         "cassert": "cpp",
         "map": "cpp",
         "set": "cpp",
-        "xtree": "cpp"
+        "xtree": "cpp",
+        "string_view": "cpp",
+        "target": "cpp"
     }
 }

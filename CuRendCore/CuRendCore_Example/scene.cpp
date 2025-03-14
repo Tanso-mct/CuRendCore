@@ -11,11 +11,8 @@ MainSceneEvent::~MainSceneEvent()
 {
 }
 
-void MainSceneEvent::InputHandleExample(std::unique_ptr<ICRCContainable>& inputAttr)
+void MainSceneEvent::InputHandleExample(std::unique_ptr<CRCUserInputAttr>& input)
 {
-    CRCUserInputAttr* input = CRC::As<CRCUserInputAttr>(inputAttr.get());
-    if (!input) return;
-
     if (input->GetKeyState(CRC_KEY::W).isPressed)
     {
         std::cout << "Main Scene Press W" << std::endl;
@@ -70,7 +67,10 @@ void MainSceneEvent::InputHandleExample(std::unique_ptr<ICRCContainable>& inputA
 
 void MainSceneEvent::OnUpdate(std::unique_ptr<ICRCContainer>& container, UINT msg, WPARAM wParam, LPARAM lParam)
 {   
-    InputHandleExample(container->Get(idUserInput_));
+    CRCTransCastUnique<CRCUserInputAttr, ICRCContainable> input(container->Get(idUserInput_));
+    if (!input()) return;
+
+    InputHandleExample(input());
 }
 
 void MainSceneEvent::OnSize(std::unique_ptr<ICRCContainer>& container, UINT msg, WPARAM wParam, LPARAM lParam)

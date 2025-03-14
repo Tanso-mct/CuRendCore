@@ -19,9 +19,13 @@ private:
     DXGI_SWAP_CHAIN_DESC desc_ = {};
 
 public:
-    CRC_SWAP_CHAIN_DESC(Microsoft::WRL::ComPtr<IDXGISwapChain>& d3d11SwapChain) : d3d11SwapChain_(d3d11SwapChain) {}
+    CRC_SWAP_CHAIN_DESC
+    (
+        Microsoft::WRL::ComPtr<ID3D11Device>& d3d11Device, Microsoft::WRL::ComPtr<IDXGISwapChain>& d3d11SwapChain
+    ) : d3d11Device_(d3d11Device), d3d11SwapChain_(d3d11SwapChain) {}
     ~CRC_SWAP_CHAIN_DESC() override = default;
 
+    Microsoft::WRL::ComPtr<ID3D11Device>& d3d11Device_;
     Microsoft::WRL::ComPtr<IDXGISwapChain>& d3d11SwapChain_;
     DXGI_SWAP_CHAIN_DESC& GetDxgiDesc() { return desc_; }
 };
@@ -53,24 +57,32 @@ public:
 class CRC_API CRCSwapChain : public ICRCContainable, public ICRCSwapChain
 {
 private:
+Microsoft::WRL::ComPtr<ID3D11Device>& d3d11Device_;
     Microsoft::WRL::ComPtr<IDXGISwapChain>& d3d11SwapChain_;
 
     UINT bufferCount_;
     DXGI_RATIONAL refreshRate_;
+    UINT frameIndex_ = 0;
+    bool presentExecuted_ = false;
 
     std::vector<cudaGraphicsResource_t> cudaResources_;
-    UINT frameIndex_ = 0;
+    std::vector<ICRCTexture2D*> backSurfaces_;
 
-    std::unique_ptr<CRCTexture2D> backBuffer_ = nullptr;
+    ICRCTexture2D* backBuffer_ = nullptr;
 
 public:
     CRCSwapChain
     (
+        Microsoft::WRL::ComPtr<ID3D11Device>& d3d11Device,
         Microsoft::WRL::ComPtr<IDXGISwapChain>& d3d11SwapChain,
         const DXGI_SWAP_CHAIN_DESC& desc
     );
 
     ~CRCSwapChain() override;
+
+    // Delete copy constructor and copy assignment
+    CRCSwapChain(const CRCSwapChain&) = delete;
+    CRCSwapChain& operator=(const CRCSwapChain&) = delete;
 
     Microsoft::WRL::ComPtr<IDXGISwapChain>& GetD3D11SwapChain() override { return d3d11SwapChain_; }
 
@@ -96,10 +108,11 @@ class CRC_API CRCIDXGISwapChain : public ICRCContainable, public ICRCSwapChain
 {
 private:
     Microsoft::WRL::ComPtr<IDXGISwapChain>& d3d11SwapChain_;
+    ICRCTexture2D* backBuffer_ = nullptr;
 
 public:
-    CRCIDXGISwapChain(Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain) : d3d11SwapChain_(d3d11SwapChain) {}
-    ~CRCIDXGISwapChain() override = default;
+    CRCIDXGISwapChain(Microsoft::WRL::ComPtr<IDXGISwapChain>& d3d11SwapChain);
+    ~CRCIDXGISwapChain() override;
 
     Microsoft::WRL::ComPtr<IDXGISwapChain>& GetD3D11SwapChain() override { return d3d11SwapChain_; }
 
