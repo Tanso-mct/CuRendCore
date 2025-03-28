@@ -1,30 +1,32 @@
 #pragma once
 
-#include "CRC_funcs.cuh"
+#include "CuRendCore/include/dsv.cuh"
 
-#include "CRC_config.h"
-#include "CRC_data_cast.h"
+#include "CuRendCore/include/funcs.cuh"
 
-#include "CRC_window.h"
-#include "CRC_scene.h"
-#include "CRC_user_input.h"
+#include "CuRendCore/include/config.h"
+#include "CuRendCore/include/data_cast.h"
 
-#include "CRC_container.h"
-#include "CRC_event.h"
-#include "CRC_event_caller.h"
-#include "CRC_factory.h"
+#include "CuRendCore/include/window.h"
+#include "CuRendCore/include/scene.h"
+#include "CuRendCore/include/user_input.h"
 
-#include "CRC_resource.cuh"
-#include "CRC_memory.cuh"
+#include "CuRendCore/include/container.h"
+#include "CuRendCore/include/event.h"
+#include "CuRendCore/include/event_caller.h"
+#include "CuRendCore/include/factory.h"
 
-#include "CRC_buffer.cuh"
-#include "CRC_texture.cuh"
+#include "CuRendCore/include/resource.cuh"
+#include "CuRendCore/include/memory.cuh"
 
-#include "CRC_device.cuh"
-#include "CRC_device_context.cuh"
-#include "CRC_swap_chain.cuh"
+#include "CuRendCore/include/buffer.cuh"
+#include "CuRendCore/include/texture.cuh"
 
-#include "CRC_view.cuh"
-#include "CRC_srv.cuh"
-#include "CRC_rtv.cuh"
-#include "CRC_dsv.cuh"
+#include "CuRendCore/include/device.cuh"
+#include "CuRendCore/include/device_context.cuh"
+#include "CuRendCore/include/swap_chain.cuh"
+
+#include "CuRendCore/include/view.cuh"
+#include "CuRendCore/include/srv.cuh"
+#include "CuRendCore/include/rtv.cuh"
+#include "CuRendCore/include/dsv.cuh"

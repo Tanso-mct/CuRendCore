@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "CuRendCore.h"
+#include "CuRendCore/include/CuRendCore.h"
 
 class MainSceneEvent : public ICRCWinMsgEvent
 {

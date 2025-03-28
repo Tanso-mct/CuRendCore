@@ -1,6 +1,4 @@
-﻿#include "CRC_pch.h"
-
-#include "CuRendCore.h"
+﻿#include "CuRendCore/include/CuRendCore.h"
 
 #include <Windows.h>
 
