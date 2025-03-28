@@ -184,7 +184,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;CURENDCORE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>Default</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)/lib/WinAppCore/include;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.6\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir);C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.6\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <ForcedIncludeFiles>$(SolutionDir)/CuRendCore/include/pch.h</ForcedIncludeFiles>
       <PrecompiledHeaderFile>$(SolutionDir)/CuRendCore/include/pch.h</PrecompiledHeaderFile>
@@ -209,7 +209,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;CURENDCORE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>Default</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)/lib/WinAppCore/include;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.6\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir);C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.6\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <ForcedIncludeFiles>$(SolutionDir)/CuRendCore/include/pch.h</ForcedIncludeFiles>
       <PrecompiledHeaderFile>$(SolutionDir)/CuRendCore/include/pch.h</PrecompiledHeaderFile>
