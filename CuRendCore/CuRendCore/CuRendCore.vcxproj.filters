@@ -130,9 +130,6 @@
     <CudaCompile Include="include\CRC_funcs.cuh">
       <Filter>ヘッダー ファイル</Filter>
     </CudaCompile>
-    <CudaCompile Include="src\CRC_resource.cu">
-      <Filter>ソース ファイル</Filter>
-    </CudaCompile>
     <CudaCompile Include="src\CRC_memory.cu">
       <Filter>ソース ファイル</Filter>
     </CudaCompile>
@@ -143,6 +140,15 @@
       <Filter>ソース ファイル</Filter>
     </CudaCompile>
     <CudaCompile Include="include\CRC_swap_chain.cuh">
+      <Filter>ヘッダー ファイル</Filter>
+    </CudaCompile>
+    <CudaCompile Include="src\CRC_vertex_shader.cu">
+      <Filter>ソース ファイル</Filter>
+    </CudaCompile>
+    <CudaCompile Include="include\CRC_vertex_shader.cuh">
+      <Filter>ヘッダー ファイル</Filter>
+    </CudaCompile>
+    <CudaCompile Include="include\CRC_shader.cuh">
       <Filter>ヘッダー ファイル</Filter>
     </CudaCompile>
   </ItemGroup>

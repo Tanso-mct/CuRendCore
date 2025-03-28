@@ -38,6 +38,7 @@
     <ClCompile Include="src\CRC_scene.cpp" />
     <ClCompile Include="src\CRC_user_input.cpp" />
     <ClCompile Include="src\CRC_window.cpp" />
+    <CudaCompile Include="src\CRC_vertex_shader.cu" />
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="include\CRC_buffer.cuh" />
@@ -59,8 +60,10 @@
     <CudaCompile Include="include\CRC_texture.cuh" />
     <CudaCompile Include="include\CRC_srv.cuh" />
     <CudaCompile Include="include\CRC_swap_chain.cuh" />
+    <CudaCompile Include="include\CRC_shader.cuh" />
     <ClInclude Include="include\CRC_user_input.h" />
     <CudaCompile Include="include\CRC_view.cuh" />
+    <CudaCompile Include="include\CRC_vertex_shader.cuh" />
     <ClInclude Include="include\CRC_window.h" />
     <ClInclude Include="include\CuRendCore.h" />
     <ClInclude Include="include\stb_image.h" />
@@ -68,7 +71,6 @@
     <CudaCompile Include="src\CRC_device.cu" />
     <CudaCompile Include="src\CRC_dsv.cu" />
     <CudaCompile Include="src\CRC_memory.cu" />
-    <CudaCompile Include="src\CRC_resource.cu" />
     <CudaCompile Include="src\CRC_rtv.cu" />
     <CudaCompile Include="src\CRC_srv.cu" />
     <CudaCompile Include="src\CRC_swap_chain.cu" />
