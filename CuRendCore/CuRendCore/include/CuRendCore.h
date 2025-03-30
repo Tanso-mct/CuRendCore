@@ -1,11 +1,11 @@
 #pragma once
 
-#include "CuRendCore/include/dsv.cuh"
-
-#include "CuRendCore/include/funcs.cuh"
+#include "packages/WinAppCore/include/WACore.h"
 
 #include "CuRendCore/include/config.h"
-#include "CuRendCore/include/data_cast.h"
+
+#include "CuRendCore/include/dsv.cuh"
+#include "CuRendCore/include/funcs.cuh"
 
 #include "CuRendCore/include/window.h"
 #include "CuRendCore/include/scene.h"

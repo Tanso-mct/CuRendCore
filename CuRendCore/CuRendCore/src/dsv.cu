@@ -6,7 +6,7 @@
 
 std::unique_ptr<ICRCContainable> CRCDepthStencilViewFactoryL0_0::Create(IDESC &desc) const
 {
-    CRC_DEPTH_STENCIL_VIEW_DESC *dsvDesc = CRC::As<CRC_DEPTH_STENCIL_VIEW_DESC>(&desc);
+    CRC_DEPTH_STENCIL_VIEW_DESC *dsvDesc = WACore::As<CRC_DEPTH_STENCIL_VIEW_DESC>(&desc);
     if (!dsvDesc)
     {
 #ifndef NDEBUG
@@ -30,7 +30,7 @@ std::unique_ptr<ICRCContainable> CRCDepthStencilViewFactoryL0_0::Create(IDESC &d
     }
 
     {
-        CRCTransCastUnique<ICRCTexture2D, ICRCContainable> texture(dsvDesc->resource_);
+        WACore::RevertCast<ICRCTexture2D, ICRCContainable> texture(dsvDesc->resource_);
         if (!texture())
         {
 #ifndef NDEBUG
@@ -91,7 +91,7 @@ const void CRCDepthStencilView::GetDesc(D3D11_DEPTH_STENCIL_VIEW_DESC *dst)
 
 std::unique_ptr<ICRCContainable> CRCID3D11DepthStencilViewFactoryL0_0::Create(IDESC &desc) const
 {
-    CRC_DEPTH_STENCIL_VIEW_DESC *dsvDesc = CRC::As<CRC_DEPTH_STENCIL_VIEW_DESC>(&desc);
+    CRC_DEPTH_STENCIL_VIEW_DESC *dsvDesc = WACore::As<CRC_DEPTH_STENCIL_VIEW_DESC>(&desc);
     if (!dsvDesc)
     {
 #ifndef NDEBUG
@@ -116,7 +116,7 @@ std::unique_ptr<ICRCContainable> CRCID3D11DepthStencilViewFactoryL0_0::Create(ID
 
     std::unique_ptr<CRCID3D11DepthStencilView> dsv;
     {
-        CRCTransCastUnique<CRCID3D11Texture2D, ICRCContainable> texture(dsvDesc->resource_);
+        WACore::RevertCast<CRCID3D11Texture2D, ICRCContainable> texture(dsvDesc->resource_);
         if (!texture())
         {
     #ifndef NDEBUG

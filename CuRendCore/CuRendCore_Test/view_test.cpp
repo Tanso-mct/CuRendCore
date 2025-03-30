@@ -1,6 +1,7 @@
 ﻿#include "pch.h"
 #include "CuRendCore/include/CuRendCore.h"
 
+
 static LRESULT CALLBACK WindowProc_ViewTest(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
     switch (msg)
@@ -36,7 +37,7 @@ TEST(CuRendCore_view_test, CreateShaderResourceView)
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
     CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
-        CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(windowAttr);
+        WACore::RevertCast<CRCWindowAttr, ICRCContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
 
         // Show window.
@@ -121,7 +122,7 @@ TEST(CuRendCore_view_test, CreateD3D11ShaderResourceView)
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
     CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
-        CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(windowAttr);
+        WACore::RevertCast<CRCWindowAttr, ICRCContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
 
         // Show window.
@@ -207,7 +208,7 @@ TEST(CuRendCore_view_test, CreateRenderTargetView)
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
     CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
-        CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(windowAttr);
+        WACore::RevertCast<CRCWindowAttr, ICRCContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
 
         // Show window.
@@ -291,7 +292,7 @@ TEST(CuRendCore_view_test, CreateD3D11RenderTargetView)
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
     CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
-        CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(windowAttr);
+        WACore::RevertCast<CRCWindowAttr, ICRCContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
 
         // Show window.
@@ -376,7 +377,7 @@ TEST(CuRendCore_view_test, CreateDepthStencilView)
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
     CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
-        CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(windowAttr);
+        WACore::RevertCast<CRCWindowAttr, ICRCContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
 
         // Show window.
@@ -460,7 +461,7 @@ TEST(CuRendCore_view_test, CreateD3D11DepthStencilView)
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
     CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
-        CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(windowAttr);
+        WACore::RevertCast<CRCWindowAttr, ICRCContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
 
         // Show window.

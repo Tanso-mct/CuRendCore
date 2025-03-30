@@ -12,7 +12,7 @@
 
 std::unique_ptr<ICRCContainable> CRCDeviceFactoryL0_0::Create(IDESC &desc) const
 {
-    CRC_DEVICE_DESC* deviceDesc = CRC::As<CRC_DEVICE_DESC>(&desc);
+    CRC_DEVICE_DESC* deviceDesc = WACore::As<CRC_DEVICE_DESC>(&desc);
     if (!deviceDesc)
     {
 #ifndef NDEBUG

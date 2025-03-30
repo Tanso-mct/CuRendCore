@@ -5,7 +5,7 @@
 
 std::unique_ptr<ICRCContainable> CRCTexture2DFactoryL0_0::Create(IDESC &desc) const
 {
-    CRC_TEXTURE2D_DESC* textureDesc = CRC::As<CRC_TEXTURE2D_DESC>(&desc);
+    CRC_TEXTURE2D_DESC* textureDesc = WACore::As<CRC_TEXTURE2D_DESC>(&desc);
     if (!textureDesc)
     {
 #ifndef NDEBUG
@@ -618,7 +618,7 @@ bool CRCCudaResource::IsCpuAccessible()
 
 std::unique_ptr<ICRCContainable> CRCID3D11Texture2DFactoryL0_0::Create(IDESC &desc) const
 {
-    CRC_TEXTURE2D_DESC* textureDesc = CRC::As<CRC_TEXTURE2D_DESC>(&desc);
+    CRC_TEXTURE2D_DESC* textureDesc = WACore::As<CRC_TEXTURE2D_DESC>(&desc);
     if (!textureDesc)
     {
 #ifndef NDEBUG

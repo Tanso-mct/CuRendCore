@@ -73,7 +73,7 @@ int main()
     HRESULT hr = S_OK;
 
     {
-        CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(container->Get(idMainWindowAttr));
+        WACore::RevertCast<CRCWindowAttr, ICRCContainable> window(container->Get(idMainWindowAttr));
         if (!window()) return CRC::ERROR_CAST;
 
         hr = CRC::ShowWindowCRC(window()->hWnd_);
@@ -94,7 +94,7 @@ int main()
         // Set key to windows message event caller.
         HWND key;
         {
-            CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(container->Get(idMainWindowAttr));
+            WACore::RevertCast<CRCWindowAttr, ICRCContainable> window(container->Get(idMainWindowAttr));
             if (!window()) return CRC::ERROR_CAST;
 
             key = window()->hWnd_;

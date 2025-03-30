@@ -5,7 +5,7 @@
 
 std::unique_ptr<ICRCContainable> CRCSwapChainFactoryL0_0::Create(IDESC &desc) const
 {
-    CRC_SWAP_CHAIN_DESC* swapChainDesc = CRC::As<CRC_SWAP_CHAIN_DESC>(&desc);
+    CRC_SWAP_CHAIN_DESC* swapChainDesc = WACore::As<CRC_SWAP_CHAIN_DESC>(&desc);
     if (!swapChainDesc)
     {
 #ifndef NDEBUG
@@ -238,7 +238,7 @@ HRESULT CRCSwapChain::GetDesc(DXGI_SWAP_CHAIN_DESC *pDesc)
 
 std::unique_ptr<ICRCContainable> CRCIDXGISwapChainFactoryL0_0::Create(IDESC &desc) const
 {
-    CRC_SWAP_CHAIN_DESC* swapChainDesc = CRC::As<CRC_SWAP_CHAIN_DESC>(&desc);
+    CRC_SWAP_CHAIN_DESC* swapChainDesc = WACore::As<CRC_SWAP_CHAIN_DESC>(&desc);
     if (!swapChainDesc)
     {
 #ifndef NDEBUG
@@ -278,7 +278,7 @@ HRESULT CRCIDXGISwapChain::GetBuffer(UINT buffer, ICRCTexture2D *&texture)
 
     HRESULT hr = d3d11SwapChain_->GetBuffer
     (
-        buffer, IID_PPV_ARGS(&CRC::As<CRCID3D11Texture2D>(backBuffer_)->Get())
+        buffer, IID_PPV_ARGS(&WACore::As<CRCID3D11Texture2D>(backBuffer_)->Get())
     );
     if (FAILED(hr))
     {

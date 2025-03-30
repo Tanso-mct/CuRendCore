@@ -6,7 +6,7 @@
 
 std::unique_ptr<ICRCContainable> CRCShaderResourceViewFactoryL0_0::Create(IDESC &desc) const
 {
-    CRC_SHADER_RESOURCE_VIEW_DESC* srvDesc = CRC::As<CRC_SHADER_RESOURCE_VIEW_DESC>(&desc);
+    CRC_SHADER_RESOURCE_VIEW_DESC* srvDesc = WACore::As<CRC_SHADER_RESOURCE_VIEW_DESC>(&desc);
     if (!srvDesc)
     {
 #ifndef NDEBUG
@@ -30,7 +30,7 @@ std::unique_ptr<ICRCContainable> CRCShaderResourceViewFactoryL0_0::Create(IDESC 
     }
 
     {
-        CRCTransCastUnique<ICRCTexture2D, ICRCContainable> texture(srvDesc->resource_);
+        WACore::RevertCast<ICRCTexture2D, ICRCContainable> texture(srvDesc->resource_);
         if (!texture())
         {
 #ifndef NDEBUG
@@ -91,7 +91,7 @@ const void CRCShaderResourceView::GetDesc(D3D11_SHADER_RESOURCE_VIEW_DESC *dst)
 
 std::unique_ptr<ICRCContainable> CRCID3D11ShaderResourceViewFactoryL0_0::Create(IDESC &desc) const
 {
-    CRC_SHADER_RESOURCE_VIEW_DESC* srvDesc = CRC::As<CRC_SHADER_RESOURCE_VIEW_DESC>(&desc);
+    CRC_SHADER_RESOURCE_VIEW_DESC* srvDesc = WACore::As<CRC_SHADER_RESOURCE_VIEW_DESC>(&desc);
     if (!srvDesc)
     {
 #ifndef NDEBUG
@@ -116,7 +116,7 @@ std::unique_ptr<ICRCContainable> CRCID3D11ShaderResourceViewFactoryL0_0::Create(
 
     std::unique_ptr<CRCID3D11ShaderResourceView> srv;
     {
-        CRCTransCastUnique<CRCID3D11Texture2D, ICRCContainable> texture(srvDesc->resource_);
+        WACore::RevertCast<CRCID3D11Texture2D, ICRCContainable> texture(srvDesc->resource_);
         if (!texture())
         {
 #ifndef NDEBUG

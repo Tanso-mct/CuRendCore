@@ -5,7 +5,7 @@
 
 std::unique_ptr<ICRCContainable> CRCWindowFactory::Create(IDESC &desc) const
 {
-    CRC_WINDOW_DESC* windowDesc = CRC::As<CRC_WINDOW_DESC>(&desc);
+    CRC_WINDOW_DESC* windowDesc = WACore::As<CRC_WINDOW_DESC>(&desc);
     if (!&windowDesc) return nullptr;
 
     std::unique_ptr<CRCWindowAttr> windowAttr = std::make_unique<CRCWindowAttr>();

@@ -31,7 +31,7 @@ HRESULT CRCImmediateContext::Map
     D3D11_MAPPED_SUBRESOURCE *mappedResource
 ){
     {
-        CRCTransCastUnique<ICRCMemory, ICRCContainable> memory(resource);
+        WACore::RevertCast<ICRCMemory, ICRCContainable> memory(resource);
         if (!memory())
         {
 #ifndef NDEBUG
@@ -71,7 +71,7 @@ void CRCImmediateContext::Unmap
     UINT subresource
 ){
     {
-        CRCTransCastUnique<ICRCMemory, ICRCContainable> memory(resource);
+        WACore::RevertCast<ICRCMemory, ICRCContainable> memory(resource);
         if (!memory())
         {
 #ifndef NDEBUG
@@ -118,7 +118,7 @@ void CRCImmediateContext::UpdateSubresource
     UINT srcByteWidth
 ){
     {
-        CRCTransCastUnique<ICRCMemory, ICRCContainable> memory(dst);
+        WACore::RevertCast<ICRCMemory, ICRCContainable> memory(dst);
         if (!memory())
         {
 #ifndef NDEBUG
@@ -171,7 +171,7 @@ HRESULT CRCID3D11Context::Map
     D3D11_MAPPED_SUBRESOURCE *mappedResource
 ){
     {
-        CRCTransCastUnique<ICRCID3D11Resource, ICRCContainable> d3d11Resource(resource);
+        WACore::RevertCast<ICRCID3D11Resource, ICRCContainable> d3d11Resource(resource);
         if (!d3d11Resource())
         {
 #ifndef NDEBUG
@@ -210,7 +210,7 @@ void CRCID3D11Context::Unmap
     UINT subresource
 ){
     {
-        CRCTransCastUnique<ICRCID3D11Resource, ICRCContainable> d3d11Resource(resource);
+        WACore::RevertCast<ICRCID3D11Resource, ICRCContainable> d3d11Resource(resource);
         if (!d3d11Resource())
         {
 #ifndef NDEBUG
@@ -234,7 +234,7 @@ void CRCID3D11Context::UpdateSubresource
     UINT srcByteWidth
 ){
     {
-        CRCTransCastUnique<ICRCID3D11Resource, ICRCContainable> d3d11Resource(dst);
+        WACore::RevertCast<ICRCID3D11Resource, ICRCContainable> d3d11Resource(dst);
         if (!d3d11Resource())
         {
 #ifndef NDEBUG

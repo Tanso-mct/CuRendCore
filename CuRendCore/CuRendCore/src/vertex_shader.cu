@@ -5,7 +5,7 @@
 
 std::unique_ptr<ICRCContainable> CRCVertexShaderFactoryL0_0::Create(IDESC &desc) const
 {
-    CRC_VERTEX_SHADER_DESC* vertexShaderDesc = CRC::As<CRC_VERTEX_SHADER_DESC>(&desc);
+    CRC_VERTEX_SHADER_DESC* vertexShaderDesc = WACore::As<CRC_VERTEX_SHADER_DESC>(&desc);
     if (!vertexShaderDesc)
     {
 #ifndef NDEBUG
@@ -47,7 +47,7 @@ HRESULT CRCVertexShader::GetShaderType(UINT &shaderType)
 
 std::unique_ptr<ICRCContainable> CRCID3D11VertexShaderFactoryL0_0::Create(IDESC &desc) const
 {
-    CRC_ID3D11_VERTEX_SHADER_DESC* vertexShaderDesc = CRC::As<CRC_ID3D11_VERTEX_SHADER_DESC>(&desc);
+    CRC_ID3D11_VERTEX_SHADER_DESC* vertexShaderDesc = WACore::As<CRC_ID3D11_VERTEX_SHADER_DESC>(&desc);
     if (!vertexShaderDesc)
     {
 #ifndef NDEBUG

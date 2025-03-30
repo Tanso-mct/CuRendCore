@@ -1,6 +1,7 @@
 ﻿#include "pch.h"
 #include "CuRendCore/include/CuRendCore.h"
 
+
 static LRESULT CALLBACK WindowProc_DeviceContextTest(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
     switch (msg)
@@ -36,7 +37,7 @@ TEST(CuRendCore_device_context, GetImmediateContext)
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
     CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
-        CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(windowAttr);
+        WACore::RevertCast<CRCWindowAttr, ICRCContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
 
         // Show window.
@@ -73,7 +74,7 @@ TEST(CuRendCore_device_context, GetImmediateContext)
     }
 
     {
-        CRCTransCastUnique<ICRCDevice, ICRCContainable> device(crcDevice);
+        WACore::RevertCast<ICRCDevice, ICRCContainable> device(crcDevice);
         ASSERT_NE(device(), nullptr);
 
         std::unique_ptr<ICRCDeviceContext>& immediateContext = device()->GetImmediateContext();
@@ -101,7 +102,7 @@ TEST(CuRendCore_device_context, GetD3D11ImmediateContext)
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
     CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
-        CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(windowAttr);
+        WACore::RevertCast<CRCWindowAttr, ICRCContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
 
         // Show window.
@@ -139,7 +140,7 @@ TEST(CuRendCore_device_context, GetD3D11ImmediateContext)
     }
 
     {
-        CRCTransCastUnique<ICRCDevice, ICRCContainable> device(crcDevice);
+        WACore::RevertCast<ICRCDevice, ICRCContainable> device(crcDevice);
         ASSERT_NE(device(), nullptr);
 
         std::unique_ptr<ICRCDeviceContext>& immediateContext = device()->GetImmediateContext();
@@ -167,7 +168,7 @@ TEST(CuRendCore_device_context, ImmediateContextMapAndUnmap)
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
     CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
-        CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(windowAttr);
+        WACore::RevertCast<CRCWindowAttr, ICRCContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
 
         // Show window.
@@ -222,7 +223,7 @@ TEST(CuRendCore_device_context, ImmediateContextMapAndUnmap)
     }
 
     {
-        CRCTransCastUnique<ICRCDevice, ICRCContainable> device(crcDevice);
+        WACore::RevertCast<ICRCDevice, ICRCContainable> device(crcDevice);
         ASSERT_NE(device(), nullptr);
 
         std::unique_ptr<ICRCDeviceContext>& immediateContext = device()->GetImmediateContext();
@@ -258,7 +259,7 @@ TEST(CuRendCore_device_context, D3D11ImmediateContextMapAndUnmap)
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
     CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
-        CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(windowAttr);
+        WACore::RevertCast<CRCWindowAttr, ICRCContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
 
         // Show window.
@@ -314,7 +315,7 @@ TEST(CuRendCore_device_context, D3D11ImmediateContextMapAndUnmap)
     }
 
     {
-        CRCTransCastUnique<ICRCDevice, ICRCContainable> device(crcDevice);
+        WACore::RevertCast<ICRCDevice, ICRCContainable> device(crcDevice);
         ASSERT_NE(device(), nullptr);
 
         std::unique_ptr<ICRCDeviceContext>& immediateContext = device()->GetImmediateContext();
@@ -350,7 +351,7 @@ TEST(CuRendCore_device_context, ImmediateContextUpdateSubresource)
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
     CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
-        CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(windowAttr);
+        WACore::RevertCast<CRCWindowAttr, ICRCContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
 
         // Show window.
@@ -405,7 +406,7 @@ TEST(CuRendCore_device_context, ImmediateContextUpdateSubresource)
     }
 
     {
-        CRCTransCastUnique<ICRCDevice, ICRCContainable> device(crcDevice);
+        WACore::RevertCast<ICRCDevice, ICRCContainable> device(crcDevice);
         ASSERT_NE(device(), nullptr);
 
         std::unique_ptr<ICRCDeviceContext>& immediateContext = device()->GetImmediateContext();
@@ -437,7 +438,7 @@ TEST(CuRendCore_device_context, D3D11ImmediateContextUpdateSubresource)
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
     CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
-        CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(windowAttr);
+        WACore::RevertCast<CRCWindowAttr, ICRCContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
 
         // Show window.
@@ -493,7 +494,7 @@ TEST(CuRendCore_device_context, D3D11ImmediateContextUpdateSubresource)
     }
 
     {
-        CRCTransCastUnique<ICRCDevice, ICRCContainable> device(crcDevice);
+        WACore::RevertCast<ICRCDevice, ICRCContainable> device(crcDevice);
         ASSERT_NE(device(), nullptr);
 
         std::unique_ptr<ICRCDeviceContext>& immediateContext = device()->GetImmediateContext();

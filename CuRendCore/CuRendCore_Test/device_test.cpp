@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "CuRendCore/include/CuRendCore.h"
 
+
 #include <thread>
 #include <chrono>
 
@@ -33,7 +34,7 @@ TEST(CuRendCore_device_test, CreateAndShowWindow)
     std::unique_ptr<ICRCContainable> windowAttr = windowFactory.Create(desc);
 
     {
-        CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(windowAttr);
+        WACore::RevertCast<CRCWindowAttr, ICRCContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
 
         // Show window.
@@ -59,7 +60,7 @@ TEST(CuRendCore_device_test, CreateD3D11DeviceAndSwapChain)
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
     CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
-        CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(windowAttr);
+        WACore::RevertCast<CRCWindowAttr, ICRCContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
 
         // Show window.
@@ -106,7 +107,7 @@ TEST(CuRendCore_device_test, CreateCRCDevice)
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
     CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
-        CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(windowAttr);
+        WACore::RevertCast<CRCWindowAttr, ICRCContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
 
         // Show window.
@@ -160,7 +161,7 @@ TEST(CuRendCore_device_test, CreateCRCID3D11Device)
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
     CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
-        CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(windowAttr);
+        WACore::RevertCast<CRCWindowAttr, ICRCContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
 
         // Show window.
@@ -215,7 +216,7 @@ TEST(CuRendCore_device_test, CreateCRCSwapChain)
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
     CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
-        CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(windowAttr);
+        WACore::RevertCast<CRCWindowAttr, ICRCContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
 
         // Show window.
@@ -270,7 +271,7 @@ TEST(CuRendCore_device_test, CreateCRCID3D11SwapChain)
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
     CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
-        CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(windowAttr);
+        WACore::RevertCast<CRCWindowAttr, ICRCContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
 
         // Show window.
@@ -325,7 +326,7 @@ TEST(CuRendCore_device_test, CreateCRCDeviceAndSwapChain)
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
     CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
-        CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(windowAttr);
+        WACore::RevertCast<CRCWindowAttr, ICRCContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
 
         // Show window.
@@ -385,7 +386,7 @@ TEST(CuRendCore_device_test, CreateCRCID3D11DeviceAndSwapChain)
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
     CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
-        CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(windowAttr);
+        WACore::RevertCast<CRCWindowAttr, ICRCContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
 
         // Show window.
@@ -447,7 +448,7 @@ TEST(CuRendCore_device_test, GetSwapChainBuffer)
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
     CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
-        CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(windowAttr);
+        WACore::RevertCast<CRCWindowAttr, ICRCContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
 
         // Show window.
@@ -484,7 +485,7 @@ TEST(CuRendCore_device_test, GetSwapChainBuffer)
 
     ICRCTexture2D* backBuffer = nullptr;
     {
-        CRCTransCastUnique<CRCSwapChain, ICRCContainable> swapChain(crcSwapChain);
+        WACore::RevertCast<CRCSwapChain, ICRCContainable> swapChain(crcSwapChain);
         swapChain()->GetBuffer(0, backBuffer);
     }
 
@@ -508,7 +509,7 @@ TEST(CuRendCore_device_test, GetD3D11SwapChainBuffer)
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
     CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
-        CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(windowAttr);
+        WACore::RevertCast<CRCWindowAttr, ICRCContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
 
         // Show window.
@@ -545,7 +546,7 @@ TEST(CuRendCore_device_test, GetD3D11SwapChainBuffer)
 
     ICRCTexture2D* backBuffer = nullptr;
     {
-        CRCTransCastUnique<CRCIDXGISwapChain, ICRCContainable> swapChain(crcSwapChain);
+        WACore::RevertCast<CRCIDXGISwapChain, ICRCContainable> swapChain(crcSwapChain);
         swapChain()->GetBuffer(0, backBuffer);
     }
 
@@ -569,7 +570,7 @@ TEST(CuRendCore_device_test, PresentSwapChain2)
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
     CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
-        CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(windowAttr);
+        WACore::RevertCast<CRCWindowAttr, ICRCContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
 
         // Show window.
@@ -606,7 +607,7 @@ TEST(CuRendCore_device_test, PresentSwapChain2)
 
     ICRCTexture2D* backBuffer = nullptr;
     {
-        CRCTransCastUnique<CRCSwapChain, ICRCContainable> swapChain(crcSwapChain);
+        WACore::RevertCast<CRCSwapChain, ICRCContainable> swapChain(crcSwapChain);
         swapChain()->GetBuffer(0, backBuffer);
 
         HRESULT hr = swapChain()->Present(0, 0);
@@ -631,7 +632,7 @@ TEST(CuRendCore_device_test, PresentSwapChain3)
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
     CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
-        CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(windowAttr);
+        WACore::RevertCast<CRCWindowAttr, ICRCContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
 
         // Show window.
@@ -668,7 +669,7 @@ TEST(CuRendCore_device_test, PresentSwapChain3)
 
     ICRCTexture2D* backBuffer = nullptr;
     {
-        CRCTransCastUnique<CRCSwapChain, ICRCContainable> swapChain(crcSwapChain);
+        WACore::RevertCast<CRCSwapChain, ICRCContainable> swapChain(crcSwapChain);
         swapChain()->GetBuffer(0, backBuffer);
 
         HRESULT hr = swapChain()->Present(0, 0);
@@ -696,7 +697,7 @@ TEST(CuRendCore_device_test, PresentD3D11SwapChain2)
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
     CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
-        CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(windowAttr);
+        WACore::RevertCast<CRCWindowAttr, ICRCContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
 
         // Show window.
@@ -733,7 +734,7 @@ TEST(CuRendCore_device_test, PresentD3D11SwapChain2)
 
     ICRCTexture2D* backBuffer = nullptr;
     {
-        CRCTransCastUnique<CRCIDXGISwapChain, ICRCContainable> swapChain(crcSwapChain);
+        WACore::RevertCast<CRCIDXGISwapChain, ICRCContainable> swapChain(crcSwapChain);
         swapChain()->GetBuffer(0, backBuffer);
 
         HRESULT hr = swapChain()->Present(0, 0);
@@ -758,7 +759,7 @@ TEST(CuRendCore_device_test, PresentD3D11SwapChain3)
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
     CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
-        CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(windowAttr);
+        WACore::RevertCast<CRCWindowAttr, ICRCContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
 
         // Show window.
@@ -795,7 +796,7 @@ TEST(CuRendCore_device_test, PresentD3D11SwapChain3)
 
     ICRCTexture2D* backBuffer = nullptr;
     {
-        CRCTransCastUnique<CRCIDXGISwapChain, ICRCContainable> swapChain(crcSwapChain);
+        WACore::RevertCast<CRCIDXGISwapChain, ICRCContainable> swapChain(crcSwapChain);
         swapChain()->GetBuffer(0, backBuffer);
 
         HRESULT hr = swapChain()->Present(0, 0);
@@ -820,7 +821,7 @@ TEST(CuRendCore_device_test, ResizeSwapChain)
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
     CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
-        CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(windowAttr);
+        WACore::RevertCast<CRCWindowAttr, ICRCContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
 
         // Show window.
@@ -857,7 +858,7 @@ TEST(CuRendCore_device_test, ResizeSwapChain)
 
     ICRCTexture2D* backBuffer = nullptr;
     {
-        CRCTransCastUnique<CRCSwapChain, ICRCContainable> swapChain(crcSwapChain);
+        WACore::RevertCast<CRCSwapChain, ICRCContainable> swapChain(crcSwapChain);
         swapChain()->GetBuffer(0, backBuffer);
 
         HRESULT hr = swapChain()->ResizeBuffers(3, 1920, 1080, DXGI_FORMAT_R8G8B8A8_UNORM, 0);
@@ -882,7 +883,7 @@ TEST(CuRendCore_device_test, ResizeD3D11SwapChain)
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
     CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
-        CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(windowAttr);
+        WACore::RevertCast<CRCWindowAttr, ICRCContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
 
         // Show window.
@@ -919,10 +920,10 @@ TEST(CuRendCore_device_test, ResizeD3D11SwapChain)
 
     ICRCTexture2D* backBuffer = nullptr;
     {
-        CRCTransCastUnique<CRCIDXGISwapChain, ICRCContainable> swapChain(crcSwapChain);
+        WACore::RevertCast<CRCIDXGISwapChain, ICRCContainable> swapChain(crcSwapChain);
         swapChain()->GetBuffer(0, backBuffer);
 
-        CRC::As<CRCID3D11Texture2D>(backBuffer)->Get()->Release();
+        WACore::As<CRCID3D11Texture2D>(backBuffer)->Get()->Release();
 
         HRESULT hr = swapChain()->ResizeBuffers(3, 1920, 1080, DXGI_FORMAT_R8G8B8A8_UNORM, 0); 
         EXPECT_EQ(hr, S_OK);

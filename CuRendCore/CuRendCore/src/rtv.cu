@@ -6,7 +6,7 @@
 
 std::unique_ptr<ICRCContainable> CRCRenderTargetViewFactoryL0_0::Create(IDESC &desc) const
 {
-    CRC_RENDER_TARGET_VIEW_DESC* rtvDesc = CRC::As<CRC_RENDER_TARGET_VIEW_DESC>(&desc);
+    CRC_RENDER_TARGET_VIEW_DESC* rtvDesc = WACore::As<CRC_RENDER_TARGET_VIEW_DESC>(&desc);
     if (!rtvDesc)
     {
 #ifndef NDEBUG
@@ -30,7 +30,7 @@ std::unique_ptr<ICRCContainable> CRCRenderTargetViewFactoryL0_0::Create(IDESC &d
     }
 
     {
-        CRCTransCastUnique<ICRCTexture2D, ICRCContainable> texture(rtvDesc->resource_);
+        WACore::RevertCast<ICRCTexture2D, ICRCContainable> texture(rtvDesc->resource_);
         if (!texture())
         {
 #ifndef NDEBUG
@@ -92,7 +92,7 @@ const void CRCRenderTargetView::GetDesc(D3D11_RENDER_TARGET_VIEW_DESC *dst)
 
 std::unique_ptr<ICRCContainable> CRCID3D11RenderTargetViewFactoryL0_0::Create(IDESC &desc) const
 {
-    CRC_RENDER_TARGET_VIEW_DESC* rtvDesc = CRC::As<CRC_RENDER_TARGET_VIEW_DESC>(&desc);
+    CRC_RENDER_TARGET_VIEW_DESC* rtvDesc = WACore::As<CRC_RENDER_TARGET_VIEW_DESC>(&desc);
     if (!rtvDesc)
     {
 #ifndef NDEBUG
@@ -117,7 +117,7 @@ std::unique_ptr<ICRCContainable> CRCID3D11RenderTargetViewFactoryL0_0::Create(ID
 
     std::unique_ptr<CRCID3D11RenderTargetView> rtv;
     {
-        CRCTransCastUnique<CRCID3D11Texture2D, ICRCContainable> texture(rtvDesc->resource_);
+        WACore::RevertCast<CRCID3D11Texture2D, ICRCContainable> texture(rtvDesc->resource_);
         if (!texture())
         {
     #ifndef NDEBUG

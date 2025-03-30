@@ -28,5 +28,3 @@
 #include "device_launch_parameters.h"
 
 #include "packages/WinAppCore/include/WACore.h"
-
-#include "CuRendCore/include/data_cast.h"

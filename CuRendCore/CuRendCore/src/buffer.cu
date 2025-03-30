@@ -5,7 +5,7 @@
 
 std::unique_ptr<ICRCContainable> CRCBufferFactoryL0_0::Create(IDESC &desc) const
 {
-    CRC_BUFFER_DESC* bufferDesc = CRC::As<CRC_BUFFER_DESC>(&desc);
+    CRC_BUFFER_DESC* bufferDesc = WACore::As<CRC_BUFFER_DESC>(&desc);
     if (!bufferDesc)
     {
 #ifndef NDEBUG
@@ -282,7 +282,7 @@ bool CRCBuffer::IsCpuAccessible()
 
 std::unique_ptr<ICRCContainable> CRCID3D11BufferFactoryL0_0::Create(IDESC &desc) const
 {
-    CRC_BUFFER_DESC* bufferDesc = CRC::As<CRC_BUFFER_DESC>(&desc);
+    CRC_BUFFER_DESC* bufferDesc = WACore::As<CRC_BUFFER_DESC>(&desc);
     if (!bufferDesc)
     {
 #ifndef NDEBUG

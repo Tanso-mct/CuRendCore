@@ -46,7 +46,6 @@
     <CudaCompile Include="include\device_context.cuh" />
     <CudaCompile Include="include\device.cuh" />
     <CudaCompile Include="include\dsv.cuh" />
-    <ClInclude Include="include\data_cast.h" />
     <ClInclude Include="include\event_caller.h" />
     <ClInclude Include="include\factory.h" />
     <CudaCompile Include="include\funcs.cuh" />
