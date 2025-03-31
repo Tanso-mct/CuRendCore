@@ -1,7 +1,8 @@
 ﻿#pragma once
 
 #include "CuRendCore/include/config.h"
-#include "CuRendCore/include/container.h"
+#include "packages/WinAppCore/include/WACore.h"
+
 #include "CuRendCore/include/resource.cuh"
 #include "CuRendCore/include/factory.h"
 #include "CuRendCore/include/buffer.cuh"
@@ -38,11 +39,11 @@ class CRC_API CRCTexture2DFactoryL0_0 : public ICRCFactory
 {
 public:
     ~CRCTexture2DFactoryL0_0() override = default;
-    virtual std::unique_ptr<ICRCContainable> Create(IDESC& desc) const override;
+    virtual std::unique_ptr<WACore::IContainable> Create(IDESC& desc) const override;
 };
 
 class CRC_API CRCTexture2D 
-: public ICRCContainable, public ICRCResource, public ICRCTexture2D, public ICRCMemory
+: public WACore::IContainable, public ICRCResource, public ICRCTexture2D, public ICRCMemory
 {
 private:
     D3D11_TEXTURE2D_DESC desc_ = {};
@@ -87,7 +88,7 @@ public:
 };
 
 class CRC_API CRCCudaResource 
-: public ICRCContainable, public ICRCResource, public ICRCTexture2D, public ICRCMemory
+: public WACore::IContainable, public ICRCResource, public ICRCTexture2D, public ICRCMemory
 {
 private:
     D3D11_TEXTURE2D_DESC desc_ = {};
@@ -135,7 +136,7 @@ class CRC_API CRCID3D11Texture2DFactoryL0_0 : public ICRCFactory
 {
 public:
     ~CRCID3D11Texture2DFactoryL0_0() override = default;
-    virtual std::unique_ptr<ICRCContainable> Create(IDESC& desc) const override;
+    virtual std::unique_ptr<WACore::IContainable> Create(IDESC& desc) const override;
 };
 
 class CRC_API ICRCID3D11Texture2D
@@ -147,7 +148,7 @@ public:
 };
 
 class CRC_API CRCID3D11Texture2D 
-: public ICRCContainable, public ICRCResource, public ICRCID3D11Resource, public ICRCTexture2D, public ICRCID3D11Texture2D
+: public WACore::IContainable, public ICRCResource, public ICRCID3D11Resource, public ICRCTexture2D, public ICRCID3D11Texture2D
 {
 private:
     Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11Texture2D_;

@@ -1,7 +1,8 @@
 ﻿#pragma once
 
 #include "CuRendCore/include/config.h"
-#include "CuRendCore/include/container.h"
+#include "packages/WinAppCore/include/WACore.h"
+
 #include "CuRendCore/include/view.cuh"
 #include "CuRendCore/include/factory.h"
 
@@ -20,14 +21,14 @@ public:
     CRC_DEPTH_STENCIL_VIEW_DESC() = delete;
     CRC_DEPTH_STENCIL_VIEW_DESC
     (
-        Microsoft::WRL::ComPtr<ID3D11Device>& device, std::unique_ptr<ICRCContainable>& resource
+        Microsoft::WRL::ComPtr<ID3D11Device>& device, std::unique_ptr<WACore::IContainable>& resource
     ) : d3d11Device_(device), resource_(resource) {}
     ~CRC_DEPTH_STENCIL_VIEW_DESC() override = default;
 
     Microsoft::WRL::ComPtr<ID3D11Device>& d3d11Device_;
 
     D3D11_DEPTH_STENCIL_VIEW_DESC desc_ = {};
-    std::unique_ptr<ICRCContainable>& resource_;
+    std::unique_ptr<WACore::IContainable>& resource_;
 };
 
 class CRC_API ICRCDepthStencilView
@@ -41,23 +42,23 @@ class CRC_API CRCDepthStencilViewFactoryL0_0 : public ICRCFactory
 {
 public:
     ~CRCDepthStencilViewFactoryL0_0() override = default;
-    virtual std::unique_ptr<ICRCContainable> Create(IDESC& desc) const override;
+    virtual std::unique_ptr<WACore::IContainable> Create(IDESC& desc) const override;
 };
 
 class CRC_API CRCDepthStencilView 
-: public ICRCContainable, public ICRCView, public ICRCDepthStencilView
+: public WACore::IContainable, public ICRCView, public ICRCDepthStencilView
 {
 private:
     D3D11_DEPTH_STENCIL_VIEW_DESC desc_ = {};
-    std::unique_ptr<ICRCContainable>& resource_;
+    std::unique_ptr<WACore::IContainable>& resource_;
 
 public:
     CRCDepthStencilView() = delete;
-    CRCDepthStencilView(std::unique_ptr<ICRCContainable>& resource, D3D11_DEPTH_STENCIL_VIEW_DESC& desc);
+    CRCDepthStencilView(std::unique_ptr<WACore::IContainable>& resource, D3D11_DEPTH_STENCIL_VIEW_DESC& desc);
     virtual ~CRCDepthStencilView() override;
     
     // ICRCView
-    virtual std::unique_ptr<ICRCContainable>& GetResource() override { return resource_; }
+    virtual std::unique_ptr<WACore::IContainable>& GetResource() override { return resource_; }
 
     // ICRCDepthStencilView
     virtual const void GetDesc(D3D11_DEPTH_STENCIL_VIEW_DESC* dst) override;
@@ -67,21 +68,21 @@ class CRC_API CRCID3D11DepthStencilViewFactoryL0_0 : public ICRCFactory
 {
 public:
     ~CRCID3D11DepthStencilViewFactoryL0_0() override = default;
-    virtual std::unique_ptr<ICRCContainable> Create(IDESC& desc) const override;
+    virtual std::unique_ptr<WACore::IContainable> Create(IDESC& desc) const override;
 };
 
 class CRC_API CRCID3D11DepthStencilView 
-: public ICRCContainable, public ICRCView, public ICRCDepthStencilView
+: public WACore::IContainable, public ICRCView, public ICRCDepthStencilView
 {
 private:
     Microsoft::WRL::ComPtr<ID3D11DepthStencilView> d3d11DSV;
-    std::unique_ptr<ICRCContainable> emptyResource = nullptr;
+    std::unique_ptr<WACore::IContainable> emptyResource = nullptr;
 
 public:
     virtual ~CRCID3D11DepthStencilView() override;
 
     // ICRCView
-    virtual std::unique_ptr<ICRCContainable>& GetResource() override { return emptyResource; }
+    virtual std::unique_ptr<WACore::IContainable>& GetResource() override { return emptyResource; }
 
     // ICRCDepthStencilView
     virtual const void GetDesc(D3D11_DEPTH_STENCIL_VIEW_DESC* dst) override;

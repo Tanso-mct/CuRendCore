@@ -11,9 +11,6 @@
 #include "CuRendCore/include/scene.h"
 #include "CuRendCore/include/user_input.h"
 
-#include "CuRendCore/include/container.h"
-#include "CuRendCore/include/event.h"
-#include "CuRendCore/include/event_caller.h"
 #include "CuRendCore/include/factory.h"
 
 #include "CuRendCore/include/resource.cuh"

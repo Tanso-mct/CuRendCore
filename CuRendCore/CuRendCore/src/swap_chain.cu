@@ -3,7 +3,7 @@
 
 #include "CuRendCore/include/swap_chain.cuh"
 
-std::unique_ptr<ICRCContainable> CRCSwapChainFactoryL0_0::Create(IDESC &desc) const
+std::unique_ptr<WACore::IContainable> CRCSwapChainFactoryL0_0::Create(IDESC &desc) const
 {
     CRC_SWAP_CHAIN_DESC* swapChainDesc = WACore::As<CRC_SWAP_CHAIN_DESC>(&desc);
     if (!swapChainDesc)
@@ -236,7 +236,7 @@ HRESULT CRCSwapChain::GetDesc(DXGI_SWAP_CHAIN_DESC *pDesc)
     return d3d11SwapChain_->GetDesc(pDesc);
 }
 
-std::unique_ptr<ICRCContainable> CRCIDXGISwapChainFactoryL0_0::Create(IDESC &desc) const
+std::unique_ptr<WACore::IContainable> CRCIDXGISwapChainFactoryL0_0::Create(IDESC &desc) const
 {
     CRC_SWAP_CHAIN_DESC* swapChainDesc = WACore::As<CRC_SWAP_CHAIN_DESC>(&desc);
     if (!swapChainDesc)

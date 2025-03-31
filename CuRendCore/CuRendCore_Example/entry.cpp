@@ -5,15 +5,18 @@
 #include "window.h"
 #include "scene.h"
 
-static CRC::WinMsgEventSet WinMsgEventSet;
+static std::unique_ptr<WACore::IContainer> gContainer = nullptr; // Attributes container.
+static WACore::WPEventCaller gWPEventCaller; // Window message event caller.
+
 static LRESULT CALLBACK WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 int main() 
 {
     /******************************************************************************************************************
-     * Create attributes container.
+     * Attributes container creation.
      *****************************************************************************************************************/
-    std::unique_ptr<ICRCContainer> container = std::make_unique<CRCContainer>();
+    gContainer = std::make_unique<WACore::Container>();
+    if (!gContainer) return CRC::ERROR_CREATE_CONTAINER;
 
     /******************************************************************************************************************
      * Window attributes creation.
@@ -29,10 +32,10 @@ int main()
         desc.wcex_.lpfnWndProc = WindowProc;
         desc.name_ = L"Main Window";
         desc.hInstance = GetModuleHandle(NULL);
-        std::unique_ptr<ICRCContainable> windowAttr = windowFactory.Create(desc);
+        std::unique_ptr<WACore::IContainable> windowAttr = windowFactory.Create(desc);
 
         // Add window attribute to container.
-        idMainWindowAttr = container->Add(std::move(windowAttr));
+        idMainWindowAttr = gContainer->Add(std::move(windowAttr));
     }
     if (idMainWindowAttr == CRC::ID_INVALID) return CRC::ERROR_ADD_TO_CONTAINER;
 
@@ -47,10 +50,10 @@ int main()
         // Create scene attributes.
         CRC_SCENE_DESC desc = {};
         desc.name_ = "MainScene";
-        std::unique_ptr<ICRCContainable> sceneAttr = sceneFactory.Create(desc);
+        std::unique_ptr<WACore::IContainable> sceneAttr = sceneFactory.Create(desc);
 
         // Add scene to scene container.
-        idMainSceneAttr = container->Add(std::move(sceneAttr));
+        idMainSceneAttr = gContainer->Add(std::move(sceneAttr));
     }
     if (idMainSceneAttr == CRC::ID_INVALID) return CRC::ERROR_ADD_TO_CONTAINER;
 
@@ -60,10 +63,10 @@ int main()
     int idUserInputAttr = CRC::ID_INVALID;
     {
         // Create user input by user input attributes.
-        std::unique_ptr<ICRCContainable> userInputAttr = std::make_unique<CRCUserInputAttr>();
+        std::unique_ptr<WACore::IContainable> userInputAttr = std::make_unique<CRCUserInputAttr>();
 
         // Add user input to user input container.
-        idUserInputAttr = container->Add(std::move(userInputAttr));
+        idUserInputAttr = gContainer->Add(std::move(userInputAttr));
     }
     if (idUserInputAttr == CRC::ID_INVALID) return CRC::ERROR_CREATE_CONTAINER;
 
@@ -71,9 +74,8 @@ int main()
      * Show window
      *****************************************************************************************************************/
     HRESULT hr = S_OK;
-
     {
-        WACore::RevertCast<CRCWindowAttr, ICRCContainable> window(container->Get(idMainWindowAttr));
+        WACore::RevertCast<CRCWindowAttr, WACore::IContainable> window(gContainer->Get(idMainWindowAttr));
         if (!window()) return CRC::ERROR_CAST;
 
         hr = CRC::ShowWindowCRC(window()->hWnd_);
@@ -81,49 +83,36 @@ int main()
     }
 
     /******************************************************************************************************************
-     * Create window message event set.
+     * Create window message event caller.
      *****************************************************************************************************************/
-    CRC::CreateWinMsgEventFuncMap(WinMsgEventSet.funcMap_);
-    WinMsgEventSet.caller_ = std::make_unique<CRC::WinMsgEventCaller>();
-
-    /******************************************************************************************************************
-     * Create a Window Message event and
-     * register it with the window message event caller.
-     *****************************************************************************************************************/
+    HWND key;
     {
-        // Set key to windows message event caller.
-        HWND key;
-        {
-            WACore::RevertCast<CRCWindowAttr, ICRCContainable> window(container->Get(idMainWindowAttr));
-            if (!window()) return CRC::ERROR_CAST;
+        WACore::RevertCast<CRCWindowAttr, WACore::IContainable> window(gContainer->Get(idMainWindowAttr));
+        if (!window()) return CRC::ERROR_CAST;
 
-            key = window()->hWnd_;
-        }
-        WinMsgEventSet.caller_->AddKey(key);
-
-        // Move container to windows message event caller.
-        WinMsgEventSet.caller_->MoveContainer(key, std::move(container));
-
-        /**
-         * Add event to windows message event caller.
-         * when processing the window's message.
-         * Also, the order in which event are called is the order in which they are added to winMsgCaller_.
-         */
-        WinMsgEventSet.caller_->AddEvent(key, std::make_unique<MainWindowEvent>
-        (
-            idMainWindowAttr, idMainSceneAttr, idUserInputAttr
-        ));
-
-        WinMsgEventSet.caller_->AddEvent(key, std::make_unique<MainSceneEvent>
-        (
-            idMainWindowAttr, idMainSceneAttr, idUserInputAttr
-        ));
-
-        WinMsgEventSet.caller_->AddEvent(key, std::make_unique<CRCUserInputEvent>
-        (
-            idUserInputAttr
-        ));
+        key = window()->hWnd_;
     }
+
+    WACore::AddWPEventInsts
+    (
+        key, 
+        std::make_unique<MainWindowEvent>(idMainWindowAttr, idMainSceneAttr, idUserInputAttr), 
+        gWPEventCaller.instTable_
+    );
+    WACore::AddWPEventInsts
+    (
+        key, 
+        std::make_unique<MainSceneEvent>(idMainWindowAttr, idMainSceneAttr, idUserInputAttr), 
+        gWPEventCaller.instTable_
+    );
+    WACore::AddWPEventInsts
+    (
+        key, 
+        std::make_unique<CRCUserInputEvent>(idUserInputAttr), 
+        gWPEventCaller.instTable_
+    );
+
+    WACore::AddWPEventFuncs(gWPEventCaller.funcTable_);
     
     /******************************************************************************************************************
      * Main loop.
@@ -142,7 +131,7 @@ int main()
 
 static LRESULT CALLBACK WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-    CRC::CallWinMsgEvent(WinMsgEventSet, hWnd, msg, wParam, lParam);
+    gWPEventCaller.Call(hWnd, msg, gContainer, msg, wParam, lParam);
 
     switch (msg)
     {

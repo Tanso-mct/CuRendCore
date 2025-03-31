@@ -1,7 +1,8 @@
 ﻿#pragma once
 
 #include "CuRendCore/include/config.h"
-#include "CuRendCore/include/container.h"
+#include "packages/WinAppCore/include/WACore.h"
+
 #include "CuRendCore/include/view.cuh"
 #include "CuRendCore/include/factory.h"
 
@@ -22,14 +23,14 @@ public:
     CRC_SHADER_RESOURCE_VIEW_DESC() = delete;
     CRC_SHADER_RESOURCE_VIEW_DESC
     (
-        Microsoft::WRL::ComPtr<ID3D11Device>& device, std::unique_ptr<ICRCContainable>& resource
+        Microsoft::WRL::ComPtr<ID3D11Device>& device, std::unique_ptr<WACore::IContainable>& resource
     ) : d3d11Device_(device), resource_(resource) {}
     ~CRC_SHADER_RESOURCE_VIEW_DESC() override = default;
 
     Microsoft::WRL::ComPtr<ID3D11Device>& d3d11Device_;
 
     D3D11_SHADER_RESOURCE_VIEW_DESC desc_ = {};
-    std::unique_ptr<ICRCContainable>& resource_;
+    std::unique_ptr<WACore::IContainable>& resource_;
 };
 
 class CRC_API ICRCShaderResourceView
@@ -43,23 +44,23 @@ class CRC_API CRCShaderResourceViewFactoryL0_0 : public ICRCFactory
 {
 public:
     ~CRCShaderResourceViewFactoryL0_0() override = default;
-    virtual std::unique_ptr<ICRCContainable> Create(IDESC& desc) const override;
+    virtual std::unique_ptr<WACore::IContainable> Create(IDESC& desc) const override;
 };
 
 class CRC_API CRCShaderResourceView 
-: public ICRCContainable, public ICRCView, public ICRCShaderResourceView
+: public WACore::IContainable, public ICRCView, public ICRCShaderResourceView
 {
 private:
     D3D11_SHADER_RESOURCE_VIEW_DESC desc_ = {};
-    std::unique_ptr<ICRCContainable>& resource_;
+    std::unique_ptr<WACore::IContainable>& resource_;
 
 public:
     CRCShaderResourceView() = delete;
-    CRCShaderResourceView(std::unique_ptr<ICRCContainable>& resource, D3D11_SHADER_RESOURCE_VIEW_DESC& desc);
+    CRCShaderResourceView(std::unique_ptr<WACore::IContainable>& resource, D3D11_SHADER_RESOURCE_VIEW_DESC& desc);
     virtual ~CRCShaderResourceView() override;
     
     // ICRCView
-    virtual std::unique_ptr<ICRCContainable>& GetResource() override { return resource_; }
+    virtual std::unique_ptr<WACore::IContainable>& GetResource() override { return resource_; }
 
     // ICRCShaderResourceView
     virtual const void GetDesc(D3D11_SHADER_RESOURCE_VIEW_DESC* dst) override;
@@ -69,22 +70,22 @@ class CRC_API CRCID3D11ShaderResourceViewFactoryL0_0 : public ICRCFactory
 {
 public:
     ~CRCID3D11ShaderResourceViewFactoryL0_0() override = default;
-    virtual std::unique_ptr<ICRCContainable> Create(IDESC& desc) const override;
+    virtual std::unique_ptr<WACore::IContainable> Create(IDESC& desc) const override;
 };
 
 class CRC_API CRCID3D11ShaderResourceView 
-: public ICRCContainable, public ICRCView, public ICRCShaderResourceView
+: public WACore::IContainable, public ICRCView, public ICRCShaderResourceView
 {
 private:
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> d3d11SRV_;
-    std::unique_ptr<ICRCContainable> emptyResource_ = nullptr;
+    std::unique_ptr<WACore::IContainable> emptyResource_ = nullptr;
 
 public:
     CRCID3D11ShaderResourceView();
     virtual ~CRCID3D11ShaderResourceView() override;
 
     // ICRCView
-    virtual std::unique_ptr<ICRCContainable>& GetResource() override { return emptyResource_; }
+    virtual std::unique_ptr<WACore::IContainable>& GetResource() override { return emptyResource_; }
 
     // ICRCShaderResourceView
     virtual const void GetDesc(D3D11_SHADER_RESOURCE_VIEW_DESC* dst) override;

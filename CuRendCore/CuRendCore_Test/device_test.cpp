@@ -31,10 +31,10 @@ TEST(CuRendCore_device_test, CreateAndShowWindow)
     desc.wcex_.lpfnWndProc = WindowProc_DeviceTest;
     desc.name_ = L"CreateAndShowWindow";
     desc.hInstance = GetModuleHandle(NULL);
-    std::unique_ptr<ICRCContainable> windowAttr = windowFactory.Create(desc);
+    std::unique_ptr<WACore::IContainable> windowAttr = windowFactory.Create(desc);
 
     {
-        WACore::RevertCast<CRCWindowAttr, ICRCContainable> window(windowAttr);
+        WACore::RevertCast<CRCWindowAttr, WACore::IContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
 
         // Show window.
@@ -54,13 +54,13 @@ TEST(CuRendCore_device_test, CreateD3D11DeviceAndSwapChain)
     desc.wcex_.lpfnWndProc = WindowProc_DeviceTest;
     desc.name_ = L"CreateD3D11DeviceAndSwapChain";
     desc.hInstance = GetModuleHandle(NULL);
-    std::unique_ptr<ICRCContainable> windowAttr = windowFactory.Create(desc);
+    std::unique_ptr<WACore::IContainable> windowAttr = windowFactory.Create(desc);
 
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11Device;
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
     CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
-        WACore::RevertCast<CRCWindowAttr, ICRCContainable> window(windowAttr);
+        WACore::RevertCast<CRCWindowAttr, WACore::IContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
 
         // Show window.
@@ -101,13 +101,13 @@ TEST(CuRendCore_device_test, CreateCRCDevice)
     desc.wcex_.lpfnWndProc = WindowProc_DeviceTest;
     desc.name_ = L"CreateCRCDevice";
     desc.hInstance = GetModuleHandle(NULL);
-    std::unique_ptr<ICRCContainable> windowAttr = windowFactory.Create(desc);
+    std::unique_ptr<WACore::IContainable> windowAttr = windowFactory.Create(desc);
 
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11Device;
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
     CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
-        WACore::RevertCast<CRCWindowAttr, ICRCContainable> window(windowAttr);
+        WACore::RevertCast<CRCWindowAttr, WACore::IContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
 
         // Show window.
@@ -133,7 +133,7 @@ TEST(CuRendCore_device_test, CreateCRCDevice)
         CRC::CreateD3D11DeviceAndSwapChain(swapChainDesc, d3d11Device, d3d11SwapChain);
     }
 
-    std::unique_ptr<ICRCContainable> crcDevice;
+    std::unique_ptr<WACore::IContainable> crcDevice;
     {
         CRC_DEVICE_DESC desc(d3d11Device);
 
@@ -155,13 +155,13 @@ TEST(CuRendCore_device_test, CreateCRCID3D11Device)
     desc.wcex_.lpfnWndProc = WindowProc_DeviceTest;
     desc.name_ = L"CreateCRCID3D11Device";
     desc.hInstance = GetModuleHandle(NULL);
-    std::unique_ptr<ICRCContainable> windowAttr = windowFactory.Create(desc);
+    std::unique_ptr<WACore::IContainable> windowAttr = windowFactory.Create(desc);
 
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11Device;
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
     CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
-        WACore::RevertCast<CRCWindowAttr, ICRCContainable> window(windowAttr);
+        WACore::RevertCast<CRCWindowAttr, WACore::IContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
 
         // Show window.
@@ -187,7 +187,7 @@ TEST(CuRendCore_device_test, CreateCRCID3D11Device)
         CRC::CreateD3D11DeviceAndSwapChain(swapChainDesc, d3d11Device, d3d11SwapChain);
     }
 
-    std::unique_ptr<ICRCContainable> crcDevice;
+    std::unique_ptr<WACore::IContainable> crcDevice;
     {
         CRC_DEVICE_DESC desc(d3d11Device);
         desc.renderMode_ = CRC_RENDER_MODE::D3D11;
@@ -210,13 +210,13 @@ TEST(CuRendCore_device_test, CreateCRCSwapChain)
     desc.wcex_.lpfnWndProc = WindowProc_DeviceTest;
     desc.name_ = L"CreateCRCSwapChain";
     desc.hInstance = GetModuleHandle(NULL);
-    std::unique_ptr<ICRCContainable> windowAttr = windowFactory.Create(desc);
+    std::unique_ptr<WACore::IContainable> windowAttr = windowFactory.Create(desc);
 
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11Device;
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
     CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
-        WACore::RevertCast<CRCWindowAttr, ICRCContainable> window(windowAttr);
+        WACore::RevertCast<CRCWindowAttr, WACore::IContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
 
         // Show window.
@@ -245,7 +245,7 @@ TEST(CuRendCore_device_test, CreateCRCSwapChain)
     d3d11SwapChain->GetDesc(&swapChainDesc.GetDxgiDesc());
 
     // Create CRC swap chain.
-    std::unique_ptr<ICRCContainable> swapChainAttr;
+    std::unique_ptr<WACore::IContainable> swapChainAttr;
     {
         CRCSwapChainFactoryL0_0 swapChainFactory;
         swapChainAttr = swapChainFactory.Create(swapChainDesc);
@@ -265,13 +265,13 @@ TEST(CuRendCore_device_test, CreateCRCID3D11SwapChain)
     desc.wcex_.lpfnWndProc = WindowProc_DeviceTest;
     desc.name_ = L"CreateCRCID3D11SwapChain";
     desc.hInstance = GetModuleHandle(NULL);
-    std::unique_ptr<ICRCContainable> windowAttr = windowFactory.Create(desc);
+    std::unique_ptr<WACore::IContainable> windowAttr = windowFactory.Create(desc);
 
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11Device;
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
     CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
-        WACore::RevertCast<CRCWindowAttr, ICRCContainable> window(windowAttr);
+        WACore::RevertCast<CRCWindowAttr, WACore::IContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
 
         // Show window.
@@ -300,7 +300,7 @@ TEST(CuRendCore_device_test, CreateCRCID3D11SwapChain)
     d3d11SwapChain->GetDesc(&swapChainDesc.GetDxgiDesc());
 
     // Create CRC swap chain.
-    std::unique_ptr<ICRCContainable> swapChainAttr;
+    std::unique_ptr<WACore::IContainable> swapChainAttr;
     {
         CRCIDXGISwapChainFactoryL0_0 swapChainFactory;
         swapChainAttr = swapChainFactory.Create(swapChainDesc);
@@ -320,13 +320,13 @@ TEST(CuRendCore_device_test, CreateCRCDeviceAndSwapChain)
     desc.wcex_.lpfnWndProc = WindowProc_DeviceTest;
     desc.name_ = L"CreateCRCDeviceAndSwapChain";
     desc.hInstance = GetModuleHandle(NULL);
-    std::unique_ptr<ICRCContainable> windowAttr = windowFactory.Create(desc);
+    std::unique_ptr<WACore::IContainable> windowAttr = windowFactory.Create(desc);
 
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11Device;
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
     CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
-        WACore::RevertCast<CRCWindowAttr, ICRCContainable> window(windowAttr);
+        WACore::RevertCast<CRCWindowAttr, WACore::IContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
 
         // Show window.
@@ -353,8 +353,8 @@ TEST(CuRendCore_device_test, CreateCRCDeviceAndSwapChain)
     }
 
     // Create CRC d3d11Device and swap chain.
-    std::unique_ptr<ICRCContainable> crcDevice;
-    std::unique_ptr<ICRCContainable> crcSwapChain;
+    std::unique_ptr<WACore::IContainable> crcDevice;
+    std::unique_ptr<WACore::IContainable> crcSwapChain;
     CRC_DEVICE_DESC deviceDesc(d3d11Device);
     {
         CRCDeviceFactoryL0_0 deviceFactory;
@@ -380,13 +380,13 @@ TEST(CuRendCore_device_test, CreateCRCID3D11DeviceAndSwapChain)
     desc.wcex_.lpfnWndProc = WindowProc_DeviceTest;
     desc.name_ = L"CreateCRCID3D11DeviceAndSwapChain";
     desc.hInstance = GetModuleHandle(NULL);
-    std::unique_ptr<ICRCContainable> windowAttr = windowFactory.Create(desc);
+    std::unique_ptr<WACore::IContainable> windowAttr = windowFactory.Create(desc);
 
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11Device;
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
     CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
-        WACore::RevertCast<CRCWindowAttr, ICRCContainable> window(windowAttr);
+        WACore::RevertCast<CRCWindowAttr, WACore::IContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
 
         // Show window.
@@ -413,8 +413,8 @@ TEST(CuRendCore_device_test, CreateCRCID3D11DeviceAndSwapChain)
     }
 
     // Create CRC d3d11Device and swap chain.
-    std::unique_ptr<ICRCContainable> crcDevice;
-    std::unique_ptr<ICRCContainable> crcSwapChain;
+    std::unique_ptr<WACore::IContainable> crcDevice;
+    std::unique_ptr<WACore::IContainable> crcSwapChain;
     {
         CRC_DEVICE_DESC deviceDesc(d3d11Device);
         deviceDesc.renderMode_ = CRC_RENDER_MODE::D3D11;
@@ -442,13 +442,13 @@ TEST(CuRendCore_device_test, GetSwapChainBuffer)
     desc.wcex_.lpfnWndProc = WindowProc_DeviceTest;
     desc.name_ = L"GetSwapChainBuffer";
     desc.hInstance = GetModuleHandle(NULL);
-    std::unique_ptr<ICRCContainable> windowAttr = windowFactory.Create(desc);
+    std::unique_ptr<WACore::IContainable> windowAttr = windowFactory.Create(desc);
 
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11Device;
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
     CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
-        WACore::RevertCast<CRCWindowAttr, ICRCContainable> window(windowAttr);
+        WACore::RevertCast<CRCWindowAttr, WACore::IContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
 
         // Show window.
@@ -477,7 +477,7 @@ TEST(CuRendCore_device_test, GetSwapChainBuffer)
     d3d11SwapChain->GetDesc(&swapChainDesc.GetDxgiDesc());
 
     // Create CRC swap chain.
-    std::unique_ptr<ICRCContainable> crcSwapChain;
+    std::unique_ptr<WACore::IContainable> crcSwapChain;
     {
         CRCSwapChainFactoryL0_0 swapChainFactory;
         crcSwapChain = swapChainFactory.Create(swapChainDesc);
@@ -485,7 +485,7 @@ TEST(CuRendCore_device_test, GetSwapChainBuffer)
 
     ICRCTexture2D* backBuffer = nullptr;
     {
-        WACore::RevertCast<CRCSwapChain, ICRCContainable> swapChain(crcSwapChain);
+        WACore::RevertCast<CRCSwapChain, WACore::IContainable> swapChain(crcSwapChain);
         swapChain()->GetBuffer(0, backBuffer);
     }
 
@@ -503,13 +503,13 @@ TEST(CuRendCore_device_test, GetD3D11SwapChainBuffer)
     desc.wcex_.lpfnWndProc = WindowProc_DeviceTest;
     desc.name_ = L"GetD3D11SwapChainBuffer";
     desc.hInstance = GetModuleHandle(NULL);
-    std::unique_ptr<ICRCContainable> windowAttr = windowFactory.Create(desc);
+    std::unique_ptr<WACore::IContainable> windowAttr = windowFactory.Create(desc);
 
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11Device;
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
     CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
-        WACore::RevertCast<CRCWindowAttr, ICRCContainable> window(windowAttr);
+        WACore::RevertCast<CRCWindowAttr, WACore::IContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
 
         // Show window.
@@ -538,7 +538,7 @@ TEST(CuRendCore_device_test, GetD3D11SwapChainBuffer)
     d3d11SwapChain->GetDesc(&swapChainDesc.GetDxgiDesc());
 
     // Create CRC swap chain.
-    std::unique_ptr<ICRCContainable> crcSwapChain;
+    std::unique_ptr<WACore::IContainable> crcSwapChain;
     {
         CRCIDXGISwapChainFactoryL0_0 swapChainFactory;
         crcSwapChain = swapChainFactory.Create(swapChainDesc);
@@ -546,7 +546,7 @@ TEST(CuRendCore_device_test, GetD3D11SwapChainBuffer)
 
     ICRCTexture2D* backBuffer = nullptr;
     {
-        WACore::RevertCast<CRCIDXGISwapChain, ICRCContainable> swapChain(crcSwapChain);
+        WACore::RevertCast<CRCIDXGISwapChain, WACore::IContainable> swapChain(crcSwapChain);
         swapChain()->GetBuffer(0, backBuffer);
     }
 
@@ -564,13 +564,13 @@ TEST(CuRendCore_device_test, PresentSwapChain2)
     desc.wcex_.lpfnWndProc = WindowProc_DeviceTest;
     desc.name_ = L"PresentSwapChain2";
     desc.hInstance = GetModuleHandle(NULL);
-    std::unique_ptr<ICRCContainable> windowAttr = windowFactory.Create(desc);
+    std::unique_ptr<WACore::IContainable> windowAttr = windowFactory.Create(desc);
 
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11Device;
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
     CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
-        WACore::RevertCast<CRCWindowAttr, ICRCContainable> window(windowAttr);
+        WACore::RevertCast<CRCWindowAttr, WACore::IContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
 
         // Show window.
@@ -599,7 +599,7 @@ TEST(CuRendCore_device_test, PresentSwapChain2)
     d3d11SwapChain->GetDesc(&swapChainDesc.GetDxgiDesc());
 
     // Create CRC swap chain.
-    std::unique_ptr<ICRCContainable> crcSwapChain;
+    std::unique_ptr<WACore::IContainable> crcSwapChain;
     {
         CRCSwapChainFactoryL0_0 swapChainFactory;
         crcSwapChain = swapChainFactory.Create(swapChainDesc);
@@ -607,7 +607,7 @@ TEST(CuRendCore_device_test, PresentSwapChain2)
 
     ICRCTexture2D* backBuffer = nullptr;
     {
-        WACore::RevertCast<CRCSwapChain, ICRCContainable> swapChain(crcSwapChain);
+        WACore::RevertCast<CRCSwapChain, WACore::IContainable> swapChain(crcSwapChain);
         swapChain()->GetBuffer(0, backBuffer);
 
         HRESULT hr = swapChain()->Present(0, 0);
@@ -626,13 +626,13 @@ TEST(CuRendCore_device_test, PresentSwapChain3)
     desc.wcex_.lpfnWndProc = WindowProc_DeviceTest;
     desc.name_ = L"PresentSwapChain3";
     desc.hInstance = GetModuleHandle(NULL);
-    std::unique_ptr<ICRCContainable> windowAttr = windowFactory.Create(desc);
+    std::unique_ptr<WACore::IContainable> windowAttr = windowFactory.Create(desc);
 
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11Device;
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
     CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
-        WACore::RevertCast<CRCWindowAttr, ICRCContainable> window(windowAttr);
+        WACore::RevertCast<CRCWindowAttr, WACore::IContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
 
         // Show window.
@@ -661,7 +661,7 @@ TEST(CuRendCore_device_test, PresentSwapChain3)
     d3d11SwapChain->GetDesc(&swapChainDesc.GetDxgiDesc());
 
     // Create CRC swap chain.
-    std::unique_ptr<ICRCContainable> crcSwapChain;
+    std::unique_ptr<WACore::IContainable> crcSwapChain;
     {
         CRCSwapChainFactoryL0_0 swapChainFactory;
         crcSwapChain = swapChainFactory.Create(swapChainDesc);
@@ -669,7 +669,7 @@ TEST(CuRendCore_device_test, PresentSwapChain3)
 
     ICRCTexture2D* backBuffer = nullptr;
     {
-        WACore::RevertCast<CRCSwapChain, ICRCContainable> swapChain(crcSwapChain);
+        WACore::RevertCast<CRCSwapChain, WACore::IContainable> swapChain(crcSwapChain);
         swapChain()->GetBuffer(0, backBuffer);
 
         HRESULT hr = swapChain()->Present(0, 0);
@@ -691,13 +691,13 @@ TEST(CuRendCore_device_test, PresentD3D11SwapChain2)
     desc.wcex_.lpfnWndProc = WindowProc_DeviceTest;
     desc.name_ = L"PresentD3D11SwapChain2";
     desc.hInstance = GetModuleHandle(NULL);
-    std::unique_ptr<ICRCContainable> windowAttr = windowFactory.Create(desc);
+    std::unique_ptr<WACore::IContainable> windowAttr = windowFactory.Create(desc);
 
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11Device;
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
     CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
-        WACore::RevertCast<CRCWindowAttr, ICRCContainable> window(windowAttr);
+        WACore::RevertCast<CRCWindowAttr, WACore::IContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
 
         // Show window.
@@ -726,7 +726,7 @@ TEST(CuRendCore_device_test, PresentD3D11SwapChain2)
     d3d11SwapChain->GetDesc(&swapChainDesc.GetDxgiDesc());
 
     // Create CRC swap chain.
-    std::unique_ptr<ICRCContainable> crcSwapChain;
+    std::unique_ptr<WACore::IContainable> crcSwapChain;
     {
         CRCIDXGISwapChainFactoryL0_0 swapChainFactory;
         crcSwapChain = swapChainFactory.Create(swapChainDesc);
@@ -734,7 +734,7 @@ TEST(CuRendCore_device_test, PresentD3D11SwapChain2)
 
     ICRCTexture2D* backBuffer = nullptr;
     {
-        WACore::RevertCast<CRCIDXGISwapChain, ICRCContainable> swapChain(crcSwapChain);
+        WACore::RevertCast<CRCIDXGISwapChain, WACore::IContainable> swapChain(crcSwapChain);
         swapChain()->GetBuffer(0, backBuffer);
 
         HRESULT hr = swapChain()->Present(0, 0);
@@ -753,13 +753,13 @@ TEST(CuRendCore_device_test, PresentD3D11SwapChain3)
     desc.wcex_.lpfnWndProc = WindowProc_DeviceTest;
     desc.name_ = L"PresentD3D11SwapChain3";
     desc.hInstance = GetModuleHandle(NULL);
-    std::unique_ptr<ICRCContainable> windowAttr = windowFactory.Create(desc);
+    std::unique_ptr<WACore::IContainable> windowAttr = windowFactory.Create(desc);
 
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11Device;
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
     CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
-        WACore::RevertCast<CRCWindowAttr, ICRCContainable> window(windowAttr);
+        WACore::RevertCast<CRCWindowAttr, WACore::IContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
 
         // Show window.
@@ -788,7 +788,7 @@ TEST(CuRendCore_device_test, PresentD3D11SwapChain3)
     d3d11SwapChain->GetDesc(&swapChainDesc.GetDxgiDesc());
 
     // Create CRC swap chain.
-    std::unique_ptr<ICRCContainable> crcSwapChain;
+    std::unique_ptr<WACore::IContainable> crcSwapChain;
     {
         CRCIDXGISwapChainFactoryL0_0 swapChainFactory;
         crcSwapChain = swapChainFactory.Create(swapChainDesc);
@@ -796,7 +796,7 @@ TEST(CuRendCore_device_test, PresentD3D11SwapChain3)
 
     ICRCTexture2D* backBuffer = nullptr;
     {
-        WACore::RevertCast<CRCIDXGISwapChain, ICRCContainable> swapChain(crcSwapChain);
+        WACore::RevertCast<CRCIDXGISwapChain, WACore::IContainable> swapChain(crcSwapChain);
         swapChain()->GetBuffer(0, backBuffer);
 
         HRESULT hr = swapChain()->Present(0, 0);
@@ -815,13 +815,13 @@ TEST(CuRendCore_device_test, ResizeSwapChain)
     desc.wcex_.lpfnWndProc = WindowProc_DeviceTest;
     desc.name_ = L"ResizeSwapChain";
     desc.hInstance = GetModuleHandle(NULL);
-    std::unique_ptr<ICRCContainable> windowAttr = windowFactory.Create(desc);
+    std::unique_ptr<WACore::IContainable> windowAttr = windowFactory.Create(desc);
 
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11Device;
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
     CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
-        WACore::RevertCast<CRCWindowAttr, ICRCContainable> window(windowAttr);
+        WACore::RevertCast<CRCWindowAttr, WACore::IContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
 
         // Show window.
@@ -850,7 +850,7 @@ TEST(CuRendCore_device_test, ResizeSwapChain)
     d3d11SwapChain->GetDesc(&swapChainDesc.GetDxgiDesc());
 
     // Create CRC swap chain.
-    std::unique_ptr<ICRCContainable> crcSwapChain;
+    std::unique_ptr<WACore::IContainable> crcSwapChain;
     {
         CRCSwapChainFactoryL0_0 swapChainFactory;
         crcSwapChain = swapChainFactory.Create(swapChainDesc);
@@ -858,7 +858,7 @@ TEST(CuRendCore_device_test, ResizeSwapChain)
 
     ICRCTexture2D* backBuffer = nullptr;
     {
-        WACore::RevertCast<CRCSwapChain, ICRCContainable> swapChain(crcSwapChain);
+        WACore::RevertCast<CRCSwapChain, WACore::IContainable> swapChain(crcSwapChain);
         swapChain()->GetBuffer(0, backBuffer);
 
         HRESULT hr = swapChain()->ResizeBuffers(3, 1920, 1080, DXGI_FORMAT_R8G8B8A8_UNORM, 0);
@@ -877,13 +877,13 @@ TEST(CuRendCore_device_test, ResizeD3D11SwapChain)
     desc.wcex_.lpfnWndProc = WindowProc_DeviceTest;
     desc.name_ = L"ResizeD3D11SwapChain";
     desc.hInstance = GetModuleHandle(NULL);
-    std::unique_ptr<ICRCContainable> windowAttr = windowFactory.Create(desc);
+    std::unique_ptr<WACore::IContainable> windowAttr = windowFactory.Create(desc);
 
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11Device;
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
     CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
-        WACore::RevertCast<CRCWindowAttr, ICRCContainable> window(windowAttr);
+        WACore::RevertCast<CRCWindowAttr, WACore::IContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
 
         // Show window.
@@ -912,7 +912,7 @@ TEST(CuRendCore_device_test, ResizeD3D11SwapChain)
     d3d11SwapChain->GetDesc(&swapChainDesc.GetDxgiDesc());
 
     // Create CRC swap chain.
-    std::unique_ptr<ICRCContainable> crcSwapChain;
+    std::unique_ptr<WACore::IContainable> crcSwapChain;
     {
         CRCIDXGISwapChainFactoryL0_0 swapChainFactory;
         crcSwapChain = swapChainFactory.Create(swapChainDesc);
@@ -920,7 +920,7 @@ TEST(CuRendCore_device_test, ResizeD3D11SwapChain)
 
     ICRCTexture2D* backBuffer = nullptr;
     {
-        WACore::RevertCast<CRCIDXGISwapChain, ICRCContainable> swapChain(crcSwapChain);
+        WACore::RevertCast<CRCIDXGISwapChain, WACore::IContainable> swapChain(crcSwapChain);
         swapChain()->GetBuffer(0, backBuffer);
 
         WACore::As<CRCID3D11Texture2D>(backBuffer)->Get()->Release();

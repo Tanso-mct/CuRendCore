@@ -1,6 +1,8 @@
 ﻿#pragma once
 
 #include "CuRendCore/include/config.h"
+#include "packages/WinAppCore/include/WACore.h"
+
 #include "CuRendCore/include/factory.h"
 #include "CuRendCore/include/texture.cuh"
 
@@ -51,10 +53,10 @@ class CRC_API CRCSwapChainFactoryL0_0 : public ICRCFactory
 {
 public:
     ~CRCSwapChainFactoryL0_0() override = default;
-    virtual std::unique_ptr<ICRCContainable> Create(IDESC& desc) const override;
+    virtual std::unique_ptr<WACore::IContainable> Create(IDESC& desc) const override;
 };
 
-class CRC_API CRCSwapChain : public ICRCContainable, public ICRCSwapChain
+class CRC_API CRCSwapChain : public WACore::IContainable, public ICRCSwapChain
 {
 private:
 Microsoft::WRL::ComPtr<ID3D11Device>& d3d11Device_;
@@ -101,10 +103,10 @@ class CRC_API CRCIDXGISwapChainFactoryL0_0 : public ICRCFactory
 {
 public:
     ~CRCIDXGISwapChainFactoryL0_0() override = default;
-    virtual std::unique_ptr<ICRCContainable> Create(IDESC& desc) const override;
+    virtual std::unique_ptr<WACore::IContainable> Create(IDESC& desc) const override;
 };
 
-class CRC_API CRCIDXGISwapChain : public ICRCContainable, public ICRCSwapChain
+class CRC_API CRCIDXGISwapChain : public WACore::IContainable, public ICRCSwapChain
 {
 private:
     Microsoft::WRL::ComPtr<IDXGISwapChain>& d3d11SwapChain_;

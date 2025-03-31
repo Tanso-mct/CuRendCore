@@ -1,7 +1,8 @@
 ﻿#pragma once
 
 #include "CuRendCore/include/config.h"
-#include "CuRendCore/include/container.h"
+#include "packages/WinAppCore/include/WACore.h"
+
 #include "CuRendCore/include/factory.h"
 
 #include <Windows.h>
@@ -18,10 +19,10 @@ class CRC_API CRCSceneFactory : public ICRCFactory
 {
 public:
     virtual ~CRCSceneFactory() override = default;
-    virtual std::unique_ptr<ICRCContainable> Create(IDESC& desc) const override;
+    virtual std::unique_ptr<WACore::IContainable> Create(IDESC& desc) const override;
 };
 
-class CRC_API CRCSceneAttr : public ICRCContainable
+class CRC_API CRCSceneAttr : public WACore::IContainable
 {
 private:
     const std::string name;

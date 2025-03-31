@@ -1,7 +1,6 @@
 ﻿#include "CuRendCore/include/pch.h"
 #include "CuRendCore/include/funcs.cuh"
 
-#include "CuRendCore/include/container.h"
 #include "CuRendCore/include/resource.cuh"
 #include "CuRendCore/include/memory.cuh"
 #include "CuRendCore/include/buffer.cuh"
@@ -24,14 +23,14 @@ CRCImmediateContext::~CRCImmediateContext()
 
 HRESULT CRCImmediateContext::Map
 (
-    std::unique_ptr<ICRCContainable> &resource, 
+    std::unique_ptr<WACore::IContainable> &resource, 
     UINT subresource, 
     D3D11_MAP mapType, 
     UINT mapFlags, 
     D3D11_MAPPED_SUBRESOURCE *mappedResource
 ){
     {
-        WACore::RevertCast<ICRCMemory, ICRCContainable> memory(resource);
+        WACore::RevertCast<ICRCMemory, WACore::IContainable> memory(resource);
         if (!memory())
         {
 #ifndef NDEBUG
@@ -67,11 +66,11 @@ HRESULT CRCImmediateContext::Map
 
 void CRCImmediateContext::Unmap
 (
-    std::unique_ptr<ICRCContainable> &resource, 
+    std::unique_ptr<WACore::IContainable> &resource, 
     UINT subresource
 ){
     {
-        WACore::RevertCast<ICRCMemory, ICRCContainable> memory(resource);
+        WACore::RevertCast<ICRCMemory, WACore::IContainable> memory(resource);
         if (!memory())
         {
 #ifndef NDEBUG
@@ -113,12 +112,12 @@ void CRCImmediateContext::Unmap
 
 void CRCImmediateContext::UpdateSubresource
 (
-    std::unique_ptr<ICRCContainable> &dst, 
+    std::unique_ptr<WACore::IContainable> &dst, 
     const void *src, 
     UINT srcByteWidth
 ){
     {
-        WACore::RevertCast<ICRCMemory, ICRCContainable> memory(dst);
+        WACore::RevertCast<ICRCMemory, WACore::IContainable> memory(dst);
         if (!memory())
         {
 #ifndef NDEBUG
@@ -164,14 +163,14 @@ CRCID3D11Context::~CRCID3D11Context()
 
 HRESULT CRCID3D11Context::Map
 (
-    std::unique_ptr<ICRCContainable> &resource, 
+    std::unique_ptr<WACore::IContainable> &resource, 
     UINT subresource, 
     D3D11_MAP mapType, 
     UINT mapFlags, 
     D3D11_MAPPED_SUBRESOURCE *mappedResource
 ){
     {
-        WACore::RevertCast<ICRCID3D11Resource, ICRCContainable> d3d11Resource(resource);
+        WACore::RevertCast<ICRCID3D11Resource, WACore::IContainable> d3d11Resource(resource);
         if (!d3d11Resource())
         {
 #ifndef NDEBUG
@@ -206,11 +205,11 @@ HRESULT CRCID3D11Context::Map
 
 void CRCID3D11Context::Unmap
 (
-    std::unique_ptr<ICRCContainable> &resource, 
+    std::unique_ptr<WACore::IContainable> &resource, 
     UINT subresource
 ){
     {
-        WACore::RevertCast<ICRCID3D11Resource, ICRCContainable> d3d11Resource(resource);
+        WACore::RevertCast<ICRCID3D11Resource, WACore::IContainable> d3d11Resource(resource);
         if (!d3d11Resource())
         {
 #ifndef NDEBUG
@@ -229,12 +228,12 @@ void CRCID3D11Context::Unmap
 
 void CRCID3D11Context::UpdateSubresource
 (
-    std::unique_ptr<ICRCContainable> &dst, 
+    std::unique_ptr<WACore::IContainable> &dst, 
     const void *src, 
     UINT srcByteWidth
 ){
     {
-        WACore::RevertCast<ICRCID3D11Resource, ICRCContainable> d3d11Resource(dst);
+        WACore::RevertCast<ICRCID3D11Resource, WACore::IContainable> d3d11Resource(dst);
         if (!d3d11Resource())
         {
 #ifndef NDEBUG

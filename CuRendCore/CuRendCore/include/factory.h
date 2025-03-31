@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include "CuRendCore/include/config.h"
-#include "CuRendCore/include/container.h"
+#include "packages/WinAppCore/include/WACore.h"
 
 #include <Windows.h>
 #include <memory>
@@ -16,5 +16,5 @@ class CRC_API ICRCFactory
 {
 public:
     virtual ~ICRCFactory() = default;
-    virtual std::unique_ptr<ICRCContainable> Create(IDESC& desc) const = 0;
+    virtual std::unique_ptr<WACore::IContainable> Create(IDESC& desc) const = 0;
 };

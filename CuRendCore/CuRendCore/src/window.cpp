@@ -3,7 +3,7 @@
 
 #include "CuRendCore/include/window.h"
 
-std::unique_ptr<ICRCContainable> CRCWindowFactory::Create(IDESC &desc) const
+std::unique_ptr<WACore::IContainable> CRCWindowFactory::Create(IDESC &desc) const
 {
     CRC_WINDOW_DESC* windowDesc = WACore::As<CRC_WINDOW_DESC>(&desc);
     if (!&windowDesc) return nullptr;

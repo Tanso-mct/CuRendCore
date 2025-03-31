@@ -148,9 +148,9 @@ CRCUserInputEvent::CRCUserInputEvent(int& idAttr)
     mouseMap_[WM_MOUSEMOVE] = std::make_pair(CRC_MOUSE::MOVE, CRCInputState());
 }
 
-void CRCUserInputEvent::OnUpdate(std::unique_ptr<ICRCContainer>& container, UINT msg, WPARAM wParam, LPARAM lParam)
+void CRCUserInputEvent::OnUpdate(std::unique_ptr<WACore::IContainer>& container, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-    WACore::RevertCast<CRCUserInputAttr, ICRCContainable> input(container->Get(idAttr_));
+    WACore::RevertCast<CRCUserInputAttr, WACore::IContainable> input(container->Get(idAttr_));
     if (!input()) return;
 
     for (int i = 0; i < static_cast<int>(CRC_KEY::COUNT); i++)
@@ -225,9 +225,9 @@ void CRCUserInputEvent::OnUpdate(std::unique_ptr<ICRCContainer>& container, UINT
     input()->mouseWheelDelta_ = 0;
 }
 
-void CRCUserInputEvent::OnKeyDown(std::unique_ptr<ICRCContainer>& container, UINT msg, WPARAM wParam, LPARAM lParam)
+void CRCUserInputEvent::OnKeyDown(std::unique_ptr<WACore::IContainer>& container, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-    WACore::RevertCast<CRCUserInputAttr, ICRCContainable> input(container->Get(idAttr_));
+    WACore::RevertCast<CRCUserInputAttr, WACore::IContainable> input(container->Get(idAttr_));
     if (!input()) return;
 
     if (keyMap_.find({wParam, (lParam & (1 << 24)) != 0}) == keyMap_.end()) return;
@@ -236,18 +236,18 @@ void CRCUserInputEvent::OnKeyDown(std::unique_ptr<ICRCContainer>& container, UIN
     input()->keyState_[static_cast<std::size_t>(keyMap_[{wParam, (lParam & (1 << 24)) != 0}])].isPressed = true;
 }
 
-void CRCUserInputEvent::OnKeyUp(std::unique_ptr<ICRCContainer>& container, UINT msg, WPARAM wParam, LPARAM lParam)
+void CRCUserInputEvent::OnKeyUp(std::unique_ptr<WACore::IContainer>& container, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-    WACore::RevertCast<CRCUserInputAttr, ICRCContainable> input(container->Get(idAttr_));
+    WACore::RevertCast<CRCUserInputAttr, WACore::IContainable> input(container->Get(idAttr_));
     if (!input()) return;
 
     if (keyMap_.find({wParam, (lParam & (1 << 24)) != 0}) == keyMap_.end()) return;
     input()->keyState_[static_cast<std::size_t>(keyMap_[{wParam, (lParam & (1 << 24)) != 0}])].isReleased = true;
 }
 
-void CRCUserInputEvent::OnMouse(std::unique_ptr<ICRCContainer>& container, UINT msg, WPARAM wParam, LPARAM lParam)
+void CRCUserInputEvent::OnMouse(std::unique_ptr<WACore::IContainer>& container, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-    WACore::RevertCast<CRCUserInputAttr, ICRCContainable> input(container->Get(idAttr_));
+    WACore::RevertCast<CRCUserInputAttr, WACore::IContainable> input(container->Get(idAttr_));
     if (!input()) return;
 
     if (mouseMap_.find(msg) == mouseMap_.end()) return;

@@ -19,8 +19,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\container.cpp" />
-    <ClCompile Include="src\event_caller.cpp" />
     <CudaCompile Include="src\funcs.cu">
       <FileType>Document</FileType>
     </CudaCompile>
@@ -34,7 +32,6 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)/CuRendCore/include/pch.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)/CuRendCore/include/pch.h</PrecompiledHeaderFile>
     </ClCompile>
-    <ClCompile Include="src\event.cpp" />
     <ClCompile Include="src\scene.cpp" />
     <ClCompile Include="src\user_input.cpp" />
     <ClCompile Include="src\window.cpp" />
@@ -46,13 +43,10 @@
     <CudaCompile Include="include\device_context.cuh" />
     <CudaCompile Include="include\device.cuh" />
     <CudaCompile Include="include\dsv.cuh" />
-    <ClInclude Include="include\event_caller.h" />
     <ClInclude Include="include\factory.h" />
     <CudaCompile Include="include\funcs.cuh" />
     <CudaCompile Include="include\memory.cuh" />
     <ClInclude Include="include\pch.h" />
-    <ClInclude Include="include\container.h" />
-    <ClInclude Include="include\event.h" />
     <ClInclude Include="include\resource.cuh" />
     <CudaCompile Include="include\rtv.cuh" />
     <ClInclude Include="include\scene.h" />

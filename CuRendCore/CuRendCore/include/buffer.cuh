@@ -1,6 +1,8 @@
 ﻿#pragma once
 
 #include "CuRendCore/include/config.h"
+#include "packages/WinAppCore/include/WACore.h"
+
 #include "CuRendCore/include/resource.cuh"
 #include "CuRendCore/include/factory.h"
 #include "CuRendCore/include/memory.cuh"
@@ -36,11 +38,11 @@ class CRC_API CRCBufferFactoryL0_0 : public ICRCFactory
 {
 public:
     ~CRCBufferFactoryL0_0() override = default;
-    virtual std::unique_ptr<ICRCContainable> Create(IDESC& desc) const override;
+    virtual std::unique_ptr<WACore::IContainable> Create(IDESC& desc) const override;
 };
 
 class CRC_API CRCBuffer 
-: public ICRCContainable, public ICRCResource, public ICRCBuffer, public ICRCMemory
+: public WACore::IContainable, public ICRCResource, public ICRCBuffer, public ICRCMemory
 {
 private:
     D3D11_BUFFER_DESC desc_ = {};
@@ -85,7 +87,7 @@ class CRC_API CRCID3D11BufferFactoryL0_0 : public ICRCFactory
 {
 public:
     ~CRCID3D11BufferFactoryL0_0() override = default;
-    virtual std::unique_ptr<ICRCContainable> Create(IDESC& desc) const override;
+    virtual std::unique_ptr<WACore::IContainable> Create(IDESC& desc) const override;
 };
 
 class CRC_API ICRCID3D11Buffer
@@ -97,7 +99,7 @@ public:
 };
 
 class CRC_API CRCID3D11Buffer 
-: public ICRCContainable, public ICRCResource, public ICRCID3D11Resource, public ICRCBuffer, public ICRCID3D11Buffer
+: public WACore::IContainable, public ICRCResource, public ICRCID3D11Resource, public ICRCBuffer, public ICRCID3D11Buffer
 {
 private:
     Microsoft::WRL::ComPtr<ID3D11Buffer> d3d11Buffer_;

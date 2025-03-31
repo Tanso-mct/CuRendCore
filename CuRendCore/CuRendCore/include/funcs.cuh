@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "CuRendCore/include/config.h"
+#include "packages/WinAppCore/include/WACore.h"
 
 #include <memory>
 #include <Windows.h>
@@ -21,9 +22,6 @@
 class CRCCore;
 class CRC_WINDOW_DESC; 
 struct CRC_SCENE_DESC;
-
-class ICRCContainable;
-class ICRCContainer;
 
 class ICRCWinMsgEvent;
 
@@ -54,7 +52,7 @@ CRC_API HRESULT CreateCRCDeviceAndSwapChain
 (
     CRC_DEVICE_DESC& deviceDesc, CRC_SWAP_CHAIN_DESC& swapChainDesc,
     const ICRCFactory& deviceFactory, const ICRCFactory& swapChainFactory,
-    std::unique_ptr<ICRCContainable>& device, std::unique_ptr<ICRCContainable>& swapChain
+    std::unique_ptr<WACore::IContainable>& device, std::unique_ptr<WACore::IContainable>& swapChain
 );
 
 CRC_API UINT GetBytesPerPixel(const DXGI_FORMAT& format);

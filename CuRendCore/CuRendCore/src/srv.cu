@@ -4,7 +4,7 @@
 #include "CuRendCore/include/srv.cuh"
 #include "CuRendCore/include/texture.cuh"
 
-std::unique_ptr<ICRCContainable> CRCShaderResourceViewFactoryL0_0::Create(IDESC &desc) const
+std::unique_ptr<WACore::IContainable> CRCShaderResourceViewFactoryL0_0::Create(IDESC &desc) const
 {
     CRC_SHADER_RESOURCE_VIEW_DESC* srvDesc = WACore::As<CRC_SHADER_RESOURCE_VIEW_DESC>(&desc);
     if (!srvDesc)
@@ -30,7 +30,7 @@ std::unique_ptr<ICRCContainable> CRCShaderResourceViewFactoryL0_0::Create(IDESC 
     }
 
     {
-        WACore::RevertCast<ICRCTexture2D, ICRCContainable> texture(srvDesc->resource_);
+        WACore::RevertCast<ICRCTexture2D, WACore::IContainable> texture(srvDesc->resource_);
         if (!texture())
         {
 #ifndef NDEBUG
@@ -67,7 +67,7 @@ std::unique_ptr<ICRCContainable> CRCShaderResourceViewFactoryL0_0::Create(IDESC 
 
 CRCShaderResourceView::CRCShaderResourceView
 (
-    std::unique_ptr<ICRCContainable> &resource, D3D11_SHADER_RESOURCE_VIEW_DESC &desc
+    std::unique_ptr<WACore::IContainable> &resource, D3D11_SHADER_RESOURCE_VIEW_DESC &desc
 ) : resource_(resource)
 {
     desc_ = desc;
@@ -89,7 +89,7 @@ const void CRCShaderResourceView::GetDesc(D3D11_SHADER_RESOURCE_VIEW_DESC *dst)
     std::memcpy(dst, &desc_, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
 }
 
-std::unique_ptr<ICRCContainable> CRCID3D11ShaderResourceViewFactoryL0_0::Create(IDESC &desc) const
+std::unique_ptr<WACore::IContainable> CRCID3D11ShaderResourceViewFactoryL0_0::Create(IDESC &desc) const
 {
     CRC_SHADER_RESOURCE_VIEW_DESC* srvDesc = WACore::As<CRC_SHADER_RESOURCE_VIEW_DESC>(&desc);
     if (!srvDesc)
@@ -116,7 +116,7 @@ std::unique_ptr<ICRCContainable> CRCID3D11ShaderResourceViewFactoryL0_0::Create(
 
     std::unique_ptr<CRCID3D11ShaderResourceView> srv;
     {
-        WACore::RevertCast<CRCID3D11Texture2D, ICRCContainable> texture(srvDesc->resource_);
+        WACore::RevertCast<CRCID3D11Texture2D, WACore::IContainable> texture(srvDesc->resource_);
         if (!texture())
         {
 #ifndef NDEBUG

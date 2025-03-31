@@ -1,7 +1,8 @@
 ﻿#pragma once
 
 #include "CuRendCore/include/config.h"
-#include "CuRendCore/include/container.h"
+#include "packages/WinAppCore/include/WACore.h"
+
 #include "CuRendCore/include/resource.cuh"
 
 #include <d3d11.h>
@@ -17,6 +18,6 @@ class CRC_API ICRCView
 {
 public:
     virtual ~ICRCView() = default;
-    virtual std::unique_ptr<ICRCContainable>& GetResource() = 0;
+    virtual std::unique_ptr<WACore::IContainable>& GetResource() = 0;
 };
 

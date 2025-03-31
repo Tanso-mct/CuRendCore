@@ -3,7 +3,7 @@
 
 #include "CuRendCore/include/texture.cuh"
 
-std::unique_ptr<ICRCContainable> CRCTexture2DFactoryL0_0::Create(IDESC &desc) const
+std::unique_ptr<WACore::IContainable> CRCTexture2DFactoryL0_0::Create(IDESC &desc) const
 {
     CRC_TEXTURE2D_DESC* textureDesc = WACore::As<CRC_TEXTURE2D_DESC>(&desc);
     if (!textureDesc)
@@ -616,7 +616,7 @@ bool CRCCudaResource::IsCpuAccessible()
     return resType_ & (UINT)CRC_RESOURCE_TYPE::CPU_R || resType_ & (UINT)CRC_RESOURCE_TYPE::CPU_W;
 }
 
-std::unique_ptr<ICRCContainable> CRCID3D11Texture2DFactoryL0_0::Create(IDESC &desc) const
+std::unique_ptr<WACore::IContainable> CRCID3D11Texture2DFactoryL0_0::Create(IDESC &desc) const
 {
     CRC_TEXTURE2D_DESC* textureDesc = WACore::As<CRC_TEXTURE2D_DESC>(&desc);
     if (!textureDesc)

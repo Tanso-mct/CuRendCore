@@ -10,7 +10,7 @@
 #include "CuRendCore/include/rtv.cuh"
 #include "CuRendCore/include/dsv.cuh"
 
-std::unique_ptr<ICRCContainable> CRCDeviceFactoryL0_0::Create(IDESC &desc) const
+std::unique_ptr<WACore::IContainable> CRCDeviceFactoryL0_0::Create(IDESC &desc) const
 {
     CRC_DEVICE_DESC* deviceDesc = WACore::As<CRC_DEVICE_DESC>(&desc);
     if (!deviceDesc)
@@ -98,35 +98,35 @@ CRCDevice::~CRCDevice()
 #endif
 }
 
-HRESULT CRCDevice::CreateBuffer(CRC_BUFFER_DESC &desc, std::unique_ptr<ICRCContainable> &buffer)
+HRESULT CRCDevice::CreateBuffer(CRC_BUFFER_DESC &desc, std::unique_ptr<WACore::IContainable> &buffer)
 {
     buffer = bufferFactory->Create(desc);
     if (!buffer) return E_FAIL;
     return S_OK;
 }
 
-HRESULT CRCDevice::CreateTexture2D(CRC_TEXTURE2D_DESC &desc, std::unique_ptr<ICRCContainable> &texture2d)
+HRESULT CRCDevice::CreateTexture2D(CRC_TEXTURE2D_DESC &desc, std::unique_ptr<WACore::IContainable> &texture2d)
 {
     texture2d = texture2DFactory->Create(desc);
     if (!texture2d) return E_FAIL;
     return S_OK;
 }
 
-HRESULT CRCDevice::CreateShaderResourceView(CRC_SHADER_RESOURCE_VIEW_DESC &desc, std::unique_ptr<ICRCContainable>& srv)
+HRESULT CRCDevice::CreateShaderResourceView(CRC_SHADER_RESOURCE_VIEW_DESC &desc, std::unique_ptr<WACore::IContainable>& srv)
 {
     srv = srvFactory_->Create(desc);
     if (!srv) return E_FAIL;
     return S_OK;
 }
 
-HRESULT CRCDevice::CreateRenderTargetView(CRC_RENDER_TARGET_VIEW_DESC &desc, std::unique_ptr<ICRCContainable> &rtv)
+HRESULT CRCDevice::CreateRenderTargetView(CRC_RENDER_TARGET_VIEW_DESC &desc, std::unique_ptr<WACore::IContainable> &rtv)
 {
     rtv = rtvFactory_->Create(desc);
     if (!rtv) return E_FAIL;
     return S_OK;
 }
 
-HRESULT CRCDevice::CreateDepthStencilView(CRC_DEPTH_STENCIL_VIEW_DESC &desc, std::unique_ptr<ICRCContainable> &dsv)
+HRESULT CRCDevice::CreateDepthStencilView(CRC_DEPTH_STENCIL_VIEW_DESC &desc, std::unique_ptr<WACore::IContainable> &dsv)
 {
     dsv = dsvFactory_->Create(desc);
     if (!dsv) return E_FAIL;

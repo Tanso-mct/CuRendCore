@@ -4,7 +4,7 @@
 #include "CuRendCore/include/dsv.cuh"
 #include "CuRendCore/include/texture.cuh"
 
-std::unique_ptr<ICRCContainable> CRCDepthStencilViewFactoryL0_0::Create(IDESC &desc) const
+std::unique_ptr<WACore::IContainable> CRCDepthStencilViewFactoryL0_0::Create(IDESC &desc) const
 {
     CRC_DEPTH_STENCIL_VIEW_DESC *dsvDesc = WACore::As<CRC_DEPTH_STENCIL_VIEW_DESC>(&desc);
     if (!dsvDesc)
@@ -30,7 +30,7 @@ std::unique_ptr<ICRCContainable> CRCDepthStencilViewFactoryL0_0::Create(IDESC &d
     }
 
     {
-        WACore::RevertCast<ICRCTexture2D, ICRCContainable> texture(dsvDesc->resource_);
+        WACore::RevertCast<ICRCTexture2D, WACore::IContainable> texture(dsvDesc->resource_);
         if (!texture())
         {
 #ifndef NDEBUG
@@ -71,7 +71,7 @@ std::unique_ptr<ICRCContainable> CRCDepthStencilViewFactoryL0_0::Create(IDESC &d
 
 CRCDepthStencilView::CRCDepthStencilView
 (
-    std::unique_ptr<ICRCContainable> &resource, D3D11_DEPTH_STENCIL_VIEW_DESC &desc
+    std::unique_ptr<WACore::IContainable> &resource, D3D11_DEPTH_STENCIL_VIEW_DESC &desc
 ) : resource_(resource)
 {
     desc_ = desc;
@@ -89,7 +89,7 @@ const void CRCDepthStencilView::GetDesc(D3D11_DEPTH_STENCIL_VIEW_DESC *dst)
     std::memcpy(dst, &desc_, sizeof(D3D11_DEPTH_STENCIL_VIEW_DESC));
 }
 
-std::unique_ptr<ICRCContainable> CRCID3D11DepthStencilViewFactoryL0_0::Create(IDESC &desc) const
+std::unique_ptr<WACore::IContainable> CRCID3D11DepthStencilViewFactoryL0_0::Create(IDESC &desc) const
 {
     CRC_DEPTH_STENCIL_VIEW_DESC *dsvDesc = WACore::As<CRC_DEPTH_STENCIL_VIEW_DESC>(&desc);
     if (!dsvDesc)
@@ -116,7 +116,7 @@ std::unique_ptr<ICRCContainable> CRCID3D11DepthStencilViewFactoryL0_0::Create(ID
 
     std::unique_ptr<CRCID3D11DepthStencilView> dsv;
     {
-        WACore::RevertCast<CRCID3D11Texture2D, ICRCContainable> texture(dsvDesc->resource_);
+        WACore::RevertCast<CRCID3D11Texture2D, WACore::IContainable> texture(dsvDesc->resource_);
         if (!texture())
         {
     #ifndef NDEBUG

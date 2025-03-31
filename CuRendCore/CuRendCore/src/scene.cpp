@@ -8,7 +8,7 @@ CRCSceneAttr::CRCSceneAttr(std::string name)
 {
 }
 
-std::unique_ptr<ICRCContainable> CRCSceneFactory::Create(IDESC &desc) const
+std::unique_ptr<WACore::IContainable> CRCSceneFactory::Create(IDESC &desc) const
 {
     CRC_SCENE_DESC* sceneDesc = WACore::As<CRC_SCENE_DESC>(&desc);
     if (!sceneDesc) return nullptr;

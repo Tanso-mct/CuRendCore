@@ -4,7 +4,7 @@
 #include "CuRendCore/include/rtv.cuh"
 #include "CuRendCore/include/texture.cuh"
 
-std::unique_ptr<ICRCContainable> CRCRenderTargetViewFactoryL0_0::Create(IDESC &desc) const
+std::unique_ptr<WACore::IContainable> CRCRenderTargetViewFactoryL0_0::Create(IDESC &desc) const
 {
     CRC_RENDER_TARGET_VIEW_DESC* rtvDesc = WACore::As<CRC_RENDER_TARGET_VIEW_DESC>(&desc);
     if (!rtvDesc)
@@ -30,7 +30,7 @@ std::unique_ptr<ICRCContainable> CRCRenderTargetViewFactoryL0_0::Create(IDESC &d
     }
 
     {
-        WACore::RevertCast<ICRCTexture2D, ICRCContainable> texture(rtvDesc->resource_);
+        WACore::RevertCast<ICRCTexture2D, WACore::IContainable> texture(rtvDesc->resource_);
         if (!texture())
         {
 #ifndef NDEBUG
@@ -68,7 +68,7 @@ std::unique_ptr<ICRCContainable> CRCRenderTargetViewFactoryL0_0::Create(IDESC &d
 
 CRCRenderTargetView::CRCRenderTargetView
 (
-    std::unique_ptr<ICRCContainable> &resource, D3D11_RENDER_TARGET_VIEW_DESC& desc
+    std::unique_ptr<WACore::IContainable> &resource, D3D11_RENDER_TARGET_VIEW_DESC& desc
 ) : resource_(resource)
 {
     desc_ = desc;
@@ -90,7 +90,7 @@ const void CRCRenderTargetView::GetDesc(D3D11_RENDER_TARGET_VIEW_DESC *dst)
     std::memcpy(dst, &desc_, sizeof(D3D11_RENDER_TARGET_VIEW_DESC));
 }
 
-std::unique_ptr<ICRCContainable> CRCID3D11RenderTargetViewFactoryL0_0::Create(IDESC &desc) const
+std::unique_ptr<WACore::IContainable> CRCID3D11RenderTargetViewFactoryL0_0::Create(IDESC &desc) const
 {
     CRC_RENDER_TARGET_VIEW_DESC* rtvDesc = WACore::As<CRC_RENDER_TARGET_VIEW_DESC>(&desc);
     if (!rtvDesc)
@@ -117,7 +117,7 @@ std::unique_ptr<ICRCContainable> CRCID3D11RenderTargetViewFactoryL0_0::Create(ID
 
     std::unique_ptr<CRCID3D11RenderTargetView> rtv;
     {
-        WACore::RevertCast<CRCID3D11Texture2D, ICRCContainable> texture(rtvDesc->resource_);
+        WACore::RevertCast<CRCID3D11Texture2D, WACore::IContainable> texture(rtvDesc->resource_);
         if (!texture())
         {
     #ifndef NDEBUG

@@ -3,7 +3,7 @@
 
 #include "CuRendCore/include/buffer.cuh"
 
-std::unique_ptr<ICRCContainable> CRCBufferFactoryL0_0::Create(IDESC &desc) const
+std::unique_ptr<WACore::IContainable> CRCBufferFactoryL0_0::Create(IDESC &desc) const
 {
     CRC_BUFFER_DESC* bufferDesc = WACore::As<CRC_BUFFER_DESC>(&desc);
     if (!bufferDesc)
@@ -280,7 +280,7 @@ bool CRCBuffer::IsCpuAccessible()
     return resType_ & (UINT)CRC_RESOURCE_TYPE::CPU_R || resType_ & (UINT)CRC_RESOURCE_TYPE::CPU_W;
 }
 
-std::unique_ptr<ICRCContainable> CRCID3D11BufferFactoryL0_0::Create(IDESC &desc) const
+std::unique_ptr<WACore::IContainable> CRCID3D11BufferFactoryL0_0::Create(IDESC &desc) const
 {
     CRC_BUFFER_DESC* bufferDesc = WACore::As<CRC_BUFFER_DESC>(&desc);
     if (!bufferDesc)

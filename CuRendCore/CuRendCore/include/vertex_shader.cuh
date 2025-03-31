@@ -1,8 +1,8 @@
 ﻿#pragma once
 
 #include "CuRendCore/include/config.h"
+#include "packages/WinAppCore/include/WACore.h"
 
-#include "CuRendCore/include/container.h"
 #include "CuRendCore/include/factory.h"
 #include "CuRendCore/include/shader.cuh"
 
@@ -62,10 +62,10 @@ class CRC_API CRCVertexShaderFactoryL0_0 : public ICRCFactory
 {
 public:
     ~CRCVertexShaderFactoryL0_0() override = default;
-    virtual std::unique_ptr<ICRCContainable> Create(IDESC& desc) const override;
+    virtual std::unique_ptr<WACore::IContainable> Create(IDESC& desc) const override;
 };
 
-class CRC_API CRCVertexShader : public ICRCContainable, public ICRCShader, public ICRCVertexShader
+class CRC_API CRCVertexShader : public WACore::IContainable, public ICRCShader, public ICRCVertexShader
 {
 private:
     CRC::VertexShaderKernel kernel_ = nullptr;
@@ -87,10 +87,10 @@ class CRC_API CRCID3D11VertexShaderFactoryL0_0 : public ICRCFactory
 {
 public:
     ~CRCID3D11VertexShaderFactoryL0_0() override = default;
-    virtual std::unique_ptr<ICRCContainable> Create(IDESC& desc) const override;
+    virtual std::unique_ptr<WACore::IContainable> Create(IDESC& desc) const override;
 };
 
-class CRC_API CRCID3D11VertexShader : public ICRCContainable, public ICRCShader, public ICRCVertexShader
+class CRC_API CRCID3D11VertexShader : public WACore::IContainable, public ICRCShader, public ICRCVertexShader
 {
 private:
     Microsoft::WRL::ComPtr<ID3D11VertexShader> vertexShader_ = nullptr;

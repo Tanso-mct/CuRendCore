@@ -1,7 +1,8 @@
 ﻿#pragma once
 
 #include "CuRendCore/include/config.h"
-#include "CuRendCore/include/container.h"
+#include "packages/WinAppCore/include/WACore.h"
+
 #include "CuRendCore/include/view.cuh"
 #include "CuRendCore/include/factory.h"
 
@@ -20,14 +21,14 @@ public:
     CRC_RENDER_TARGET_VIEW_DESC() = delete;
     CRC_RENDER_TARGET_VIEW_DESC
     (
-        Microsoft::WRL::ComPtr<ID3D11Device>& device, std::unique_ptr<ICRCContainable>& resource
+        Microsoft::WRL::ComPtr<ID3D11Device>& device, std::unique_ptr<WACore::IContainable>& resource
     ) : d3d11Device_(device), resource_(resource) {}
     ~CRC_RENDER_TARGET_VIEW_DESC() override = default;
 
     Microsoft::WRL::ComPtr<ID3D11Device>& d3d11Device_;
 
     D3D11_RENDER_TARGET_VIEW_DESC desc_ = {};
-    std::unique_ptr<ICRCContainable>& resource_;
+    std::unique_ptr<WACore::IContainable>& resource_;
 };
 
 class CRC_API ICRCRenderTargetView
@@ -41,23 +42,23 @@ class CRC_API CRCRenderTargetViewFactoryL0_0 : public ICRCFactory
 {
 public:
     ~CRCRenderTargetViewFactoryL0_0() override = default;
-    virtual std::unique_ptr<ICRCContainable> Create(IDESC& desc) const override;
+    virtual std::unique_ptr<WACore::IContainable> Create(IDESC& desc) const override;
 };
 
 class CRC_API CRCRenderTargetView 
-: public ICRCContainable, public ICRCView, public ICRCRenderTargetView
+: public WACore::IContainable, public ICRCView, public ICRCRenderTargetView
 {
 private:
     D3D11_RENDER_TARGET_VIEW_DESC desc_ = {};
-    std::unique_ptr<ICRCContainable>& resource_;
+    std::unique_ptr<WACore::IContainable>& resource_;
 
 public:
     CRCRenderTargetView() = delete;
-    CRCRenderTargetView(std::unique_ptr<ICRCContainable>& resource, D3D11_RENDER_TARGET_VIEW_DESC& desc);
+    CRCRenderTargetView(std::unique_ptr<WACore::IContainable>& resource, D3D11_RENDER_TARGET_VIEW_DESC& desc);
     virtual ~CRCRenderTargetView() override;
 
     // ICRCView
-    virtual std::unique_ptr<ICRCContainable>& GetResource() override { return resource_; }
+    virtual std::unique_ptr<WACore::IContainable>& GetResource() override { return resource_; }
 
     // ICRCRenderTargetView
     virtual const void GetDesc(D3D11_RENDER_TARGET_VIEW_DESC* dst) override;
@@ -67,22 +68,22 @@ class CRC_API CRCID3D11RenderTargetViewFactoryL0_0 : public ICRCFactory
 {
 public:
     ~CRCID3D11RenderTargetViewFactoryL0_0() override = default;
-    virtual std::unique_ptr<ICRCContainable> Create(IDESC& desc) const override;
+    virtual std::unique_ptr<WACore::IContainable> Create(IDESC& desc) const override;
 };
 
 class CRC_API CRCID3D11RenderTargetView 
-: public ICRCContainable, public ICRCView, public ICRCRenderTargetView
+: public WACore::IContainable, public ICRCView, public ICRCRenderTargetView
 {
 private:
     Microsoft::WRL::ComPtr<ID3D11RenderTargetView> d3d11RTV_;
-    std::unique_ptr<ICRCContainable> emptyResource_ = nullptr;
+    std::unique_ptr<WACore::IContainable> emptyResource_ = nullptr;
 
 public:
     CRCID3D11RenderTargetView();
     virtual ~CRCID3D11RenderTargetView() override;
 
     // ICRCView
-    virtual std::unique_ptr<ICRCContainable>& GetResource() override { return emptyResource_; }
+    virtual std::unique_ptr<WACore::IContainable>& GetResource() override { return emptyResource_; }
 
     // ICRCRenderTargetView
     virtual const void GetDesc(D3D11_RENDER_TARGET_VIEW_DESC* dst) override;

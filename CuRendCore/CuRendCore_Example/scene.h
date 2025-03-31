@@ -2,7 +2,7 @@
 
 #include "CuRendCore/include/CuRendCore.h"
 
-class MainSceneEvent : public ICRCWinMsgEvent
+class MainSceneEvent : public WACore::IWPEvent
 {
 private:
     const int idMainWindow_ = CRC::ID_INVALID;
@@ -15,7 +15,7 @@ public:
 
     void InputHandleExample(std::unique_ptr<CRCUserInputAttr>& input);
 
-    void OnUpdate(std::unique_ptr<ICRCContainer>& container, UINT msg, WPARAM wParam, LPARAM lParam) override;
-    void OnSize(std::unique_ptr<ICRCContainer>& container, UINT msg, WPARAM wParam, LPARAM lParam) override;
-    void OnDestroy(std::unique_ptr<ICRCContainer>& container, UINT msg, WPARAM wParam, LPARAM lParam) override;
+    void OnUpdate(std::unique_ptr<WACore::IContainer>& container, UINT msg, WPARAM wParam, LPARAM lParam) override;
+    void OnSize(std::unique_ptr<WACore::IContainer>& container, UINT msg, WPARAM wParam, LPARAM lParam) override;
+    void OnDestroy(std::unique_ptr<WACore::IContainer>& container, UINT msg, WPARAM wParam, LPARAM lParam) override;
 };

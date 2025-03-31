@@ -4,9 +4,6 @@
 #include "CuRendCore/include/window.h"
 #include "CuRendCore/include/scene.h"
 
-#include "CuRendCore/include/container.h"
-#include "CuRendCore/include/event.h"
-
 #include "CuRendCore/include/device.cuh"
 #include "CuRendCore/include/swap_chain.cuh"
 
@@ -71,7 +68,7 @@ CRC_API HRESULT CRC::CreateCRCDeviceAndSwapChain
 (
     CRC_DEVICE_DESC &deviceDesc, CRC_SWAP_CHAIN_DESC &swapChainDesc, 
     const ICRCFactory &deviceFactory, const ICRCFactory &swapChainFactory, 
-    std::unique_ptr<ICRCContainable> &device, std::unique_ptr<ICRCContainable> &swapChain
+    std::unique_ptr<WACore::IContainable> &device, std::unique_ptr<WACore::IContainable> &swapChain
 ){
     device = deviceFactory.Create(deviceDesc);
     if (!device)

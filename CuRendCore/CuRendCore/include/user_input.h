@@ -1,9 +1,9 @@
 ﻿#pragma once
 
 #include "CuRendCore/include/config.h"
+#include "packages/WinAppCore/include/WACore.h"
+
 #include "CuRendCore/include/funcs.cuh"
-#include "CuRendCore/include/event.h"
-#include "CuRendCore/include/container.h"
 
 #include <unordered_map>
 #include <utility>
@@ -37,7 +37,7 @@ enum class CRC_API CRC_MOUSE : std::size_t
     LEFT = 0, RIGHT, MIDDLE, WHEEL, MOVE, COUNT
 };
 
-class CRC_API CRCUserInputAttr : public ICRCContainable
+class CRC_API CRCUserInputAttr : public WACore::IContainable
 {
 private:
     double dblTapTime_ = 300.0;
@@ -70,7 +70,7 @@ public:
     friend class CRCUserInputEvent;
 };
 
-class CRC_API CRCUserInputEvent : public ICRCWinMsgEvent
+class CRC_API CRCUserInputEvent : public WACore::IWPEvent
 {
 private:
     const int idAttr_ = CRC::ID_INVALID;
@@ -82,8 +82,8 @@ public:
     CRCUserInputEvent(int& idAttr);
     ~CRCUserInputEvent() override = default;
 
-    virtual void OnUpdate(std::unique_ptr<ICRCContainer>& container, UINT msg, WPARAM wParam, LPARAM lParam) override;
-    virtual void OnKeyDown(std::unique_ptr<ICRCContainer>& container, UINT msg, WPARAM wParam, LPARAM lParam) override;
-    virtual void OnKeyUp(std::unique_ptr<ICRCContainer>& container, UINT msg, WPARAM wParam, LPARAM lParam) override;
-    virtual void OnMouse(std::unique_ptr<ICRCContainer>& container, UINT msg, WPARAM wParam, LPARAM lParam) override;
+    virtual void OnUpdate(std::unique_ptr<WACore::IContainer>& container, UINT msg, WPARAM wParam, LPARAM lParam) override;
+    virtual void OnKeyDown(std::unique_ptr<WACore::IContainer>& container, UINT msg, WPARAM wParam, LPARAM lParam) override;
+    virtual void OnKeyUp(std::unique_ptr<WACore::IContainer>& container, UINT msg, WPARAM wParam, LPARAM lParam) override;
+    virtual void OnMouse(std::unique_ptr<WACore::IContainer>& container, UINT msg, WPARAM wParam, LPARAM lParam) override;
 };

@@ -3,7 +3,7 @@
 
 #include "CuRendCore/include/vertex_shader.cuh"
 
-std::unique_ptr<ICRCContainable> CRCVertexShaderFactoryL0_0::Create(IDESC &desc) const
+std::unique_ptr<WACore::IContainable> CRCVertexShaderFactoryL0_0::Create(IDESC &desc) const
 {
     CRC_VERTEX_SHADER_DESC* vertexShaderDesc = WACore::As<CRC_VERTEX_SHADER_DESC>(&desc);
     if (!vertexShaderDesc)
@@ -45,7 +45,7 @@ HRESULT CRCVertexShader::GetShaderType(UINT &shaderType)
     return S_OK;
 }
 
-std::unique_ptr<ICRCContainable> CRCID3D11VertexShaderFactoryL0_0::Create(IDESC &desc) const
+std::unique_ptr<WACore::IContainable> CRCID3D11VertexShaderFactoryL0_0::Create(IDESC &desc) const
 {
     CRC_ID3D11_VERTEX_SHADER_DESC* vertexShaderDesc = WACore::As<CRC_ID3D11_VERTEX_SHADER_DESC>(&desc);
     if (!vertexShaderDesc)
