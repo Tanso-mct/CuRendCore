@@ -10,10 +10,10 @@ std::unique_ptr<WACore::IContainable> CRCDepthStencilViewFactoryL0_0::Create(IDE
     if (!dsvDesc)
     {
 #ifndef NDEBUG
-        CRC::CoutWarning
-        (
+        CRC::CoutWrn
+        ({
             "Failed to create depth stencil view from desc. Desc is not CRC_DEPTH_STENCIL_VIEW_DESC."
-        );
+        });
 #endif
         return nullptr;
     }
@@ -21,10 +21,10 @@ std::unique_ptr<WACore::IContainable> CRCDepthStencilViewFactoryL0_0::Create(IDE
     if (!dsvDesc->resource_)
     {
 #ifndef NDEBUG
-        CRC::CoutWarning
-        (
+        CRC::CoutWrn
+        ({
             "Failed to create depth stencil view from desc. Resource is nullptr."
-        );
+        });
 #endif
         return nullptr;
     }
@@ -34,10 +34,10 @@ std::unique_ptr<WACore::IContainable> CRCDepthStencilViewFactoryL0_0::Create(IDE
         if (!texture())
         {
 #ifndef NDEBUG
-            CRC::CoutWarning
-            (
+            CRC::CoutWrn
+            ({
                 "Failed to create render target view from desc. Resource is not ICRCTexture2D."
-            );
+            });
 #endif
             return nullptr;
         }
@@ -48,10 +48,10 @@ std::unique_ptr<WACore::IContainable> CRCDepthStencilViewFactoryL0_0::Create(IDE
         if (!(desc.BindFlags & D3D11_BIND_DEPTH_STENCIL))
         {
 #ifndef NDEBUG
-            CRC::CoutWarning
-            (
+            CRC::CoutWrn
+            ({
                 "Failed to create render target view from desc. Texture2D is not bindable as render target."
-            );
+            });
 #endif
             return nullptr;
         }
@@ -63,7 +63,7 @@ std::unique_ptr<WACore::IContainable> CRCDepthStencilViewFactoryL0_0::Create(IDE
     );
 
 #ifndef NDEBUG
-    CRC::Cout("Created depth stencil view from desc.");
+    CRC::CoutDebug({"Created depth stencil view from desc."});
 #endif
 
     return dsv;
@@ -80,7 +80,7 @@ CRCDepthStencilView::CRCDepthStencilView
 CRCDepthStencilView::~CRCDepthStencilView()
 {
 #ifndef NDEBUG
-    CRC::Cout("Destroyed depth stencil view.");
+    CRC::CoutDebug({"Destroyed depth stencil view."});
 #endif
 }
 
@@ -95,10 +95,10 @@ std::unique_ptr<WACore::IContainable> CRCID3D11DepthStencilViewFactoryL0_0::Crea
     if (!dsvDesc)
     {
 #ifndef NDEBUG
-        CRC::CoutWarning
-        (
+        CRC::CoutWrn
+        ({
             "Failed to create depth stencil view from desc. Desc is not CRC_DEPTH_STENCIL_VIEW_DESC."
-        );
+        });
 #endif
         return nullptr;
     }
@@ -106,10 +106,10 @@ std::unique_ptr<WACore::IContainable> CRCID3D11DepthStencilViewFactoryL0_0::Crea
     if (!dsvDesc->d3d11Device_)
     {
 #ifndef NDEBUG
-        CRC::CoutWarning
-        (
+        CRC::CoutWrn
+        ({
             "Failed to create depth stencil view from desc. D3D11 device is nullptr."
-        );
+        });
 #endif
         return nullptr;
     }
@@ -120,10 +120,10 @@ std::unique_ptr<WACore::IContainable> CRCID3D11DepthStencilViewFactoryL0_0::Crea
         if (!texture())
         {
     #ifndef NDEBUG
-            CRC::CoutWarning
-            (
+            CRC::CoutWrn
+            ({
                 "Failed to create depth stencil view from desc. Resource is not CRCID3D11Texture2D."
-            );
+            });
     #endif
             return nullptr;
         }
@@ -137,17 +137,17 @@ std::unique_ptr<WACore::IContainable> CRCID3D11DepthStencilViewFactoryL0_0::Crea
         if (FAILED(hr))
         {
     #ifndef NDEBUG
-            CRC::CoutWarning
-            (
+            CRC::CoutWrn
+            ({
                 "Failed to create depth stencil view from desc. D3D11Device CreateDepthStencilView failed."
-            );
+            });
     #endif
             return nullptr;
         }
     }
 
 #ifndef NDEBUG
-    CRC::Cout("Created D3D11 depth stencil view from desc.");
+    CRC::CoutDebug({"Created D3D11 depth stencil view from desc."});
 #endif
 
     return dsv;
@@ -156,7 +156,7 @@ std::unique_ptr<WACore::IContainable> CRCID3D11DepthStencilViewFactoryL0_0::Crea
 CRCID3D11DepthStencilView::~CRCID3D11DepthStencilView()
 {
 #ifndef NDEBUG
-    CRC::Cout("Destroyed D3D11 depth stencil view.");
+    CRC::CoutDebug({"Destroyed D3D11 depth stencil view."});
 #endif
 }
 

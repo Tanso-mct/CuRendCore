@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include "CuRendCore/include/config.h"
-#include "packages/WinAppCore/include/WACore.h"
+#include "CuRendCore/include/WinAppCore/WACore.h"
 
 #include "CuRendCore/include/view.cuh"
 #include "CuRendCore/include/factory.h"

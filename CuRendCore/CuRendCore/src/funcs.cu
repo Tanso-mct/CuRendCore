@@ -14,7 +14,7 @@ HRESULT CRC::ShowWindowCRC(HWND& hWnd)
     if (!hWnd)
     {
 #ifndef NDEBUG
-        CoutError("Failed to show window. Window handle is null.");
+        CRC::CoutDebug({"Failed to show window. Window handle is null."});
 #endif
         throw std::runtime_error("Failed to show window. Window handle is null.");
     }
@@ -52,13 +52,13 @@ CRC_API HRESULT CRC::CreateD3D11DeviceAndSwapChain
     if (FAILED(hr))
     {
 #ifndef NDEBUG
-        CoutError("Failed to create D3D11 device and swap chain.");
+        CRC::CoutDebug({"Failed to create D3D11 device and swap chain."});
 #endif
         throw std::runtime_error("Failed to create D3D11 device and swap chain.");
     }
 
 #ifndef NDEBUG
-    Cout("Created D3D11 device and swap chain.");
+    CRC::CoutDebug({"Created D3D11 device and swap chain."});
 #endif
 
     return hr;
@@ -74,7 +74,7 @@ CRC_API HRESULT CRC::CreateCRCDeviceAndSwapChain
     if (!device)
     {
 #ifndef NDEBUG
-        CoutError("Failed to create CuRendCore device.");
+        CRC::CoutDebug({"Failed to create CuRendCore device."});
 #endif
         return E_FAIL;
     }
@@ -85,7 +85,7 @@ CRC_API HRESULT CRC::CreateCRCDeviceAndSwapChain
     if (!swapChain)
     {
 #ifndef NDEBUG
-        CoutError("Failed to create CuRendCore swap chain.");
+        CRC::CoutDebug({"Failed to create CuRendCore swap chain."});
 #endif
         return E_FAIL;
     }
@@ -103,7 +103,7 @@ UINT CRC::GetBytesPerPixel(const DXGI_FORMAT &format)
 
     default:
 #ifndef NDEBUG
-        CoutError("This DXGI_FORMAT is not supported by CuRendCore.");
+        CRC::CoutDebug({"This DXGI_FORMAT is not supported by CuRendCore."});
 #endif
         throw std::runtime_error("This DXGI_FORMAT is not supported by CuRendCore.");
     }
@@ -129,7 +129,7 @@ void CRC::CreateCudaChannelDescFromDXGIFormat(cudaChannelFormatDesc &channelDesc
 
     default:
 #ifndef NDEBUG
-        CoutError("This DXGI_FORMAT is not supported by CuRendCore.");
+        CRC::CoutDebug({"This DXGI_FORMAT is not supported by CuRendCore."});
 #endif
         throw std::runtime_error("This DXGI_FORMAT is not supported by CuRendCore.");
     }
@@ -252,10 +252,42 @@ CRC_API void CRC::CheckCuda(cudaError_t call)
         std::string code = std::to_string(call);
         std::string reason = cudaGetErrorString(call);
 #ifndef NDEBUG
-        CoutError("CUDA error occurred.", code, reason);
+        CRC::CoutDebug({"CUDA error occurred.", code, reason});
 #endif
         throw std::runtime_error("CUDA error occurred. " + code + " " + reason);
     }
+}
+
+CRC_API std::unique_ptr<WACore::ConsoleOuter> &CRC::GetConsoleOuter()
+{
+    static std::unique_ptr<WACore::ConsoleOuter> consoleOuter = std::make_unique<WACore::ConsoleOuter>();
+    consoleOuter->startTag_ = "[CuRendCore]";
+    return consoleOuter;
+}
+
+CRC_API void CRC::Cout(std::initializer_list<std::string_view> args)
+{
+    GetConsoleOuter()->Cout(args);
+}
+
+CRC_API void CRC::CoutErr(std::initializer_list<std::string_view> args)
+{
+    GetConsoleOuter()->CoutErr(args);
+}
+
+CRC_API void CRC::CoutWrn(std::initializer_list<std::string_view> args)
+{
+    GetConsoleOuter()->CoutWrn(args);
+}
+
+CRC_API void CRC::CoutInfo(std::initializer_list<std::string_view> args)
+{
+    GetConsoleOuter()->CoutInfo(args);
+}
+
+CRC_API void CRC::CoutDebug(std::initializer_list<std::string_view> args)
+{
+    GetConsoleOuter()->CoutDebug(args);
 }
 
 void CRC::RegisterCudaResources
@@ -276,7 +308,7 @@ void CRC::RegisterCudaResources
         if (FAILED(hr))
         {
 #ifndef NDEBUG
-            CoutError("Failed to get buffers from DXGI swap chain.");
+            CRC::CoutDebug({"Failed to get buffers from DXGI swap chain."});
 #endif
             throw std::runtime_error("Failed to get buffers from DXGI swap chain.");
         }
@@ -293,7 +325,7 @@ void CRC::RegisterCudaResources
     }
 
 #ifndef NDEBUG
-    Cout("Registered CUDA resources.");
+    CRC::CoutDebug({"Registered CUDA resources."});
 #endif
 }
 
@@ -305,7 +337,7 @@ void CRC::RegisterCudaResource
     CRC::CheckCuda(cudaGraphicsD3D11RegisterResource(&cudaResource, d3d11Texture, flags));
 
 #ifndef NDEBUG
-    Cout("Registered CUDA resource.");
+    CRC::CoutDebug({"Registered CUDA resource."});
 #endif
 }
 
@@ -317,7 +349,7 @@ void CRC::UnregisterCudaResources(std::vector<cudaGraphicsResource_t> &cudaResou
     }
 
 #ifndef NDEBUG
-    Cout("Unregistered CUDA resources.");
+    CRC::CoutDebug({"Unregistered CUDA resources."});
 #endif
 }
 
@@ -326,7 +358,7 @@ void CRC::UnregisterCudaResource(cudaGraphicsResource_t &cudaResource)
     CRC::CheckCuda(cudaGraphicsUnregisterResource(cudaResource));
 
 #ifndef NDEBUG
-    CRC::Cout("Unregistered CUDA resource.");
+    CRC::CoutDebug({{"Unregistered CUDA resource."}});
 #endif
 }
 
@@ -339,7 +371,7 @@ CRC_API void CRC::UnregisterCudaResource
     if (FAILED(hr))
     {
 #ifndef NDEBUG
-        CRC::CoutError("Failed to unregister CUDA resource.");
+        CRC::CoutErr({"Failed to unregister CUDA resource."});
 #endif
         throw std::runtime_error("Failed to unregister CUDA resource.");
     }
@@ -355,7 +387,7 @@ CRC_API void CRC::UnregisterSwapChain3Presented
     if (bufferCount != 3)
     {
 #ifndef NDEBUG
-        CRC::CoutError("This function is only for 3 buffer swap chains.");
+        CRC::CoutErr({"This function is only for 3 buffer swap chains."});
 #endif
         throw std::runtime_error("This function is only for 3 buffer swap chains.");
     }
@@ -374,7 +406,7 @@ CRC_API void CRC::UnregisterSwapChain3Presented
     CRC::UnregisterCudaResource(cudaResources[targetIndex], d3d11Device);
 
 #ifndef NDEBUG
-    Cout("Unregistered CUDA resources in swap chain.");
+    CRC::CoutDebug({"Unregistered CUDA resources in swap chain."});
 #endif
 }
 
@@ -388,7 +420,7 @@ CRC_API void CRC::UnregisterSwapChain2Presented
     if (bufferCount != 2)
     {
 #ifndef NDEBUG
-        CRC::CoutError("This function is only for 2 buffer swap chains.");
+        CRC::CoutErr({"This function is only for 2 buffer swap chains."});
 #endif
         throw std::runtime_error("This function is only for 2 buffer swap chains.");
     }
@@ -404,7 +436,7 @@ CRC_API void CRC::UnregisterSwapChain2Presented
     CRC::UnregisterCudaResource(cudaResources[targetIndex], d3d11Device);
 
 #ifndef NDEBUG
-    Cout("Unregistered CUDA resources in swap chain.");
+    CRC::CoutDebug({"Unregistered CUDA resources in swap chain."});
 #endif
 }
 
@@ -428,7 +460,7 @@ CRC_API void CRC::UnregisterSwapChainNotPresented
     CRC::UnregisterCudaResource(cudaResources[targetIndex], d3d11Device);
 
 #ifndef NDEBUG
-    Cout("Unregistered CUDA resources in swap chain.");
+    CRC::CoutDebug({"Unregistered CUDA resources in swap chain."});
 #endif
 }
 
@@ -437,7 +469,7 @@ void CRC::MapCudaResource(cudaGraphicsResource_t& cudaResource, cudaStream_t str
     CRC::CheckCuda(cudaGraphicsMapResources(1, &cudaResource, stream));
 
 #ifndef NDEBUG
-    Cout("Mapped CUDA resource.");
+    CRC::CoutDebug({"Mapped CUDA resource."});
 #endif
 }
 
@@ -446,7 +478,7 @@ void CRC::UnmapCudaResource(cudaGraphicsResource_t& cudaResource, cudaStream_t s
     CRC::CheckCuda(cudaGraphicsUnmapResources(1, &cudaResource, stream));
 
 #ifndef NDEBUG
-    Cout("Unmapped CUDA resource.");
+    CRC::CoutDebug({"Unmapped CUDA resource."});
 #endif
 }
 
@@ -517,7 +549,7 @@ CRC_API void CRC::PresentD3D11SwapChain
     if (FAILED(hr))
     {
 #ifndef NDEBUG
-        CRC::CoutError("Failed to present swap chain. IDXGISwapChain Present failed.");
+        CRC::CoutErr({"Failed to present swap chain. IDXGISwapChain Present failed."});
 #endif
         throw std::runtime_error("Failed to present swap chain. IDXGISwapChain Present failed.");
     }

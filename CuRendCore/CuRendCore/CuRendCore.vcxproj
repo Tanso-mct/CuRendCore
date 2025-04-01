@@ -188,7 +188,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <AdditionalLibraryDirectories>C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.6\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>cudart_static.lib;d3d11.lib;$(SolutionDir)/packages/WinAppCore/lib/Debug/WinAppCore.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>cudart_static.lib;d3d11.lib;$(SolutionDir)$(Platform)\$(Configuration)\WinAppCore.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <CudaCompile>
       <AdditionalOptions>--std=c++17 %(AdditionalOptions)</AdditionalOptions>
@@ -215,7 +215,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <AdditionalLibraryDirectories>C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.6\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>cudart_static.lib;d3d11.lib;$(SolutionDir)/packages/WinAppCore/lib/Debug/WinAppCore.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>cudart_static.lib;d3d11.lib;$(SolutionDir)$(Platform)\$(Configuration)\WinAppCore.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <CudaCompile>
       <AdditionalOptions>--std=c++17 %(AdditionalOptions)</AdditionalOptions>

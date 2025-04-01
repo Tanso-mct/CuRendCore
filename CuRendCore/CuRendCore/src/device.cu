@@ -16,7 +16,7 @@ std::unique_ptr<WACore::IContainable> CRCDeviceFactoryL0_0::Create(IDESC &desc) 
     if (!deviceDesc)
     {
 #ifndef NDEBUG
-        CRC::CoutWarning("Failed to create device. Invalid description.");
+        CRC::CoutWrn({"Failed to create device. Invalid description."});
 #endif
         return nullptr;
     }
@@ -42,7 +42,7 @@ std::unique_ptr<WACore::IContainable> CRCDeviceFactoryL0_0::Create(IDESC &desc) 
         if (!d3d11DeviceContext)
         {
 #ifndef NDEBUG
-            CRC::CoutError("Failed to create device. Failed to get immediate context.");
+            CRC::CoutErr({"Failed to create device. Failed to get immediate context."});
 #endif
             throw std::runtime_error("Failed to create device. Failed to get immediate context.");
         }
@@ -61,7 +61,7 @@ std::unique_ptr<WACore::IContainable> CRCDeviceFactoryL0_0::Create(IDESC &desc) 
     else
     {
 #ifndef NDEBUG
-        CRC::CoutError("Failed to create device. Unknown render mode.");
+        CRC::CoutErr({"Failed to create device. Unknown render mode."});
 #endif
         throw std::runtime_error("Failed to create device. Unknown render mode.");
     }
@@ -87,14 +87,14 @@ CRCDevice::CRCDevice
 , dsvFactory_(std::move(dsvFactory))
 {
 #ifndef NDEBUG
-    CRC::Cout("CRC Device created.");
+    CRC::CoutDebug({"CRC Device created."});
 #endif
 }
 
 CRCDevice::~CRCDevice()
 {
 #ifndef NDEBUG
-    CRC::Cout("CRC Device destroyed.");
+    CRC::CoutDebug({"CRC Device destroyed."});
 #endif
 }
 

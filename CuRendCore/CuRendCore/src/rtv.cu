@@ -10,10 +10,10 @@ std::unique_ptr<WACore::IContainable> CRCRenderTargetViewFactoryL0_0::Create(IDE
     if (!rtvDesc)
     {
 #ifndef NDEBUG
-        CRC::CoutWarning
-        (
+        CRC::CoutWrn
+        ({
             "Failed to create render target view from desc. Desc is not CRC_RENDER_TARGET_VIEW_DESC."
-        );
+        });
 #endif
         return nullptr;
     }
@@ -21,10 +21,10 @@ std::unique_ptr<WACore::IContainable> CRCRenderTargetViewFactoryL0_0::Create(IDE
     if (!rtvDesc->resource_)
     {
 #ifndef NDEBUG
-        CRC::CoutWarning
-        (
+        CRC::CoutWrn
+        ({
             "Failed to create render target view from desc. Resource is nullptr."
-        );
+        });
 #endif
         return nullptr;
     }
@@ -34,10 +34,10 @@ std::unique_ptr<WACore::IContainable> CRCRenderTargetViewFactoryL0_0::Create(IDE
         if (!texture())
         {
 #ifndef NDEBUG
-            CRC::CoutWarning
-            (
+            CRC::CoutWrn
+            ({
                 "Failed to create render target view from desc. Resource is not ICRCTexture2D."
-            );
+            });
 #endif
             return nullptr;
         }
@@ -48,10 +48,10 @@ std::unique_ptr<WACore::IContainable> CRCRenderTargetViewFactoryL0_0::Create(IDE
         if (!(desc.BindFlags & D3D11_BIND_RENDER_TARGET))
         {
 #ifndef NDEBUG
-            CRC::CoutWarning
-            (
+            CRC::CoutWrn
+            ({
                 "Failed to create render target view from desc. Texture2D is not bindable as render target."
-            );
+            });
 #endif
             return nullptr;
         }
@@ -74,14 +74,14 @@ CRCRenderTargetView::CRCRenderTargetView
     desc_ = desc;
 
 #ifndef NDEBUG
-    CRC::Cout("Created render target view from desc.");
+    CRC::CoutDebug({"Created render target view from desc."});
 #endif
 }
 
 CRCRenderTargetView::~CRCRenderTargetView()
 {
 #ifndef NDEBUG
-    CRC::Cout("Destroyed render target view.");
+    CRC::CoutDebug({"Destroyed render target view."});
 #endif
 }
 
@@ -96,10 +96,10 @@ std::unique_ptr<WACore::IContainable> CRCID3D11RenderTargetViewFactoryL0_0::Crea
     if (!rtvDesc)
     {
 #ifndef NDEBUG
-        CRC::CoutWarning
-        (
+        CRC::CoutWrn
+        ({
             "Failed to create render target view from desc. Desc is not CRC_RENDER_TARGET_VIEW_DESC."
-        );
+        });
 #endif
         return nullptr;
     }
@@ -107,10 +107,10 @@ std::unique_ptr<WACore::IContainable> CRCID3D11RenderTargetViewFactoryL0_0::Crea
     if (!rtvDesc->d3d11Device_)
     {
 #ifndef NDEBUG
-        CRC::CoutWarning
-        (
+        CRC::CoutWrn
+        ({
             "Failed to create render target view from desc. D3D11 device is nullptr."
-        );
+        });
 #endif
         return nullptr;
     }
@@ -121,10 +121,10 @@ std::unique_ptr<WACore::IContainable> CRCID3D11RenderTargetViewFactoryL0_0::Crea
         if (!texture())
         {
     #ifndef NDEBUG
-            CRC::CoutWarning
-            (
+            CRC::CoutWrn
+            ({
                 "Failed to create render target view from desc. Resource is not CRCID3D11Texture2D."
-            );
+            });
     #endif
             return nullptr;
         }
@@ -138,10 +138,10 @@ std::unique_ptr<WACore::IContainable> CRCID3D11RenderTargetViewFactoryL0_0::Crea
         if (FAILED(hr))
         {
     #ifndef NDEBUG
-            CRC::CoutWarning
-            (
+            CRC::CoutWrn
+            ({
                 "Failed to create render target view from desc. D3D11Device CreateRenderTargetView failed."
-            );
+            });
     #endif
             return nullptr;
         }
@@ -153,14 +153,14 @@ std::unique_ptr<WACore::IContainable> CRCID3D11RenderTargetViewFactoryL0_0::Crea
 CRCID3D11RenderTargetView::CRCID3D11RenderTargetView()
 {
 #ifndef NDEBUG
-    CRC::Cout("Created D3D11 render target view from desc.");
+    CRC::CoutDebug({"Created D3D11 render target view from desc."});
 #endif
 }
 
 CRCID3D11RenderTargetView::~CRCID3D11RenderTargetView()
 {
 #ifndef NDEBUG
-    CRC::Cout("Destroyed D3D11 render target view.");
+    CRC::CoutDebug({"Destroyed D3D11 render target view."});
 #endif
 }
 

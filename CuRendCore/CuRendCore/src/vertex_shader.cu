@@ -9,7 +9,7 @@ std::unique_ptr<WACore::IContainable> CRCVertexShaderFactoryL0_0::Create(IDESC &
     if (!vertexShaderDesc)
     {
 #ifndef NDEBUG
-        CRC::CoutWarning("Failed to create vertex shader from desc. Desc is not CRC_VERTEX_SHADER_DESC.");
+        CRC::CoutWrn({"Failed to create vertex shader from desc. Desc is not CRC_VERTEX_SHADER_DESC."});
 #endif
         return nullptr;
     }
@@ -23,14 +23,14 @@ CRCVertexShader::CRCVertexShader(CRC_VERTEX_SHADER_DESC &desc)
     kernel_ = desc.kernel_;
 
 #ifndef NDEBUG
-    CRC::Cout("Created CRC Vertex Shader");
+    CRC::CoutDebug({"Created CRC Vertex Shader"});
 #endif
 }
 
 CRCVertexShader::~CRCVertexShader()
 {
 #ifndef NDEBUG
-    CRC::Cout("Destroyed CRC Vertex Shader");
+    CRC::CoutDebug({"Destroyed CRC Vertex Shader"});
 #endif
 }
 
@@ -51,7 +51,7 @@ std::unique_ptr<WACore::IContainable> CRCID3D11VertexShaderFactoryL0_0::Create(I
     if (!vertexShaderDesc)
     {
 #ifndef NDEBUG
-        CRC::CoutWarning("Failed to create vertex shader from desc. Desc is not CRC_ID3D11_VERTEX_SHADER_DESC.");
+        CRC::CoutWrn({"Failed to create vertex shader from desc. Desc is not CRC_ID3D11_VERTEX_SHADER_DESC."});
 #endif
         return nullptr;
     }
@@ -70,20 +70,20 @@ CRCID3D11VertexShader::CRCID3D11VertexShader(CRC_ID3D11_VERTEX_SHADER_DESC &desc
     if (FAILED(hr))
     {
 #ifndef NDEBUG
-        CRC::CoutError("Failed to create ID3D11VertexShader.");
+        CRC::CoutErr({"Failed to create ID3D11VertexShader."});
 #endif
         throw std::runtime_error("Failed to create ID3D11VertexShader.");
     }
 
 #ifndef NDEBUG
-    CRC::Cout("Created ID3D11 Vertex Shader");
+    CRC::CoutDebug({"Created ID3D11 Vertex Shader"});
 #endif
 }
 
 CRCID3D11VertexShader::~CRCID3D11VertexShader()
 {
 #ifndef NDEBUG
-    CRC::Cout("Destroyed ID3D11 Vertex Shader");
+    CRC::CoutDebug({"Destroyed ID3D11 Vertex Shader"});
 #endif
 }
 

@@ -9,7 +9,7 @@ std::unique_ptr<WACore::IContainable> CRCBufferFactoryL0_0::Create(IDESC &desc) 
     if (!bufferDesc)
     {
 #ifndef NDEBUG
-        CRC::CoutWarning("Failed to create buffer from desc. Desc is not CRC_BUFFER_DESC.");
+        CRC::CoutWrn({"Failed to create buffer from desc. Desc is not CRC_BUFFER_DESC."});
 #endif
         return nullptr;
     }
@@ -52,11 +52,11 @@ CRCBuffer::CRCBuffer(CRC_BUFFER_DESC &desc)
 
 #ifndef NDEBUG
     std::string rcTypeStr = CRC::GetCRCResourceTypeString(resType_);
-    CRC::Cout
-    (
-        "Buffer created.", "\n",
-        "Resource Type :", rcTypeStr
-    );
+    CRC::CoutDebug
+    ({
+        "Buffer created.",
+        "Resource Type :" + rcTypeStr
+    });
 #endif
 }
 
@@ -66,7 +66,7 @@ CRCBuffer::~CRCBuffer()
     if (hPtr_) HostFree();
 
 #ifndef NDEBUG
-    CRC::Cout("Buffer destroyed.");
+    CRC::CoutDebug({"Buffer destroyed."});
 #endif
 }
 
@@ -86,7 +86,7 @@ void CRCBuffer::Malloc(UINT byteWidth)
     if (dPtr_)
     {
 #ifndef NDEBUG
-        CRC::CoutError("Buffer device memory already allocated.");
+        CRC::CoutErr({"Buffer device memory already allocated."});
 #endif
         throw std::runtime_error("Buffer device memory already allocated.");
     }
@@ -95,11 +95,11 @@ void CRCBuffer::Malloc(UINT byteWidth)
     CRC::CheckCuda(cudaMalloc(&dPtr_, byteWidth_));
 
 #ifndef NDEBUG
-    CRC::Cout
-    (
-        "Buffer device memory allocated.", "\n",
-        "ByteWidth :", byteWidth_
-    );
+    CRC::CoutDebug
+    ({
+        "Buffer device memory allocated.",
+        "ByteWidth :" + std::to_string(byteWidth_)
+    });
 #endif
 }
 
@@ -108,7 +108,7 @@ void CRCBuffer::Free()
     if (!dPtr_)
     {
 #ifndef NDEBUG
-        CRC::CoutError("Buffer device memory not allocated.");
+        CRC::CoutErr({"Buffer device memory not allocated."});
 #endif
         throw std::runtime_error("Buffer device memory not allocated.");
     }
@@ -119,7 +119,7 @@ void CRCBuffer::Free()
     dPtr_ = nullptr;
 
 #ifndef NDEBUG
-    CRC::Cout("Buffer device memory free.");
+    CRC::CoutDebug({"Buffer device memory free."});
 #endif
 }
 
@@ -128,7 +128,7 @@ void CRCBuffer::HostMalloc(UINT byteWidth)
     if (hPtr_)
     {
 #ifndef NDEBUG
-        CRC::CoutError("Buffer host memory already allocated.");
+        CRC::CoutErr({"Buffer host memory already allocated."});
 #endif
         throw std::runtime_error("Buffer host memory already allocated.");
     }
@@ -137,11 +137,11 @@ void CRCBuffer::HostMalloc(UINT byteWidth)
     CRC::CheckCuda(cudaMallocHost(&hPtr_, byteWidth_));
 
 #ifndef NDEBUG
-    CRC::Cout
-    (
-        "Buffer host memory allocated.", "\n",
-        "ByteWidth :", byteWidth_
-    );
+    CRC::CoutDebug
+    ({
+        "Buffer host memory allocated.",
+        "ByteWidth :" + std::to_string(byteWidth_)
+    });
 #endif
 }
 
@@ -150,7 +150,7 @@ void CRCBuffer::HostFree()
     if (!hPtr_)
     {
 #ifndef NDEBUG
-        CRC::CoutError("Buffer host memory not allocated.");
+        CRC::CoutErr({"Buffer host memory not allocated."});
 #endif
         throw std::runtime_error("Buffer host memory not allocated.");
     }
@@ -170,7 +170,7 @@ void *const CRCBuffer::GetHostPtr()
     else
     {
 #ifndef NDEBUG
-        CRC::CoutWarning("This buffer is not CPU readable or writable.");
+        CRC::CoutWrn({"This buffer is not CPU readable or writable."});
 #endif
         return nullptr;
     }
@@ -181,7 +181,7 @@ HRESULT CRCBuffer::SendHostToDevice()
     if (!dPtr_)
     {
 #ifndef NDEBUG
-        CRC::CoutWarning("Buffer device memory not allocated.");
+        CRC::CoutWrn({"Buffer device memory not allocated."});
 #endif
         return E_FAIL;
     }
@@ -189,7 +189,7 @@ HRESULT CRCBuffer::SendHostToDevice()
     if (!hPtr_)
     {
 #ifndef NDEBUG
-        CRC::CoutWarning("Buffer host memory not allocated.");
+        CRC::CoutWrn({"Buffer host memory not allocated."});
 #endif
         return E_FAIL;
     }
@@ -201,7 +201,7 @@ HRESULT CRCBuffer::SendHostToDevice()
     else
     {
 #ifndef NDEBUG
-        CRC::CoutWarning("This buffer is not CPU readable or writable.");
+        CRC::CoutWrn({"This buffer is not CPU readable or writable."});
 #endif
         return E_FAIL;
     }
@@ -214,7 +214,7 @@ HRESULT CRCBuffer::SendHostToDevice(const void *src, UINT srcByteWidth)
     if (!dPtr_)
     {
 #ifndef NDEBUG
-        CRC::CoutWarning("Buffer device memory not allocated.");
+        CRC::CoutWrn({"Buffer device memory not allocated."});
 #endif
         return E_FAIL;
     }
@@ -224,7 +224,7 @@ HRESULT CRCBuffer::SendHostToDevice(const void *src, UINT srcByteWidth)
         if (srcByteWidth > byteWidth_)
         {
 #ifndef NDEBUG
-            CRC::CoutWarning("Source byte width is larger than buffer byte width.");
+            CRC::CoutWrn({"Source byte width is larger than buffer byte width."});
 #endif
             return E_FAIL;
         }
@@ -234,7 +234,7 @@ HRESULT CRCBuffer::SendHostToDevice(const void *src, UINT srcByteWidth)
     else
     {
 #ifndef NDEBUG
-        CRC::CoutWarning("This buffer is not CPU readable or writable.");
+        CRC::CoutWrn({"This buffer is not CPU readable or writable."});
 #endif
         return E_FAIL;
     }
@@ -247,7 +247,7 @@ HRESULT CRCBuffer::SendDeviceToHost()
     if (!dPtr_)
     {
 #ifndef NDEBUG
-        CRC::CoutWarning("Buffer device memory not allocated.");
+        CRC::CoutWrn({"Buffer device memory not allocated."});
 #endif
         return E_FAIL;
     }
@@ -255,7 +255,7 @@ HRESULT CRCBuffer::SendDeviceToHost()
     if (!hPtr_)
     {
 #ifndef NDEBUG
-        CRC::CoutWarning("Buffer host memory not allocated.");
+        CRC::CoutWrn({"Buffer host memory not allocated."});
 #endif
         return E_FAIL;
     }
@@ -267,7 +267,7 @@ HRESULT CRCBuffer::SendDeviceToHost()
     else
     {
 #ifndef NDEBUG
-        CRC::CoutWarning("This buffer is not CPU readable or writable.");
+        CRC::CoutWrn({"This buffer is not CPU readable or writable."});
 #endif
         return E_FAIL;
     }
@@ -286,7 +286,7 @@ std::unique_ptr<WACore::IContainable> CRCID3D11BufferFactoryL0_0::Create(IDESC &
     if (!bufferDesc)
     {
 #ifndef NDEBUG
-        CRC::CoutWarning("Failed to create buffer from desc. Desc is not CRC_BUFFER_DESC.");
+        CRC::CoutWrn({"Failed to create buffer from desc. Desc is not CRC_BUFFER_DESC."});
 #endif
         return nullptr;
     }
@@ -294,7 +294,7 @@ std::unique_ptr<WACore::IContainable> CRCID3D11BufferFactoryL0_0::Create(IDESC &
     if (!bufferDesc->d3d11Device_)
     {
 #ifndef NDEBUG
-        CRC::CoutWarning("Failed to create buffer. D3D11 device is nullptr.");
+        CRC::CoutWrn({"Failed to create buffer. D3D11 device is nullptr."});
 #endif
         return nullptr;
     }
@@ -320,7 +320,7 @@ std::unique_ptr<WACore::IContainable> CRCID3D11BufferFactoryL0_0::Create(IDESC &
     if (FAILED(hr))
     {
 #ifndef NDEBUG
-        CRC::CoutError("Failed to create buffer.");
+        CRC::CoutErr({"Failed to create buffer."});
 #endif
         throw std::runtime_error("Failed to create buffer.");
     }
@@ -335,11 +335,11 @@ std::unique_ptr<WACore::IContainable> CRCID3D11BufferFactoryL0_0::Create(IDESC &
 
 #ifndef NDEBUG
     std::string rcTypeStr = CRC::GetCRCResourceTypeString(resType);
-    CRC::Cout
-    (
-        "ID3D11Buffer created.", "\n",
-        "Resource Type :", rcTypeStr
-    );
+    CRC::CoutDebug
+    ({
+        "ID3D11Buffer created.",
+        "Resource Type :" + rcTypeStr
+    });
 #endif
 
     return buffer;
@@ -353,7 +353,7 @@ const void CRCID3D11Buffer::GetDesc(D3D11_BUFFER_DESC *dst)
 CRCID3D11Buffer::~CRCID3D11Buffer()
 {
 #ifndef NDEBUG
-    CRC::Cout("ID3D11Buffer destroyed.");
+    CRC::CoutDebug({"ID3D11Buffer destroyed."});
 #endif
 }
 

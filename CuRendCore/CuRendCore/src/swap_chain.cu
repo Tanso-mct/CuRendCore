@@ -9,7 +9,7 @@ std::unique_ptr<WACore::IContainable> CRCSwapChainFactoryL0_0::Create(IDESC &des
     if (!swapChainDesc)
     {
 #ifndef NDEBUG
-        CRC::CoutWarning("Failed to create swap chain from desc. Desc is not CRC_SWAP_CHAIN_DESC.");
+        CRC::CoutWrn({"Failed to create swap chain from desc. Desc is not CRC_SWAP_CHAIN_DESC."});
 #endif
     }
 
@@ -34,7 +34,7 @@ CRCSwapChain::CRCSwapChain
     if (!(bufferCount_ == 2 || bufferCount_ == 3))
     {
 #ifndef NDEBUG
-        CRC::CoutWarning("Failed to create swap chain. Buffer count is not 2 or 3.");
+        CRC::CoutWrn({"Failed to create swap chain. Buffer count is not 2 or 3."});
 #endif
         return;
     }
@@ -70,12 +70,12 @@ CRCSwapChain::CRCSwapChain
     backBuffer_ = backSurfaces_[frameIndex_];
 
 #ifndef NDEBUG
-    CRC::Cout
-    (
-        "Swap chain created.", "\n",
-        "Buffer count :", bufferCount_, "\n",
-        "Refresh rate :", refreshRate_.Denominator, "/", refreshRate_.Numerator
-    );
+    CRC::CoutDebug
+    ({
+        "Swap chain created.",
+        "Buffer count :" + std::to_string(bufferCount_),
+        "Refresh rate :" + std::to_string(refreshRate_.Numerator) + "/" + std::to_string(refreshRate_.Denominator),
+    });
 #endif
 }
 
@@ -117,7 +117,7 @@ CRCSwapChain::~CRCSwapChain()
     backBuffer_ = nullptr;
 
 #ifndef NDEBUG
-    CRC::Cout("Swap chain destroyed.");
+    CRC::CoutDebug({"Swap chain destroyed."});
 #endif
 }
 
@@ -169,7 +169,7 @@ HRESULT CRCSwapChain::ResizeBuffers
     if (FAILED(hr))
     {
 #ifndef NDEBUG
-        CRC::CoutWarning("Failed to resize buffers. IDXGISwapChain ResizeBuffers failed.");
+        CRC::CoutWrn({"Failed to resize buffers. IDXGISwapChain ResizeBuffers failed."});
 #endif
     }
 
@@ -216,7 +216,7 @@ HRESULT CRCSwapChain::Present(UINT syncInterval, UINT flags)
     if (FAILED(hr))
     {
 #ifndef NDEBUG
-        CRC::CoutWarning("Failed to present swap chain. IDXGISwapChain Present failed.");
+        CRC::CoutWrn({"Failed to present swap chain. IDXGISwapChain Present failed."});
 #endif  
         CRC::MapCudaResource(cudaResources_[frameIndex_]);
         return hr;
@@ -242,7 +242,7 @@ std::unique_ptr<WACore::IContainable> CRCIDXGISwapChainFactoryL0_0::Create(IDESC
     if (!swapChainDesc)
     {
 #ifndef NDEBUG
-        CRC::CoutWarning("Failed to create swap chain from desc. Desc is not CRC_SWAP_CHAIN_DESC.");
+        CRC::CoutWrn({"Failed to create swap chain from desc. Desc is not CRC_SWAP_CHAIN_DESC."});
 #endif
         return nullptr;
     }
@@ -271,7 +271,7 @@ HRESULT CRCIDXGISwapChain::GetBuffer(UINT buffer, ICRCTexture2D *&texture)
     if (!d3d11SwapChain_)
     {
 #ifndef NDEBUG
-        CRC::CoutWarning("Failed to get buffer. IDXGISwapChain is nullptr.");
+        CRC::CoutWrn({"Failed to get buffer. IDXGISwapChain is nullptr."});
 #endif
         return E_FAIL;
     }
@@ -283,7 +283,7 @@ HRESULT CRCIDXGISwapChain::GetBuffer(UINT buffer, ICRCTexture2D *&texture)
     if (FAILED(hr))
     {
 #ifndef NDEBUG
-        CRC::CoutWarning("Failed to get buffer. IDXGISwapChain GetBuffer failed.");
+        CRC::CoutWrn({"Failed to get buffer. IDXGISwapChain GetBuffer failed."});
 #endif
     }
 
@@ -300,7 +300,7 @@ HRESULT CRCIDXGISwapChain::ResizeBuffers
     if (FAILED(hr))
     {
 #ifndef NDEBUG
-        CRC::CoutWarning("Failed to resize buffers. IDXGISwapChain ResizeBuffers failed.");
+        CRC::CoutWrn({"Failed to resize buffers. IDXGISwapChain ResizeBuffers failed."});
 #endif
     }
 
@@ -313,7 +313,7 @@ HRESULT CRCIDXGISwapChain::Present(UINT syncInterval, UINT flags)
     if (FAILED(hr))
     {
 #ifndef NDEBUG
-        CRC::CoutWarning("Failed to present swap chain. IDXGISwapChain Present failed.");
+        CRC::CoutWrn({"Failed to present swap chain. IDXGISwapChain Present failed."});
 #endif
     }
 

@@ -10,14 +10,14 @@
 CRCImmediateContext::CRCImmediateContext()
 {
 #ifndef NDEBUG
-    CRC::Cout("Created CRC immediate context.");
+    CRC::CoutDebug({"Created CRC immediate context."});
 #endif
 }
 
 CRCImmediateContext::~CRCImmediateContext()
 {
 #ifndef NDEBUG
-    CRC::Cout("Destroyed CRC immediate context.");
+    CRC::CoutDebug({"Destroyed CRC immediate context."});
 #endif
 }
 
@@ -34,11 +34,11 @@ HRESULT CRCImmediateContext::Map
         if (!memory())
         {
 #ifndef NDEBUG
-            CRC::CoutWarning
-            (
+            CRC::CoutWrn
+            ({
                 "Failed to map resource.",
                 "This resource is not CRC resource."
-            );
+            });
 #endif
             return E_FAIL;
         }
@@ -46,11 +46,11 @@ HRESULT CRCImmediateContext::Map
         if (!memory()->IsCpuAccessible())
         {
 #ifndef NDEBUG
-            CRC::CoutWarning
-            (
+            CRC::CoutWrn
+            ({
                 "Failed to map resource.",
                 "This resource is not CPU accessible."
-            );
+            });
 #endif
             return E_FAIL;
         }
@@ -74,11 +74,11 @@ void CRCImmediateContext::Unmap
         if (!memory())
         {
 #ifndef NDEBUG
-            CRC::CoutWarning
-            (
+            CRC::CoutWrn
+            ({
                 "Failed to unmap resource.",
                 "This resource is not CRC resource."
-            );
+            });
 #endif
             return;
         }
@@ -86,11 +86,11 @@ void CRCImmediateContext::Unmap
         if (!memory()->IsCpuAccessible())
         {
 #ifndef NDEBUG
-            CRC::CoutWarning
-            (
+            CRC::CoutWrn
+            ({
                 "Failed to unmap resource.",
                 "This resource is not CPU accessible."
-            );
+            });
 #endif
             return;
         }
@@ -99,11 +99,11 @@ void CRCImmediateContext::Unmap
         if (FAILED(hr))
         {
 #ifndef NDEBUG
-            CRC::CoutWarning
-            (
+            CRC::CoutWrn
+            ({
                 "Failed to unmap resource.",
                 "SendHostToDevice failed."
-            );
+            });
 #endif
             return;
         }
@@ -121,11 +121,11 @@ void CRCImmediateContext::UpdateSubresource
         if (!memory())
         {
 #ifndef NDEBUG
-            CRC::CoutWarning
-            (
+            CRC::CoutWrn
+            ({
                 "Failed to update subresource.",
                 "This resource is not CRC resource."
-            );
+            });
 #endif
             return;
         }
@@ -133,11 +133,11 @@ void CRCImmediateContext::UpdateSubresource
         if (!memory()->IsCpuAccessible())
         {
 #ifndef NDEBUG
-            CRC::CoutWarning
-            (
+            CRC::CoutWrn
+            ({
                 "Failed to update subresource.",
                 "This resource is not CPU accessible."
-            );
+            });
 #endif
             return;
         }
@@ -150,14 +150,14 @@ CRCID3D11Context::CRCID3D11Context(ID3D11DeviceContext** d3d11DeviceContext)
 : d3d11DeviceContext(*d3d11DeviceContext)
 {
 #ifndef NDEBUG
-    CRC::Cout("Created CRC ID3D11 context.");
+    CRC::CoutDebug({"Created CRC ID3D11 context."});
 #endif
 }
 
 CRCID3D11Context::~CRCID3D11Context()
 {
 #ifndef NDEBUG
-    CRC::Cout("Destroyed CRC ID3D11 context.");
+    CRC::CoutDebug({"Destroyed CRC ID3D11 context."});
 #endif
 }
 
@@ -174,11 +174,11 @@ HRESULT CRCID3D11Context::Map
         if (!d3d11Resource())
         {
 #ifndef NDEBUG
-            CRC::CoutWarning
-            (
+            CRC::CoutWrn
+            ({
                 "Failed to map resource.",
                 "This resource is not ID3D11 resource."
-            );
+            });
 #endif
             return E_FAIL;
         }
@@ -190,11 +190,11 @@ HRESULT CRCID3D11Context::Map
         if (FAILED(hr))
         {
 #ifndef NDEBUG
-            CRC::CoutWarning
-            (
+            CRC::CoutWrn
+            ({
                 "Failed to map resource.",
                 "D3D11DeviceContext Map failed."
-            );
+            });
 #endif
             return hr;
         }
@@ -213,11 +213,11 @@ void CRCID3D11Context::Unmap
         if (!d3d11Resource())
         {
 #ifndef NDEBUG
-            CRC::CoutWarning
-            (
+            CRC::CoutWrn
+            ({
                 "Failed to unmap resource.",
                 "This resource is not ID3D11 resource."
-            );
+            });
 #endif
             return;
         }
@@ -237,11 +237,11 @@ void CRCID3D11Context::UpdateSubresource
         if (!d3d11Resource())
         {
 #ifndef NDEBUG
-            CRC::CoutWarning
-            (
+            CRC::CoutWrn
+            ({
                 "Failed to update subresource.",
                 "This resource is not ID3D11 resource."
-            );
+            });
 #endif
             return;
         }

@@ -27,4 +27,4 @@
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
 
-#include "packages/WinAppCore/include/WACore.h"
+#include "CuRendCore/include/WinAppCore/WACore.h"

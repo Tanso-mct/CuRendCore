@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include "CuRendCore/include/config.h"
-#include "packages/WinAppCore/include/WACore.h"
+#include "CuRendCore/include/WinAppCore/WACore.h"
 
 #include <memory>
 #include <Windows.h>
@@ -22,8 +22,6 @@
 class CRCCore;
 class CRC_WINDOW_DESC; 
 struct CRC_SCENE_DESC;
-
-class ICRCWinMsgEvent;
 
 class ICRCFactory;
 
@@ -93,35 +91,12 @@ struct PairEqual
 
 CRC_API void CheckCuda(cudaError_t call);
 
-template <typename... Args>
-CRC_API void Cout(Args&... args)
-{
-    std::cout << CRC::C_COLOR_MSG << CRC::C_TAG << CRC::C_COLOR_RESET << " ";
-    std::initializer_list<int> ilist = {(std::cout << args << " ", 0)...};
-
-    if (ilist.size() == 1) std::cout << std::endl;
-    else std::cout << std::endl << CRC::C_COLOR_MSG << CRC::C_TAG_END << CRC::C_COLOR_RESET << std::endl;
-}
-
-template <typename... Args>
-CRC_API void CoutError(Args&... args)
-{
-    std::cout << CRC::C_COLOR_ERROR << CRC::C_TAG << CRC::C_COLOR_RESET << " ";
-    std::initializer_list<int> ilist = {(std::cout << args << " ", 0)...};
-    
-    if (ilist.size() == 1) std::cout << std::endl;
-    else std::cout << std::endl << CRC::C_COLOR_ERROR << CRC::C_TAG_END << CRC::C_COLOR_RESET << std::endl;
-}
-
-template <typename... Args>
-CRC_API void CoutWarning(Args&... args)
-{
-    std::cout << CRC::C_COLOR_WARNING << CRC::C_TAG << CRC::C_COLOR_RESET << " ";
-    std::initializer_list<int> ilist = {(std::cout << args << " ", 0)...};
-    
-    if (ilist.size() == 1) std::cout << std::endl;
-    else std::cout << std::endl << CRC::C_COLOR_WARNING << CRC::C_TAG_END << CRC::C_COLOR_RESET << std::endl;
-}
+CRC_API std::unique_ptr<WACore::ConsoleOuter>& GetConsoleOuter();
+CRC_API void Cout(std::initializer_list<std::string_view> args);
+CRC_API void CoutErr(std::initializer_list<std::string_view> args);
+CRC_API void CoutWrn(std::initializer_list<std::string_view> args);
+CRC_API void CoutInfo(std::initializer_list<std::string_view> args);
+CRC_API void CoutDebug(std::initializer_list<std::string_view> args);
 
 CRC_API void RegisterCudaResources
 (

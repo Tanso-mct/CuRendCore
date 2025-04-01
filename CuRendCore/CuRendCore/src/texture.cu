@@ -9,7 +9,7 @@ std::unique_ptr<WACore::IContainable> CRCTexture2DFactoryL0_0::Create(IDESC &des
     if (!textureDesc)
     {
 #ifndef NDEBUG
-        CRC::CoutWarning("Failed to create texture2d from desc. Desc is not CRC_TEXTURE2D_DESC.");
+        CRC::CoutWrn({"Failed to create texture2d from desc. Desc is not CRC_TEXTURE2D_DESC."});
 #endif
         return nullptr;
     }
@@ -54,11 +54,11 @@ CRCTexture2D::CRCTexture2D(CRC_TEXTURE2D_DESC& desc)
 
 #ifndef NDEBUG
     std::string rcTypeStr = CRC::GetCRCResourceTypeString(resType_);
-    CRC::Cout
-    (
-        "Texture2D created.", "\n",
-        "Resource Type :", rcTypeStr
-    );
+    CRC::CoutDebug
+    ({
+        "Texture2D created.",
+        "Resource Type :" + rcTypeStr,
+    });
 #endif
 }
 
@@ -68,7 +68,7 @@ CRCTexture2D::~CRCTexture2D()
     if (hPtr_) HostFree();
 
 #ifndef NDEBUG
-    CRC::Cout("Texture2D destroyed.");
+    CRC::CoutDebug({"Texture2D destroyed."});
 #endif
 }
 
@@ -88,7 +88,7 @@ void CRCTexture2D::Malloc(UINT byteWidth)
     if (cudaArray_)
     {
 #ifndef NDEBUG
-        CRC::CoutError("Texture2D device memory already allocated.");
+        CRC::CoutErr({"Texture2D device memory already allocated."});
 #endif
         throw std::runtime_error("Texture2D device memory already allocated.");
     }
@@ -122,13 +122,13 @@ void CRCTexture2D::Malloc(UINT byteWidth)
     }
 
 #ifndef NDEBUG
-    CRC::Cout
-    (
-        "Texture2D device memory allocated.", "\n",
-        "ByteWidth :", byteWidth_, "\n",
-        "Width :", desc_.Width, "\n",
-        "Height :", desc_.Height
-    );
+    CRC::CoutDebug
+    ({
+        "Texture2D device memory allocated.",
+        "ByteWidth :" + std::to_string(byteWidth_),
+        "Width :" + std::to_string(desc_.Width),
+        "Height :" + std::to_string(desc_.Height)
+    });
 #endif
 }
 
@@ -137,7 +137,7 @@ void CRCTexture2D::Free()
     if (!cudaArray_)
     {
 #ifndef NDEBUG
-        CRC::CoutError("Texture2D device memory not allocated.");
+        CRC::CoutErr({"Texture2D device memory not allocated."});
 #endif
         throw std::runtime_error("Texture2D device memory not allocated.");
     }
@@ -150,7 +150,7 @@ void CRCTexture2D::Free()
     cudaArray_ = nullptr;
 
 #ifndef NDEBUG
-    CRC::Cout("Texture2D device memory free.");
+    CRC::CoutDebug({"Texture2D device memory free."});
 #endif
 }
 
@@ -159,7 +159,7 @@ void CRCTexture2D::HostMalloc(UINT byteWidth)
     if (hPtr_)
     {
 #ifndef NDEBUG
-        CRC::CoutError("Texture2D host memory already allocated.");
+        CRC::CoutErr({"Texture2D host memory already allocated."});
 #endif
         throw std::runtime_error("Texture2D host memory already allocated.");
     }
@@ -168,13 +168,13 @@ void CRCTexture2D::HostMalloc(UINT byteWidth)
     CRC::CheckCuda(cudaMallocHost(&hPtr_, byteWidth_));
 
 #ifndef NDEBUG
-    CRC::Cout
-    (
-        "Texture2D host memory allocated.", "\n",
-        "ByteWidth :", byteWidth_, "\n",
-        "Width :", desc_.Width, "\n",
-        "Height :", desc_.Height
-    );
+    CRC::CoutDebug
+    ({
+        "Texture2D host memory allocated.",
+        "ByteWidth :" + std::to_string(byteWidth_),
+        "Width :" + std::to_string(desc_.Width),
+        "Height :" + std::to_string(desc_.Height)
+    });
 #endif
 }
 
@@ -183,7 +183,7 @@ void CRCTexture2D::HostFree()
     if (!hPtr_)
     {
 #ifndef NDEBUG
-        CRC::CoutError("Texture2D host memory not allocated.");
+        CRC::CoutErr({"Texture2D host memory not allocated."});
 #endif
         throw std::runtime_error("Texture2D host memory not allocated.");
     }
@@ -194,7 +194,7 @@ void CRCTexture2D::HostFree()
     hPtr_ = nullptr;
 
 #ifndef NDEBUG
-    CRC::Cout("Texture2D host memory free.");
+    CRC::CoutDebug({"Texture2D host memory free."});
 #endif
 }
 
@@ -212,7 +212,7 @@ void *const CRCTexture2D::GetHostPtr()
     else
     {
 #ifndef NDEBUG
-        CRC::CoutWarning("This texture2d is not CPU readable or writable.");
+        CRC::CoutWrn({"This texture2d is not CPU readable or writable."});
 #endif
         return nullptr;
     }
@@ -223,7 +223,7 @@ HRESULT CRCTexture2D::SendHostToDevice()
     if (!cudaArray_)
     {
 #ifndef NDEBUG
-        CRC::CoutError("Texture2D device memory not allocated.");
+        CRC::CoutErr({"Texture2D device memory not allocated."});
 #endif
         return E_FAIL;
     }
@@ -231,7 +231,7 @@ HRESULT CRCTexture2D::SendHostToDevice()
     if (!hPtr_)
     {
 #ifndef NDEBUG
-        CRC::CoutError("Texture2D host memory not allocated.");
+        CRC::CoutErr({"Texture2D host memory not allocated."});
 #endif
         return E_FAIL;
     }
@@ -247,7 +247,7 @@ HRESULT CRCTexture2D::SendHostToDevice()
     else
     {
 #ifndef NDEBUG
-        CRC::CoutWarning("This texture2d is not CPU readable or writable.");
+        CRC::CoutWrn({"This texture2d is not CPU readable or writable."});
 #endif
         return E_FAIL;
     }
@@ -260,7 +260,7 @@ HRESULT CRCTexture2D::SendHostToDevice(const void *src, UINT srcByteWidth)
     if (!cudaArray_)
     {
 #ifndef NDEBUG
-        CRC::CoutError("Texture2D device memory not allocated.");
+        CRC::CoutErr({"Texture2D device memory not allocated."});
 #endif
         return E_FAIL;
     }
@@ -270,7 +270,7 @@ HRESULT CRCTexture2D::SendHostToDevice(const void *src, UINT srcByteWidth)
         if (srcByteWidth > byteWidth_)
         {
 #ifndef NDEBUG
-            CRC::CoutError("Failed to send host to device. Source byte width is larger than destination.");
+            CRC::CoutErr({"Failed to send host to device. Source byte width is larger than destination."});
 #endif
             return E_FAIL;
         }
@@ -284,7 +284,7 @@ HRESULT CRCTexture2D::SendHostToDevice(const void *src, UINT srcByteWidth)
     else
     {
 #ifndef NDEBUG
-        CRC::CoutWarning("This texture2d is not CPU readable or writable.");
+        CRC::CoutWrn({"This texture2d is not CPU readable or writable."});
 #endif
         return E_FAIL;
     }
@@ -297,7 +297,7 @@ HRESULT CRCTexture2D::SendDeviceToHost()
     if (!cudaArray_)
     {
 #ifndef NDEBUG
-        CRC::CoutError("Texture2D device memory not allocated.");
+        CRC::CoutErr({"Texture2D device memory not allocated."});
 #endif
         return E_FAIL;
     }
@@ -305,7 +305,7 @@ HRESULT CRCTexture2D::SendDeviceToHost()
     if (!hPtr_)
     {
 #ifndef NDEBUG
-        CRC::CoutError("Texture2D host memory not allocated.");
+        CRC::CoutErr({"Texture2D host memory not allocated."});
 #endif
         return E_FAIL;
     }
@@ -321,7 +321,7 @@ HRESULT CRCTexture2D::SendDeviceToHost()
     else
     {
 #ifndef NDEBUG
-        CRC::CoutWarning("This texture2d is not CPU readable or writable.");
+        CRC::CoutWrn({"This texture2d is not CPU readable or writable."});
 #endif
         return E_FAIL;
     }
@@ -347,11 +347,11 @@ CRCCudaResource::CRCCudaResource(D3D11_TEXTURE2D_DESC &desc)
 
 #ifndef NDEBUG
     std::string rcTypeStr = CRC::GetCRCResourceTypeString(resType_);
-    CRC::Cout
-    (
-        "Texture2D created.", "\n",
-        "Resource Type :", rcTypeStr
-    );
+    CRC::CoutDebug
+    ({
+        "Texture2D created.",
+        "Resource Type :" + rcTypeStr
+    });
 #endif
 }
 
@@ -361,7 +361,7 @@ CRCCudaResource::~CRCCudaResource()
     if (hPtr_) HostFree();
 
 #ifndef NDEBUG
-    CRC::Cout("Texture2D destroyed.");
+    CRC::CoutDebug({"Texture2D destroyed."});
 #endif
 }
 
@@ -381,7 +381,7 @@ void CRCCudaResource::Assign(void *const mem, UINT byteWidth)
     if (cudaArray_)
     {
 #ifndef NDEBUG
-        CRC::CoutError("Texture2D device memory already assigned.");
+        CRC::CoutErr({"Texture2D device memory already assigned."});
 #endif
         throw std::runtime_error("Texture2D device memory already assigned.");
     }
@@ -392,7 +392,7 @@ void CRCCudaResource::Assign(void *const mem, UINT byteWidth)
     if (!cudaArray_)
     {
 #ifndef NDEBUG
-        CRC::CoutError("Failed to cast cudaArray.");
+        CRC::CoutErr({"Failed to cast cudaArray."});
 #endif
         throw std::runtime_error("Failed to cast cudaArray.");
     }
@@ -424,7 +424,7 @@ void CRCCudaResource::Unassign()
     if (!cudaArray_)
     {
 #ifndef NDEBUG
-        CRC::CoutError("Texture2D device memory not assigned.");
+        CRC::CoutErr({"Texture2D device memory not assigned."});
 #endif
         throw std::runtime_error("Texture2D device memory not assigned.");
     }
@@ -441,7 +441,7 @@ void CRCCudaResource::HostMalloc(UINT byteWidth)
     if (hPtr_)
     {
 #ifndef NDEBUG
-        CRC::CoutError("CudaResource host memory already allocated.");
+        CRC::CoutErr({"CudaResource host memory already allocated."});
 #endif
         throw std::runtime_error("CudaResource host memory already allocated.");
     }
@@ -450,13 +450,13 @@ void CRCCudaResource::HostMalloc(UINT byteWidth)
     CRC::CheckCuda(cudaMallocHost(&hPtr_, byteWidth_));
 
 #ifndef NDEBUG
-    CRC::Cout
-    (
-        "CudaResource host memory allocated.", "\n",
-        "ByteWidth :", byteWidth_, "\n",
-        "Width :", desc_.Width, "\n",
-        "Height :", desc_.Height
-    );
+    CRC::CoutDebug
+    ({
+        "CudaResource host memory allocated."
+        "ByteWidth :" + std::to_string(byteWidth_),
+        "Width :" + std::to_string(desc_.Width),
+        "Height :" + std::to_string(desc_.Height)
+    });
 #endif
 }
 
@@ -465,7 +465,7 @@ void CRCCudaResource::HostFree()
     if (!hPtr_)
     {
 #ifndef NDEBUG
-        CRC::CoutError("CudaResource host memory not allocated.");
+        CRC::CoutErr({"CudaResource host memory not allocated."});
 #endif
         throw std::runtime_error("CudaResource host memory not allocated.");
     }
@@ -476,7 +476,7 @@ void CRCCudaResource::HostFree()
     hPtr_ = nullptr;
 
 #ifndef NDEBUG
-    CRC::Cout("CudaResource host memory free.");
+    CRC::CoutDebug({"CudaResource host memory free."});
 #endif
 }
 
@@ -494,7 +494,7 @@ void *const CRCCudaResource::GetHostPtr()
     else
     {
 #ifndef NDEBUG
-        CRC::CoutWarning("This CudaResource is not CPU readable or writable.");
+        CRC::CoutWrn({"This CudaResource is not CPU readable or writable."});
 #endif
         return nullptr;
     }
@@ -505,7 +505,7 @@ HRESULT CRCCudaResource::SendHostToDevice()
     if (!cudaArray_)
     {
 #ifndef NDEBUG
-        CRC::CoutWarning("Texture2D device memory not allocated.");
+        CRC::CoutWrn({"Texture2D device memory not allocated."});
 #endif
         return E_FAIL;
     }
@@ -513,7 +513,7 @@ HRESULT CRCCudaResource::SendHostToDevice()
     if (!hPtr_)
     {
 #ifndef NDEBUG
-        CRC::CoutWarning("Texture2D host memory not allocated.");
+        CRC::CoutWrn({"Texture2D host memory not allocated."});
 #endif
         return E_FAIL;
     }
@@ -529,7 +529,7 @@ HRESULT CRCCudaResource::SendHostToDevice()
     else
     {
 #ifndef NDEBUG
-        CRC::CoutWarning("This CudaResource is not CPU readable or writable.");
+        CRC::CoutWrn({"This CudaResource is not CPU readable or writable."});
 #endif
         return E_FAIL;
     }
@@ -542,7 +542,7 @@ HRESULT CRCCudaResource::SendHostToDevice(const void *src, UINT srcByteWidth)
     if (!cudaArray_)
     {
 #ifndef NDEBUG
-        CRC::CoutWarning("Texture2D device memory not allocated.");
+        CRC::CoutWrn({"Texture2D device memory not allocated."});
 #endif
         return E_FAIL;
     }
@@ -552,7 +552,7 @@ HRESULT CRCCudaResource::SendHostToDevice(const void *src, UINT srcByteWidth)
         if (srcByteWidth > byteWidth_)
         {
 #ifndef NDEBUG
-            CRC::CoutWarning("Failed to send host to device. Source byte width is larger than destination.");
+            CRC::CoutWrn({"Failed to send host to device. Source byte width is larger than destination."});
 #endif
             return E_FAIL;
         }
@@ -566,7 +566,7 @@ HRESULT CRCCudaResource::SendHostToDevice(const void *src, UINT srcByteWidth)
     else
     {
 #ifndef NDEBUG
-        CRC::CoutWarning("This CudaResource is not CPU readable or writable.");
+        CRC::CoutWrn({"This CudaResource is not CPU readable or writable."});
 #endif
         return E_FAIL;
     }
@@ -579,7 +579,7 @@ HRESULT CRCCudaResource::SendDeviceToHost()
     if (!cudaArray_)
     {
 #ifndef NDEBUG
-        CRC::CoutWarning("Texture2D device memory not allocated.");
+        CRC::CoutWrn({"Texture2D device memory not allocated."});
 #endif
         return E_FAIL;
     }
@@ -587,7 +587,7 @@ HRESULT CRCCudaResource::SendDeviceToHost()
     if (!hPtr_)
     {
 #ifndef NDEBUG
-        CRC::CoutWarning("Texture2D host memory not allocated.");
+        CRC::CoutWrn({"Texture2D host memory not allocated."});
 #endif
         return E_FAIL;
     }
@@ -603,7 +603,7 @@ HRESULT CRCCudaResource::SendDeviceToHost()
     else
     {
 #ifndef NDEBUG
-        CRC::CoutWarning("This CudaResource is not CPU readable or writable.");
+        CRC::CoutWrn({"This CudaResource is not CPU readable or writable."});
 #endif
         return E_FAIL;
     }
@@ -622,7 +622,7 @@ std::unique_ptr<WACore::IContainable> CRCID3D11Texture2DFactoryL0_0::Create(IDES
     if (!textureDesc)
     {
 #ifndef NDEBUG
-        CRC::CoutWarning("Failed to create texture2d from desc. Desc is not CRC_TEXTURE2D_DESC.");
+        CRC::CoutWrn({"Failed to create texture2d from desc. Desc is not CRC_TEXTURE2D_DESC."});
 #endif
         return nullptr;
     }
@@ -630,7 +630,7 @@ std::unique_ptr<WACore::IContainable> CRCID3D11Texture2DFactoryL0_0::Create(IDES
     if (!textureDesc->d3d11Device_)
     {
 #ifndef NDEBUG
-        CRC::CoutWarning("Failed to create texture2d from desc. D3D11 device is nullptr.");
+        CRC::CoutWrn({"Failed to create texture2d from desc. D3D11 device is nullptr."});
 #endif
         return nullptr;
     }
@@ -656,7 +656,7 @@ std::unique_ptr<WACore::IContainable> CRCID3D11Texture2DFactoryL0_0::Create(IDES
     if (FAILED(hr))
     {
 #ifndef NDEBUG
-        CRC::CoutError("Failed to create texture2d from desc. D3D11Device CreateTexture2D failed.");
+        CRC::CoutErr({"Failed to create texture2d from desc. D3D11Device CreateTexture2D failed."});
 #endif
         throw std::runtime_error("Failed to create texture2d from desc. D3D11Device CreateTexture2D failed.");
     }
@@ -671,11 +671,11 @@ std::unique_ptr<WACore::IContainable> CRCID3D11Texture2DFactoryL0_0::Create(IDES
 
 #ifndef NDEBUG
     std::string rcTypeStr = CRC::GetCRCResourceTypeString(resType);
-    CRC::Cout
-    (
-        "ID3D11Texture2D created.", "\n",
-        "Resource Type :", rcTypeStr
-    );
+    CRC::CoutDebug
+    ({
+        "ID3D11Texture2D created.",
+        "Resource Type :" + rcTypeStr
+    });
 #endif
 
     return texture;
@@ -684,7 +684,7 @@ std::unique_ptr<WACore::IContainable> CRCID3D11Texture2DFactoryL0_0::Create(IDES
 CRCID3D11Texture2D::~CRCID3D11Texture2D()
 {
 #ifndef NDEBUG
-    CRC::Cout("ID3D11Texture2D destroyed.");
+    CRC::CoutDebug({"ID3D11Texture2D destroyed."});
 #endif
 }
 
