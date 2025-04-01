@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CuRendCore/include/WinAppCore/WACore.h"
+#include "WinAppCore/include/WACore.h"
 
 #include "CuRendCore/include/config.h"
 

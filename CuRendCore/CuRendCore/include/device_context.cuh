@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include "CuRendCore/include/config.h"
-#include "CuRendCore/include/WinAppCore/WACore.h"
+#include "WinAppCore/include/WACore.h"
 
 #include <d3d11.h>
 #include <wrl/client.h>
