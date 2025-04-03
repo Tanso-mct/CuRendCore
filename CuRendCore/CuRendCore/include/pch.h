@@ -28,3 +28,4 @@
 #include "device_launch_parameters.h"
 
 #include "WinAppCore/include/WACore.h"
+#include "CudaCore/include/CudaCore.h"
