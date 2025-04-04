@@ -2,7 +2,7 @@
 
 #include <memory>
 
-namespace FACTORY
+namespace CRC
 {
 
 class IDesc
@@ -24,4 +24,4 @@ public:
     virtual std::unique_ptr<IProduct> Create(IDesc& desc) const = 0;
 };
 
-} // namespace FACTORY
+} // namespace CRC
