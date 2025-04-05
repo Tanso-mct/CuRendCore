@@ -1,7 +1,6 @@
 ﻿#pragma once
 
-#include "Interfaces/include/device_child.h"
-#include "Interfaces/include/factory.h"
+#include "CRCInterface/include/device_child.h"
 
 namespace CRC
 {

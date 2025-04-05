@@ -1,16 +1,18 @@
 ﻿#pragma once
 
-#include "Interfaces/include/unknown.h"
-#include "Interfaces/include/factory.h"
+#include "CRCInterface/include/unknown.h"
 
-#include "Interfaces/include/resource.h"
-#include "Interfaces/include/view.h"
-#include "Interfaces/include/device_context.h"
-#include "Interfaces/include/shader.h"
-#include "Interfaces/include/state.h"
+#include <memory>
 
 namespace CRC
 {
+
+class IDesc;
+class IResource;
+class IView;
+class IShader;
+class IState;
+class IDeviceContext;
 
 class IDevice : public IUnknown
 {

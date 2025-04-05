@@ -2,6 +2,7 @@
 #include "CuRendCore/include/funcs.cuh"
 
 #include "CuRendCore/include/buffer.cuh"
+#include "buffer.cuh"
 
 std::unique_ptr<WACore::IContainable> CRCBufferFactoryL0_0::Create(IDESC &desc) const
 {
@@ -368,4 +369,9 @@ Microsoft::WRL::ComPtr<ID3D11Resource> CRCID3D11Buffer::GetResource()
     Microsoft::WRL::ComPtr<ID3D11Resource> resource;
     d3d11Buffer_.As(&resource);
     return resource;
+}
+
+HRESULT CRC::Buffer::Release()
+{
+return E_NOTIMPL;
 }

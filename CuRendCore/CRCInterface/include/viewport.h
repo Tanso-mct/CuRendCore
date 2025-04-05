@@ -1,7 +1,7 @@
 ﻿#pragma once
 
-#include "Interfaces/include/unknown.h"
-#include "Interfaces/include/factory.h"
+#include "CRCInterface/include/unknown.h"
+#include "CRCInterface/include/factory.h"
 
 namespace CRC
 {

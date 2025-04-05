@@ -1,11 +1,15 @@
 ﻿#pragma once
 
-#include "Interfaces/include/device_child.h"
-#include "Interfaces/include/resource.h"
-#include "Interfaces/include/viewport.h"
+#include "CRCInterface/include/device_child.h"
 
 namespace CRC
 {
+
+class IResource;
+class IView;
+class IState;
+class IShader;
+class IViewport;
 
 enum class MAP_TYPE : UINT
 {
