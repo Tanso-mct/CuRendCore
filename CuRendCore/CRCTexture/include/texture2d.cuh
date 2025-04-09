@@ -4,10 +4,9 @@
 
 #include "WinAppCore/include/WACore.h"
 
-#include "CRCInterface/include/resource.h"
+#include "CRCInterface/include/texture.h"
 #include "CRCInterface/include/factory.h"
 #include "CRCInterface/include/device.h"
-#include "CRCInterface/include/texture.h"
 
 #include <d3d11.h>
 #include <wrl/client.h>
@@ -19,13 +18,14 @@
 namespace CRC
 {
 
-class CRC_TEXTURE Texture2d : public IResource, public ITexture, public WACore::IContainable, public IProduct
+class CRC_TEXTURE Texture2d : public ITexture, public WACore::IContainable, public IProduct
 {
 private:
     std::unique_ptr<IDevice>& device_;
 
     bool isValid_ = false;
-    const UINT type_ = 0;
+    const UINT type_;
+    const cudaChannelFormatDesc channelDesc_;
 
     cudaArray* dArray_ = nullptr;
     unsigned long long object_ = 0;
@@ -37,7 +37,7 @@ private:
 
 public:
     Texture2d() = delete;
-    Texture2d(std::unique_ptr<IDevice>& device, UINT cpuRWFlags, UINT gpuRWFlags);
+    Texture2d(std::unique_ptr<IDevice>& device, UINT cpuRWFlags, UINT gpuRWFlags, cudaChannelFormatDesc channelDesc);
     ~Texture2d() override;
 
     //*************************************************************************************************************** */
@@ -59,14 +59,19 @@ public:
     HRESULT GetType(UINT& type) override;
     void GetDesc(IDesc *desc) override;
 
-    HRESULT GetDataDeviceSide(UINT& size, void** data) override; // Obtain a CUDA object
-    HRESULT GetDataHostSide(UINT& size, void** data) override;
-
     //*************************************************************************************************************** */
     // ITexture
     //*************************************************************************************************************** */
     
-    HRESULT GetArray(UINT& size, cudaArray** array) override; // Obtain a CUDA array object
+    HRESULT GetSize(UINT& size) override;
+    HRESULT GetStride(UINT& stride) override;;
+    HRESULT GetWidth(UINT& width) override;;
+    HRESULT GetHeight(UINT& height) override;;
+    HRESULT GetFormat(cudaChannelFormatDesc& channelDesc) override;;
+    HRESULT GetArray(cudaArray** array) override;;
+    HRESULT GetObj(unsigned long long* object) override;;
+    HRESULT GetDataHostSide(void** data) override;;
+
 };
 
 class CRC_TEXTURE Texture2dDesc : public IDesc
@@ -80,6 +85,7 @@ public:
 
     UINT cpuRWFlags_ = 0;
     UINT gpuRWFlags_ = 0;
+    cudaChannelFormatDesc channelDesc_;
 
     UINT stride_ = 0;
     UINT width_ = 0;

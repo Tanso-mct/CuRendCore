@@ -24,6 +24,12 @@ CRC::Buffer::~Buffer()
 
 HRESULT CRC::Buffer::Release()
 {
+    if (!isValid_)
+    {
+        CRCBuffer::CoutWrn({"Buffer is not valid.", "Buffer is already released."});
+        return E_FAIL;
+    }
+
     size_ = 0;
     if (dData_)
     {
@@ -42,7 +48,11 @@ HRESULT CRC::Buffer::Release()
 
 HRESULT CRC::Buffer::GetDevice(std::unique_ptr<CRC::IDevice>*& device)
 {
-    if (!device_) return E_FAIL;
+    if (!device_)
+    {
+        CRCBuffer::CoutWrn({"Buffer is not valid.", "Buffer has no device."});
+        return E_FAIL;
+    }
 
     device = &device_;
     return S_OK;
@@ -50,7 +60,12 @@ HRESULT CRC::Buffer::GetDevice(std::unique_ptr<CRC::IDevice>*& device)
 
 HRESULT CRC::Buffer::GetType(UINT &type)
 {
-    if (type == 0) return E_FAIL;
+    if (!isValid_)
+    {
+        CRCBuffer::CoutWrn({"Buffer is not valid."});
+        return E_FAIL;
+    }
+
     type = type_;
     return S_OK;
 }
@@ -59,23 +74,31 @@ void CRC::Buffer::GetDesc(IDesc *desc)
 {
 }
 
-HRESULT CRC::Buffer::GetDataDeviceSide(UINT &size, void **data)
+HRESULT CRC::Buffer::GetSize(UINT &size)
 {
-    if (!isValid_) return E_FAIL;
+    if (!isValid_)
+    {
+        CRCBuffer::CoutWrn({"Buffer is not valid."});
+        return E_FAIL;
+    }
 
     size = size_;
-    data = &dData_;
-
     return S_OK;
 }
 
-HRESULT CRC::Buffer::GetDataHostSide(UINT &size, void **data)
+HRESULT CRC::Buffer::GetDataDeviceSide(void **data)
 {
     if (!isValid_) return E_FAIL;
 
-    size = size_;
-    data = &hData_;
+    data = &dData_;
+    return S_OK;
+}
 
+HRESULT CRC::Buffer::GetDataHostSide(void **data)
+{
+    if (!isValid_) return E_FAIL;
+
+    data = &hData_;
     return S_OK;
 }
 
@@ -109,11 +132,13 @@ std::unique_ptr<CRC::IProduct> CRC::BufferFactory::Create(CRC::IDesc &desc) cons
         UINT type = 0;
         buffer()->GetType(type);
 
+        UINT size = 0;
+        buffer()->GetSize(size);
+
         if (type & (UINT)CRC::RESOURCE_TYPE::GPU_R || type & (UINT)CRC::RESOURCE_TYPE::GPU_W)
         {
             void** data = nullptr;
-            UINT size = 0;
-            buffer()->GetDataDeviceSide(size, data);
+            buffer()->GetDataDeviceSide(data);
 
             CudaCore::Malloc(data, bufferDesc->size_);
         }
@@ -121,8 +146,7 @@ std::unique_ptr<CRC::IProduct> CRC::BufferFactory::Create(CRC::IDesc &desc) cons
         if (type & (UINT)CRC::RESOURCE_TYPE::CPU_R || type & (UINT)CRC::RESOURCE_TYPE::CPU_W)
         {
             void** data = nullptr;
-            UINT size = 0;
-            buffer()->GetDataHostSide(size, data);
+            buffer()->GetDataHostSide(data);
 
             CudaCore::MallocHost(data, bufferDesc->size_);
         }

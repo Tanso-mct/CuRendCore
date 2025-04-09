@@ -4,7 +4,7 @@
 
 #include "WinAppCore/include/WACore.h"
 
-#include "CRCInterface/include/resource.h"
+#include "CRCInterface/include/buffer.h"
 #include "CRCInterface/include/factory.h"
 #include "CRCInterface/include/device.h"
 
@@ -18,7 +18,7 @@
 namespace CRC
 {
 
-class CRC_BUFFER Buffer : public IResource, public WACore::IContainable, public IProduct
+class CRC_BUFFER Buffer : public IBuffer, public WACore::IContainable, public IProduct
 {
 private:
     std::unique_ptr<IDevice>& device_;
@@ -54,8 +54,13 @@ public:
     HRESULT GetType(UINT& type) override;
     void GetDesc(IDesc *desc) override;
 
-    HRESULT GetDataDeviceSide(UINT& size, void** data) override;
-    HRESULT GetDataHostSide(UINT& size, void** data) override;
+    //*************************************************************************************************************** */
+    // IBuffer
+    //*************************************************************************************************************** */
+
+    HRESULT GetSize(UINT& size) override;
+    HRESULT GetDataDeviceSide(void** data) override;
+    HRESULT GetDataHostSide(void** data) override;
 };
 
 class CRC_BUFFER BufferDesc : public IDesc

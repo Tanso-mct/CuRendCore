@@ -1,15 +1,19 @@
 ﻿#include "CRCTexture/include/pch.h"
 #include "CRCTexture/include/texture2d.cuh"
-#include "texture2d.cuh"
 
-CRC::Texture2d::Texture2d(std::unique_ptr<CRC::IDevice> &device, UINT cpuRWFlags, UINT gpuRWFlags)
-: device_(device),
+CRC::Texture2d::Texture2d
+(
+    std::unique_ptr<CRC::IDevice> &device, 
+    UINT cpuRWFlags, UINT gpuRWFlags, cudaChannelFormatDesc channelDesc
+): device_(device),
 type_(
     ((cpuRWFlags & (UINT)CRC::RW_FLAG::READ) ? (UINT)CRC::RESOURCE_TYPE::CPU_R : 0) |
     ((cpuRWFlags & (UINT)CRC::RW_FLAG::WRITE) ? (UINT)CRC::RESOURCE_TYPE::CPU_W : 0) |
     ((gpuRWFlags & (UINT)CRC::RW_FLAG::READ) ? (UINT)CRC::RESOURCE_TYPE::GPU_R : 0) |
-    ((gpuRWFlags & (UINT)CRC::RW_FLAG::WRITE) ? (UINT)CRC::RESOURCE_TYPE::GPU_W : 0)
-){
+    ((gpuRWFlags & (UINT)CRC::RW_FLAG::WRITE) ? (UINT)CRC::RESOURCE_TYPE::GPU_W : 0) |
+    (UINT)CRC::RESOURCE_TYPE::TEXTURE2D),
+channelDesc_(channelDesc)
+{
     // Initialize the texture with default values
     isValid_ = true;
     width_ = 0;
@@ -76,34 +80,67 @@ void CRC::Texture2d::GetDesc(IDesc *desc)
 {
 }
 
-HRESULT CRC::Texture2d::GetDataDeviceSide(UINT &size, void **data)
+HRESULT CRC::Texture2d::GetSize(UINT &size)
 {
     if (!isValid_) return E_FAIL;
 
-    size = stride_ * width_ * height_;
-    void* dData = &object_;
-    data =  &dData;
-
+    size = width_ * height_ * stride_;
     return S_OK;
 }
 
-HRESULT CRC::Texture2d::GetDataHostSide(UINT &size, void **data)
+HRESULT CRC::Texture2d::GetStride(UINT &stride)
 {
     if (!isValid_) return E_FAIL;
 
-    size = stride_ * width_ * height_;
-    data = &hPtr_;
-
+    stride = stride_;
     return S_OK;
 }
 
-HRESULT CRC::Texture2d::GetArray(UINT &size, cudaArray **array)
+HRESULT CRC::Texture2d::GetWidth(UINT &width)
 {
     if (!isValid_) return E_FAIL;
 
-    size = stride_ * width_ * height_;
+    width = width_;
+    return S_OK;
+}
+
+HRESULT CRC::Texture2d::GetHeight(UINT &height)
+{
+    if (!isValid_) return E_FAIL;
+
+    height = height_;
+    return S_OK;
+}
+
+HRESULT CRC::Texture2d::GetFormat(cudaChannelFormatDesc &channelDesc)
+{
+    if (!isValid_) return E_FAIL;
+
+    channelDesc = channelDesc_;
+    return S_OK;
+}
+
+HRESULT CRC::Texture2d::GetArray(cudaArray **array)
+{
+    if (!isValid_) return E_FAIL;
+
     array = &dArray_;
+    return S_OK;
+}
 
+HRESULT CRC::Texture2d::GetObj(unsigned long long *object)
+{
+    if (!isValid_) return E_FAIL;
+
+    object = &object_;
+    return S_OK;
+}
+
+HRESULT CRC::Texture2d::GetDataHostSide(void **data)
+{
+    if (!isValid_) return E_FAIL;
+
+    data = &hPtr_;
     return S_OK;
 }
 
@@ -140,24 +177,56 @@ std::unique_ptr<CRC::IProduct> CRC::Texture2dFactory::Create(CRC::IDesc &desc) c
         UINT type = 0;
         texture2d()->GetType(type);
 
+        cudaArray* dArray = nullptr;
+        texture2d()->GetArray(&dArray);
         if (type & (UINT)CRC::RESOURCE_TYPE::GPU_R || type & (UINT)CRC::RESOURCE_TYPE::GPU_W)
         {
-            UINT size = 0;
-            cudaArray* dArray = nullptr;
+            UINT width, height;
+            cudaChannelFormatDesc channelDesc;
+            texture2d()->GetWidth(width);
+            texture2d()->GetHeight(height);
+            texture2d()->GetFormat(channelDesc);
+            
+            CudaCore::MallocArray
+            (
+                &dArray, &texture2dDesc->channelDesc_, 
+                width, height, 0
+            );
         }
+
+        struct cudaResourceDesc resDesc;
+        ZeroMemory(&resDesc, sizeof(resDesc));
+        resDesc.resType = cudaResourceTypeArray;
+        resDesc.res.array.array = dArray;
+
+        unsigned long long* object = 0;
+        texture2d()->GetObj(object);
 
         if (type & (UINT)CRC::RESOURCE_TYPE::GPU_R && !(type & (UINT)CRC::RESOURCE_TYPE::GPU_W))
         {
-            
+            struct cudaTextureDesc texDesc;
+            ZeroMemory(&texDesc, sizeof(texDesc));
+            texDesc.addressMode[0] = cudaAddressModeClamp;
+            texDesc.addressMode[1] = cudaAddressModeClamp;
+            texDesc.filterMode = cudaFilterModePoint;
+            texDesc.readMode = cudaReadModeElementType;
+
+            CudaCore::CreateTextureObj(object, &resDesc, &texDesc, 0);
         }
         else if (type & (UINT)CRC::RESOURCE_TYPE::GPU_W)
         {
-
+            CudaCore::CreateSurfaceObj(object, &resDesc);
         }
 
         if (type & (UINT)CRC::RESOURCE_TYPE::CPU_R || type & (UINT)CRC::RESOURCE_TYPE::CPU_W)
         {
-            
+            void** data = nullptr;
+            texture2d()->GetDataHostSide(data);
+
+            UINT size = 0;
+            texture2d()->GetSize(size);
+
+            CudaCore::MallocHost(data, size);
         }
     }
 

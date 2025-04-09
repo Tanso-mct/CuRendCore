@@ -3,19 +3,23 @@
 #include "CRCInterface/include/resource.h"
 
 struct cudaArray;
+struct cudaChannelFormatDesc;
 
 namespace CRC
 {
 
-class IDesc;
-
-class ITexture
+class ITexture : public IResource
 {
 public:
     virtual ~ITexture() = default;
-    virtual HRESULT GetArray(UINT& stride, UINT& width, UINT& height, cudaArray** array) = 0;
-    virtual HRESULT GetObject(UINT& stride, UINT& width, UINT& height, unsigned long long* object) = 0;
-    virtual HRESULT GetDataHostSide(UINT& size, void** data) = 0;
+    virtual HRESULT GetSize(UINT& size) = 0;
+    virtual HRESULT GetStride(UINT& stride) = 0;
+    virtual HRESULT GetWidth(UINT& width) = 0;
+    virtual HRESULT GetHeight(UINT& height) = 0;
+    virtual HRESULT GetFormat(cudaChannelFormatDesc& channelDesc) = 0;
+    virtual HRESULT GetArray(cudaArray** array) = 0;
+    virtual HRESULT GetObj(unsigned long long* object) = 0;
+    virtual HRESULT GetDataHostSide(void** data) = 0;
 };
 
 } // namespace CRC
