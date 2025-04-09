@@ -14,6 +14,7 @@
         "ICRC",
         "ifdef",
         "Inited",
+        "Malloc",
         "nullptr",
         "OBJECTATTR",
         "OVERLAPPEDWINDOW",

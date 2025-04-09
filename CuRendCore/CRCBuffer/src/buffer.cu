@@ -1,12 +1,17 @@
 ﻿#include "CRCBuffer/include/pch.h"
 #include "CRCBuffer/include/buffer.cuh"
 
-CRC::Buffer::Buffer(std::unique_ptr<IDevice> &device)
-: device_(device)
-{
+CRC::Buffer::Buffer(std::unique_ptr<IDevice>& device, UINT cpuRWFlags, UINT gpuRWFlags)
+: device_(device),
+type_
+(
+    ((cpuRWFlags & (UINT)CRC::RW_FLAG::READ) ? (UINT)CRC::RESOURCE_TYPE::CPU_R : 0) |
+    ((cpuRWFlags & (UINT)CRC::RW_FLAG::WRITE) ? (UINT)CRC::RESOURCE_TYPE::CPU_W : 0) |
+    ((gpuRWFlags & (UINT)CRC::RW_FLAG::READ) ? (UINT)CRC::RESOURCE_TYPE::GPU_R : 0) |
+    ((gpuRWFlags & (UINT)CRC::RW_FLAG::WRITE) ? (UINT)CRC::RESOURCE_TYPE::GPU_W : 0)
+){
     // Initialize the buffer with default values
     isValid_ = true;
-    type_ = 0;
     size_ = 0;
     dData_ = nullptr;
     hData_ = nullptr;
@@ -79,5 +84,36 @@ std::unique_ptr<CRC::IProduct> CRC::BufferFactory::Create(CRC::IDesc &desc) cons
         return nullptr;
     }
 
-    return std::make_unique<CRC::Buffer>(bufferDesc->device_);
+    std::unique_ptr<CRC::IProduct> product = std::make_unique<CRC::Buffer>
+    (
+        bufferDesc->device_, 
+        bufferDesc->cpuRWFlags, bufferDesc->gpuRWFlags
+    );
+
+    {
+        WACore::RevertCast<CRC::Buffer, CRC::IProduct> buffer(product);
+
+        UINT type = 0;
+        buffer()->GetType(type);
+
+        if (type & (UINT)CRC::RESOURCE_TYPE::GPU_R || type & (UINT)CRC::RESOURCE_TYPE::GPU_W)
+        {
+            void** data = nullptr;
+            UINT size = 0;
+            buffer()->GetDataDeviceSide(size, data);
+
+            CudaCore::Malloc(data, bufferDesc->size_);
+        }
+
+        if (type & (UINT)CRC::RESOURCE_TYPE::CPU_R || type & (UINT)CRC::RESOURCE_TYPE::CPU_W)
+        {
+            void** data = nullptr;
+            UINT size = 0;
+            buffer()->GetDataHostSide(size, data);
+
+            CudaCore::MallocHost(data, bufferDesc->size_);
+        }
+    }
+
+    return product;
 }

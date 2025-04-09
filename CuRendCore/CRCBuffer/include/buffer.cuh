@@ -24,7 +24,7 @@ private:
     std::unique_ptr<IDevice>& device_;
 
     bool isValid_ = false;
-    UINT type_ = 0;
+    const UINT type_ = 0;
 
     UINT size_ = 0;
     void* dData_ = nullptr;
@@ -32,7 +32,7 @@ private:
 
 public:
     Buffer() = delete;
-    Buffer(std::unique_ptr<IDevice>& device);
+    Buffer(std::unique_ptr<IDevice>& device, UINT cpuRWFlags, UINT gpuRWFlags);
     ~Buffer() override;
 
     //*************************************************************************************************************** */
@@ -61,10 +61,16 @@ public:
 class CRC_BUFFER BufferDesc : public IDesc
 {
 public:
+    BufferDesc() = delete;
     BufferDesc(std::unique_ptr<IDevice>& device);
     ~BufferDesc() override = default;
 
     std::unique_ptr<IDevice>& device_;
+
+    UINT cpuRWFlags = 0;
+    UINT gpuRWFlags = 0;
+
+    UINT size_ = 0;
 };
 
 class CRC_BUFFER BufferFactory : public IFactory

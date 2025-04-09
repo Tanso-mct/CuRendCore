@@ -7,9 +7,16 @@ namespace CRC
 
 class IDesc;
 
+enum class RW_FLAG : UINT
+{
+    NONE = 0,
+    READ = 1 << 1,
+    WRITE = 1 << 2,
+};
+
 enum class RESOURCE_TYPE : UINT
 {
-    UNKNOWN = 1 << 0,
+    UNKNOWN = 0,
 
     BUFFER = 1 << 1,
     TEXTURE1D = 1 << 2,
