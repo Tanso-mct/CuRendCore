@@ -1,7 +1,7 @@
 ﻿#include "CRCBuffer/include/pch.h"
 #include "CRCBuffer/include/buffer.cuh"
 
-CRC::Buffer::Buffer(std::unique_ptr<IDevice>& device, UINT cpuRWFlags, UINT gpuRWFlags)
+CRC::Buffer::Buffer(std::unique_ptr<CRC::IDevice>& device, UINT cpuRWFlags, UINT gpuRWFlags)
 : device_(device),
 type_
 (
@@ -24,7 +24,17 @@ CRC::Buffer::~Buffer()
 
 HRESULT CRC::Buffer::Release()
 {
-
+    size_ = 0;
+    if (dData_)
+    {
+        CudaCore::Free(&dData_);
+        dData_ = nullptr;
+    }
+    if (hData_)
+    {
+        CudaCore::FreeHost(&hData_);
+        hData_ = nullptr;
+    }
 
     isValid_ = false;
     return S_OK;
@@ -51,7 +61,7 @@ void CRC::Buffer::GetDesc(IDesc *desc)
 
 HRESULT CRC::Buffer::GetDataDeviceSide(UINT &size, void **data)
 {
-    if (size == 0 || data == nullptr) return E_INVALIDARG;
+    if (!isValid_) return E_FAIL;
 
     size = size_;
     data = &dData_;
@@ -61,7 +71,7 @@ HRESULT CRC::Buffer::GetDataDeviceSide(UINT &size, void **data)
 
 HRESULT CRC::Buffer::GetDataHostSide(UINT &size, void **data)
 {
-    if (size == 0 || data == nullptr) return E_INVALIDARG;
+    if (!isValid_) return E_FAIL;
 
     size = size_;
     data = &hData_;
@@ -69,10 +79,13 @@ HRESULT CRC::Buffer::GetDataHostSide(UINT &size, void **data)
     return S_OK;
 }
 
-CRC::BufferDesc::BufferDesc(std::unique_ptr<IDevice> &device)
+CRC::BufferDesc::BufferDesc(std::unique_ptr<CRC::IDevice> &device)
 : device_(device)
 {
-    
+    // Initialize the buffer description with default values
+    cpuRWFlags_ = 0;
+    gpuRWFlags_ = 0;
+    size_ = 0;
 }
 
 std::unique_ptr<CRC::IProduct> CRC::BufferFactory::Create(CRC::IDesc &desc) const
@@ -87,7 +100,7 @@ std::unique_ptr<CRC::IProduct> CRC::BufferFactory::Create(CRC::IDesc &desc) cons
     std::unique_ptr<CRC::IProduct> product = std::make_unique<CRC::Buffer>
     (
         bufferDesc->device_, 
-        bufferDesc->cpuRWFlags, bufferDesc->gpuRWFlags
+        bufferDesc->cpuRWFlags_, bufferDesc->gpuRWFlags_
     );
 
     {
