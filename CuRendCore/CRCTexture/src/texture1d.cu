@@ -1,11 +1,11 @@
 ﻿#include "CRCTexture/include/pch.h"
-#include "CRCTexture/include/texture2d.cuh"
+#include "CRCTexture/include/texture1d.cuh"
 
-CRC::Texture2d::Texture2d
+CRC::Texture1d::Texture1d
 (
     std::unique_ptr<CRC::IDevice> &device, 
     UINT cpuRWFlags, UINT gpuRWFlags, cudaChannelFormatDesc channelDesc,
-    UINT stride, UINT width, UINT height
+    UINT stride, UINT width
 ): device_(device),
 type_(
     ((cpuRWFlags & (UINT)CRC::RW_FLAG::READ) ? (UINT)CRC::RESOURCE_TYPE::CPU_R : 0) |
@@ -13,7 +13,7 @@ type_(
     ((gpuRWFlags & (UINT)CRC::RW_FLAG::READ) ? (UINT)CRC::RESOURCE_TYPE::GPU_R : 0) |
     ((gpuRWFlags & (UINT)CRC::RW_FLAG::WRITE) ? (UINT)CRC::RESOURCE_TYPE::GPU_W : 0) |
     (UINT)CRC::RESOURCE_TYPE::TEXTURE2D),
-channelDesc_(channelDesc), stride_(stride), width_(width), height_(height)
+channelDesc_(channelDesc), stride_(stride), width_(width)
 {
     // Initialize the texture with default values
     isValid_ = true;
@@ -22,12 +22,12 @@ channelDesc_(channelDesc), stride_(stride), width_(width), height_(height)
     object_ = 0;
 }
 
-CRC::Texture2d::~Texture2d()
+CRC::Texture1d::~Texture1d()
 {
     if (isValid_) Release();
 }
 
-HRESULT CRC::Texture2d::Release()
+HRESULT CRC::Texture1d::Release()
 {
     if (type_ & (UINT)CRC::RESOURCE_TYPE::GPU_W)
     {
@@ -55,7 +55,7 @@ HRESULT CRC::Texture2d::Release()
     return S_OK;
 }
 
-HRESULT CRC::Texture2d::GetDevice(const std::unique_ptr<CRC::IDevice> *&device) const
+HRESULT CRC::Texture1d::GetDevice(const std::unique_ptr<CRC::IDevice> *&device) const
 {
     if (!device_) return E_FAIL;
 
@@ -63,26 +63,26 @@ HRESULT CRC::Texture2d::GetDevice(const std::unique_ptr<CRC::IDevice> *&device) 
     return S_OK;
 }
 
-HRESULT CRC::Texture2d::GetType(UINT &type) const
+HRESULT CRC::Texture1d::GetType(UINT &type) const
 {
     if (type == 0) return E_FAIL;
     type = type_;
     return S_OK;
 }
 
-void CRC::Texture2d::GetDesc(IDesc *desc) const
+void CRC::Texture1d::GetDesc(IDesc *desc) const
 {
 }
 
-HRESULT CRC::Texture2d::GetSize(UINT &size) const
+HRESULT CRC::Texture1d::GetSize(UINT &size) const
 {
     if (!isValid_) return E_FAIL;
 
-    size = width_ * height_ * stride_;
+    size = width_ * stride_;
     return S_OK;
 }
 
-HRESULT CRC::Texture2d::GetStride(UINT &stride) const
+HRESULT CRC::Texture1d::GetStride(UINT &stride) const
 {
     if (!isValid_) return E_FAIL;
 
@@ -90,7 +90,7 @@ HRESULT CRC::Texture2d::GetStride(UINT &stride) const
     return S_OK;
 }
 
-HRESULT CRC::Texture2d::GetWidth(UINT &width) const
+HRESULT CRC::Texture1d::GetWidth(UINT &width) const
 {
     if (!isValid_) return E_FAIL;
 
@@ -98,15 +98,15 @@ HRESULT CRC::Texture2d::GetWidth(UINT &width) const
     return S_OK;
 }
 
-HRESULT CRC::Texture2d::GetHeight(UINT &height) const
+HRESULT CRC::Texture1d::GetHeight(UINT &height) const
 {
     if (!isValid_) return E_FAIL;
 
-    height = height_;
+    height = 1;
     return S_OK;
 }
 
-HRESULT CRC::Texture2d::GetDepth(UINT &depth) const
+HRESULT CRC::Texture1d::GetDepth(UINT &depth) const
 {
     if (!isValid_) return E_FAIL;
 
@@ -114,7 +114,7 @@ HRESULT CRC::Texture2d::GetDepth(UINT &depth) const
     return S_OK;
 }
 
-HRESULT CRC::Texture2d::GetFormat(cudaChannelFormatDesc &channelDesc) const
+HRESULT CRC::Texture1d::GetFormat(cudaChannelFormatDesc &channelDesc) const
 {
     if (!isValid_) return E_FAIL;
 
@@ -122,7 +122,7 @@ HRESULT CRC::Texture2d::GetFormat(cudaChannelFormatDesc &channelDesc) const
     return S_OK;
 }
 
-HRESULT CRC::Texture2d::GetArray(cudaArray **array)
+HRESULT CRC::Texture1d::GetArray(cudaArray **array)
 {
     if (!isValid_) return E_FAIL;
 
@@ -130,7 +130,7 @@ HRESULT CRC::Texture2d::GetArray(cudaArray **array)
     return S_OK;
 }
 
-HRESULT CRC::Texture2d::GetObj(unsigned long long *object)
+HRESULT CRC::Texture1d::GetObj(unsigned long long *object)
 {
     if (!isValid_) return E_FAIL;
 
@@ -138,7 +138,7 @@ HRESULT CRC::Texture2d::GetObj(unsigned long long *object)
     return S_OK;
 }
 
-HRESULT CRC::Texture2d::GetDataHostSide(void **data)
+HRESULT CRC::Texture1d::GetDataHostSide(void **data)
 {
     if (!isValid_) return E_FAIL;
 
@@ -146,7 +146,7 @@ HRESULT CRC::Texture2d::GetDataHostSide(void **data)
     return S_OK;
 }
 
-CRC::Texture2dDesc::Texture2dDesc(std::unique_ptr<CRC::IDevice> &device)
+CRC::Texture1dDesc::Texture1dDesc(std::unique_ptr<CRC::IDevice> &device)
 : device_(device)
 {
     // Initialize the texture descriptor with default values
@@ -155,45 +155,44 @@ CRC::Texture2dDesc::Texture2dDesc(std::unique_ptr<CRC::IDevice> &device)
 
     stride_ = 0;
     width_ = 0;
-    height_ = 0;
 }
 
-std::unique_ptr<CRC::IProduct> CRC::Texture2dFactory::Create(CRC::IDesc &desc) const
+std::unique_ptr<CRC::IProduct> CRC::Texture1dFactory::Create(CRC::IDesc &desc) const
 {
-    CRC::Texture2dDesc* texture2dDesc = WACore::As<CRC::Texture2dDesc>(&desc);
-    if (!texture2dDesc)
+    CRC::Texture1dDesc* texture1dDesc = WACore::As<CRC::Texture1dDesc>(&desc);
+    if (!texture1dDesc)
     {
-        CRCTexture::CoutWrn({"Failed to create texture2d from desc.", "Desc is not CRC::Texture2dDesc."});
+        CRCTexture::CoutWrn({"Failed to create texture1d from desc.", "Desc is not CRC::Texture1dDesc."});
         return nullptr;
     }
 
-    std::unique_ptr<CRC::IProduct> product = std::make_unique<CRC::Texture2d>
+    std::unique_ptr<CRC::IProduct> product = std::make_unique<CRC::Texture1d>
     (
-        texture2dDesc->device_, 
-        texture2dDesc->cpuRWFlags_, texture2dDesc->gpuRWFlags_,
-        texture2dDesc->channelDesc_,
-        texture2dDesc->stride_, texture2dDesc->width_, texture2dDesc->height_
+        texture1dDesc->device_, 
+        texture1dDesc->cpuRWFlags_, texture1dDesc->gpuRWFlags_,
+        texture1dDesc->channelDesc_,
+        texture1dDesc->stride_, texture1dDesc->width_
     );
 
     {
-        WACore::RevertCast<CRC::Texture2d, CRC::IProduct> texture2d(product);
+        WACore::RevertCast<CRC::Texture1d, CRC::IProduct> texture1d(product);
 
         UINT type = 0;
-        texture2d()->GetType(type);
+        texture1d()->GetType(type);
 
         cudaArray* dArray = nullptr;
-        texture2d()->GetArray(&dArray);
+        texture1d()->GetArray(&dArray);
         if (type & (UINT)CRC::RESOURCE_TYPE::GPU_R || type & (UINT)CRC::RESOURCE_TYPE::GPU_W)
         {
             UINT width, height;
             cudaChannelFormatDesc channelDesc;
-            texture2d()->GetWidth(width);
-            texture2d()->GetHeight(height);
-            texture2d()->GetFormat(channelDesc);
+            texture1d()->GetWidth(width);
+            texture1d()->GetHeight(height);
+            texture1d()->GetFormat(channelDesc);
             
             CudaCore::MallocArray
             (
-                &dArray, &texture2dDesc->channelDesc_, 
+                &dArray, &texture1dDesc->channelDesc_, 
                 width, height, 0
             );
         }
@@ -204,11 +203,11 @@ std::unique_ptr<CRC::IProduct> CRC::Texture2dFactory::Create(CRC::IDesc &desc) c
         resDesc.res.array.array = dArray;
 
         unsigned long long* object = 0;
-        texture2d()->GetObj(object);
+        texture1d()->GetObj(object);
 
         if (type & (UINT)CRC::RESOURCE_TYPE::GPU_R && !(type & (UINT)CRC::RESOURCE_TYPE::GPU_W))
         {
-            CudaCore::CreateTextureObj(object, &resDesc, &texture2dDesc->cudaTextureDesc_, 0);
+            CudaCore::CreateTextureObj(object, &resDesc, &texture1dDesc->cudaTextureDesc_, 0);
         }
         else if (type & (UINT)CRC::RESOURCE_TYPE::GPU_W)
         {
@@ -218,10 +217,10 @@ std::unique_ptr<CRC::IProduct> CRC::Texture2dFactory::Create(CRC::IDesc &desc) c
         if (type & (UINT)CRC::RESOURCE_TYPE::CPU_R || type & (UINT)CRC::RESOURCE_TYPE::CPU_W)
         {
             void** data = nullptr;
-            texture2d()->GetDataHostSide(data);
+            texture1d()->GetDataHostSide(data);
 
             UINT size = 0;
-            texture2d()->GetSize(size);
+            texture1d()->GetSize(size);
 
             CudaCore::MallocHost(data, size);
         }

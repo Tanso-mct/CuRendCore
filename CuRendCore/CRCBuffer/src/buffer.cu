@@ -1,18 +1,17 @@
 ﻿#include "CRCBuffer/include/pch.h"
 #include "CRCBuffer/include/buffer.cuh"
 
-CRC::Buffer::Buffer(std::unique_ptr<CRC::IDevice>& device, UINT cpuRWFlags, UINT gpuRWFlags)
+CRC::Buffer::Buffer(std::unique_ptr<CRC::IDevice>& device, UINT cpuRWFlags, UINT gpuRWFlags, UINT size)
 : device_(device),
-type_
-(
+type_(
     ((cpuRWFlags & (UINT)CRC::RW_FLAG::READ) ? (UINT)CRC::RESOURCE_TYPE::CPU_R : 0) |
     ((cpuRWFlags & (UINT)CRC::RW_FLAG::WRITE) ? (UINT)CRC::RESOURCE_TYPE::CPU_W : 0) |
     ((gpuRWFlags & (UINT)CRC::RW_FLAG::READ) ? (UINT)CRC::RESOURCE_TYPE::GPU_R : 0) |
-    ((gpuRWFlags & (UINT)CRC::RW_FLAG::WRITE) ? (UINT)CRC::RESOURCE_TYPE::GPU_W : 0)
-){
+    ((gpuRWFlags & (UINT)CRC::RW_FLAG::WRITE) ? (UINT)CRC::RESOURCE_TYPE::GPU_W : 0)),
+size_(size)
+{
     // Initialize the buffer with default values
     isValid_ = true;
-    size_ = 0;
     dData_ = nullptr;
     hData_ = nullptr;
 }
@@ -30,7 +29,6 @@ HRESULT CRC::Buffer::Release()
         return E_FAIL;
     }
 
-    size_ = 0;
     if (dData_)
     {
         CudaCore::Free(&dData_);
@@ -46,7 +44,7 @@ HRESULT CRC::Buffer::Release()
     return S_OK;
 }
 
-HRESULT CRC::Buffer::GetDevice(std::unique_ptr<CRC::IDevice>*& device)
+HRESULT CRC::Buffer::GetDevice(const std::unique_ptr<CRC::IDevice>*& device) const
 {
     if (!device_)
     {
@@ -58,7 +56,7 @@ HRESULT CRC::Buffer::GetDevice(std::unique_ptr<CRC::IDevice>*& device)
     return S_OK;
 }
 
-HRESULT CRC::Buffer::GetType(UINT &type)
+HRESULT CRC::Buffer::GetType(UINT &type) const
 {
     if (!isValid_)
     {
@@ -70,11 +68,11 @@ HRESULT CRC::Buffer::GetType(UINT &type)
     return S_OK;
 }
 
-void CRC::Buffer::GetDesc(IDesc *desc)
+void CRC::Buffer::GetDesc(IDesc *desc) const
 {
 }
 
-HRESULT CRC::Buffer::GetSize(UINT &size)
+HRESULT CRC::Buffer::GetSize(UINT &size) const
 {
     if (!isValid_)
     {
@@ -123,7 +121,7 @@ std::unique_ptr<CRC::IProduct> CRC::BufferFactory::Create(CRC::IDesc &desc) cons
     std::unique_ptr<CRC::IProduct> product = std::make_unique<CRC::Buffer>
     (
         bufferDesc->device_, 
-        bufferDesc->cpuRWFlags_, bufferDesc->gpuRWFlags_
+        bufferDesc->cpuRWFlags_, bufferDesc->gpuRWFlags_, bufferDesc->size_
     );
 
     {

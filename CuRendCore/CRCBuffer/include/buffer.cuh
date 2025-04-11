@@ -21,18 +21,18 @@ namespace CRC
 class CRC_BUFFER Buffer : public IBuffer, public WACore::IContainable, public IProduct
 {
 private:
-    std::unique_ptr<IDevice>& device_;
+    const std::unique_ptr<IDevice>& device_;
 
     bool isValid_ = false;
     const UINT type_ = 0;
 
-    UINT size_ = 0;
+    const UINT size_ = 0;
     void* dData_ = nullptr;
     void* hData_ = nullptr;
 
 public:
     Buffer() = delete;
-    Buffer(std::unique_ptr<IDevice>& device, UINT cpuRWFlags, UINT gpuRWFlags);
+    Buffer(std::unique_ptr<IDevice>& device, UINT cpuRWFlags, UINT gpuRWFlags, UINT size);
     ~Buffer() override;
 
     //*************************************************************************************************************** */
@@ -45,20 +45,20 @@ public:
     // IDeviceChild
     //*************************************************************************************************************** */
 
-    HRESULT GetDevice(std::unique_ptr<IDevice>*& device) override;
+    HRESULT GetDevice(const std::unique_ptr<IDevice>*& device) const override;
 
     //*************************************************************************************************************** */
     // IResource
     //*************************************************************************************************************** */
 
-    HRESULT GetType(UINT& type) override;
-    void GetDesc(IDesc *desc) override;
+    HRESULT GetType(UINT& type) const override;
+    void GetDesc(IDesc *desc) const override;
 
     //*************************************************************************************************************** */
     // IBuffer
     //*************************************************************************************************************** */
 
-    HRESULT GetSize(UINT& size) override;
+    HRESULT GetSize(UINT& size) const override;
     HRESULT GetDataDeviceSide(void** data) override;
     HRESULT GetDataHostSide(void** data) override;
 };

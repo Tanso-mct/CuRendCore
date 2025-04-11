@@ -13,7 +13,7 @@ class IDeviceChild : public IUnknown
 {
 public:
     virtual ~IDeviceChild() = default;
-    virtual HRESULT GetDevice(std::unique_ptr<IDevice>*& device) = 0;
+    virtual HRESULT GetDevice(const std::unique_ptr<IDevice>*& device) const = 0;
 };
 
 } // namespace CRC

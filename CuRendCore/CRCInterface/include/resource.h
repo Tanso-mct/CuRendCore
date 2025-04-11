@@ -34,11 +34,8 @@ class IResource : public IDeviceChild
 public:
     virtual ~IResource() = default;
     
-    virtual HRESULT GetType(UINT& type) = 0;
-    virtual void GetDesc(IDesc *desc) = 0;
-
-    virtual HRESULT GetDataDeviceSide(UINT& size, void** data) = 0;
-    virtual HRESULT GetDataHostSide(UINT& size, void** data) = 0;
+    virtual HRESULT GetType(UINT& type) const = 0;
+    virtual void GetDesc(IDesc *desc) const = 0;
 };
 
 } // namespace CRC

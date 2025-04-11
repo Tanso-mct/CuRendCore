@@ -35,6 +35,10 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CRCBuffer_Test", "CRCBuffer_Test\CRCBuffer_Test.vcxproj", "{19D73E0C-10C6-4242-9055-FEF40AB8D271}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CRCTexture", "CRCTexture\CRCTexture.vcxproj", "{D0B2B28C-A914-4717-88E8-A2C187564224}"
+	ProjectSection(ProjectDependencies) = postProject
+		{45E2BCB1-0517-4B19-859B-ACF9D2102B43} = {45E2BCB1-0517-4B19-859B-ACF9D2102B43}
+		{BEAE07B0-734F-4061-8950-7771630A9569} = {BEAE07B0-734F-4061-8950-7771630A9569}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

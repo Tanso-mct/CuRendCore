@@ -18,7 +18,7 @@
 namespace CRC
 {
 
-class CRC_TEXTURE Texture2d : public ITexture, public WACore::IContainable, public IProduct
+class CRC_TEXTURE Texture1d : public ITexture, public WACore::IContainable, public IProduct
 {
 private:
     const std::unique_ptr<IDevice>& device_;
@@ -33,16 +33,15 @@ private:
 
     const UINT stride_ = 0;
     const UINT width_ = 0;
-    const UINT height_ = 0;
 
 public:
-    Texture2d() = delete;
-    Texture2d
+    Texture1d() = delete;
+    Texture1d
     (
         std::unique_ptr<IDevice>& device, UINT cpuRWFlags, UINT gpuRWFlags, cudaChannelFormatDesc channelDesc,
-        UINT stride, UINT width, UINT height
+        UINT stride, UINT width
     );
-    ~Texture2d() override;
+    ~Texture1d() override;
 
     //*************************************************************************************************************** */
     // IUnknown
@@ -79,12 +78,12 @@ public:
 
 };
 
-class CRC_TEXTURE Texture2dDesc : public IDesc
+class CRC_TEXTURE Texture1dDesc : public IDesc
 {
 public:
-    Texture2dDesc() = delete;
-    Texture2dDesc(std::unique_ptr<IDevice>& device);
-    ~Texture2dDesc() override = default;
+    Texture1dDesc() = delete;
+    Texture1dDesc(std::unique_ptr<IDevice>& device);
+    ~Texture1dDesc() override = default;
 
     std::unique_ptr<IDevice>& device_;
 
@@ -94,15 +93,14 @@ public:
 
     UINT stride_ = 0;
     UINT width_ = 0;
-    UINT height_ = 0;
 
     cudaTextureDesc cudaTextureDesc_;
 };
 
-class CRC_TEXTURE Texture2dFactory : public IFactory
+class CRC_TEXTURE Texture1dFactory : public IFactory
 {
 public:
-    ~Texture2dFactory() override = default;
+    ~Texture1dFactory() override = default;
     std::unique_ptr<IProduct> Create(IDesc& desc) const override;
 };
 
