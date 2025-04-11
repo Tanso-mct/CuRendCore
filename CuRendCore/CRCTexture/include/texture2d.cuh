@@ -90,6 +90,8 @@ public:
     UINT stride_ = 0;
     UINT width_ = 0;
     UINT height_ = 0;
+
+    cudaTextureDesc cudaTextureDesc_;
 };
 
 class CRC_TEXTURE Texture2dFactory : public IFactory

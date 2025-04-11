@@ -204,14 +204,7 @@ std::unique_ptr<CRC::IProduct> CRC::Texture2dFactory::Create(CRC::IDesc &desc) c
 
         if (type & (UINT)CRC::RESOURCE_TYPE::GPU_R && !(type & (UINT)CRC::RESOURCE_TYPE::GPU_W))
         {
-            struct cudaTextureDesc texDesc;
-            ZeroMemory(&texDesc, sizeof(texDesc));
-            texDesc.addressMode[0] = cudaAddressModeClamp;
-            texDesc.addressMode[1] = cudaAddressModeClamp;
-            texDesc.filterMode = cudaFilterModePoint;
-            texDesc.readMode = cudaReadModeElementType;
-
-            CudaCore::CreateTextureObj(object, &resDesc, &texDesc, 0);
+            CudaCore::CreateTextureObj(object, &resDesc, &texture2dDesc->cudaTextureDesc_, 0);
         }
         else if (type & (UINT)CRC::RESOURCE_TYPE::GPU_W)
         {
