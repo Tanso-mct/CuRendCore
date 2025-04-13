@@ -1,8 +1,8 @@
 ﻿#pragma once
-#include "config.h"
+#include "WinAppCore/include/config.h"
 
-#include "event.h"
-#include "container.h"
+#include "WinAppCore/include/event.h"
+#include "WinAppCore/include/container.h"
 
 namespace WACore
 {

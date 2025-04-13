@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "config.h"
+#include "WinAppCore/include/config.h"
 
 #include <iostream>
 #include <initializer_list>

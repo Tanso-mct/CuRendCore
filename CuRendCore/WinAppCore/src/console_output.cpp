@@ -1,5 +1,5 @@
-﻿#include "pch.h"
-#include "console_output.h"
+﻿#include "WinAppCore/include/pch.h"
+#include "WinAppCore/include/console_output.h"
 
 WACore::IssueNotifier::IssueNotifier(const unsigned int &errorCount, const unsigned int &warningCount)
 : errorCount_(errorCount),

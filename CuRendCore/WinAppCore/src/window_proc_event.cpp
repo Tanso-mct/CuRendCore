@@ -1,5 +1,5 @@
-﻿#include "pch.h"
-#include "window_proc_event.h"
+﻿#include "WinAppCore/include/pch.h"
+#include "WinAppCore/include/window_proc_event.h"
 
 void WIN_APP_CORE WACore::AddWPEventInsts
 (

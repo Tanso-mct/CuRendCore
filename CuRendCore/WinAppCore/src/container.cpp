@@ -1,5 +1,5 @@
-﻿#include "pch.h"
-#include "container.h"
+﻿#include "WinAppCore/include/pch.h"
+#include "WinAppCore/include/container.h"
 
 int WACore::Container::Add(std::unique_ptr<WACore::IContainable> data)
 {

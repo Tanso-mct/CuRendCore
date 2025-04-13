@@ -1,7 +1,7 @@
 ﻿#pragma once
-#include "config.h"
+#include "WinAppCore/include/config.h"
 
-#include "container.h"
+#include "WinAppCore/include/container.h"
 
 #include <Windows.h>
 #include <memory>
