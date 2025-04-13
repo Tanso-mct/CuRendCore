@@ -117,7 +117,8 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>cudart_static.lib;d3d11.lib;$(SolutionDir)$(Platform)\$(Configuration)\WinAppCore.lib;$(SolutionDir)$(Platform)\$(Configuration)\CudaCore.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)$(Platform)\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <CudaCompile>
       <AdditionalOptions>--std=c++17 %(AdditionalOptions)</AdditionalOptions>
@@ -143,7 +144,8 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>cudart_static.lib;d3d11.lib;$(SolutionDir)$(Platform)\$(Configuration)\WinAppCore.lib;$(SolutionDir)$(Platform)\$(Configuration)\CudaCore.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)$(Platform)\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <CudaCompile />
     <CudaCompile>

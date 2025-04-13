@@ -193,7 +193,7 @@ std::unique_ptr<CRC::IProduct> CRC::Texture1dFactory::Create(CRC::IDesc &desc) c
             CudaCore::MallocArray
             (
                 &dArray, &texture1dDesc->channelDesc_, 
-                width, height, 0
+                width, height
             );
         }
 
