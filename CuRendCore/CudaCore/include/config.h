@@ -7,3 +7,6 @@
 #else
 #define CUDA_CORE __declspec(dllimport)
 #endif
+
+#pragma comment(lib, "WinAppCore.lib")
+#pragma comment(lib, "cudart_static.lib")

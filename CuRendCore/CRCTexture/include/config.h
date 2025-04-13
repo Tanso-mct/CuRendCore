@@ -7,3 +7,7 @@
 #else
 #define CRC_TEXTURE __declspec(dllimport)
 #endif
+
+#pragma comment(lib, "cudart_static.lib")
+#pragma comment(lib, "WinAppCore.lib")
+#pragma comment(lib, "CudaCore.lib")
