@@ -36,7 +36,7 @@ public:
     virtual HRESULT CreateRasterizerState(IDesc& desc, std::unique_ptr<IState>& rasterizerState) = 0;
     virtual HRESULT CreateSamplerState(IDesc& desc, std::unique_ptr<IState>& samplerState) = 0;
 
-    virtual HRESULT GetImmediateContext(std::unique_ptr<IDeviceContext>& context) = 0;
+    virtual HRESULT GetDeviceContext(std::unique_ptr<IDeviceContext>& context) = 0;
 };
 
 } // namespace CRC
