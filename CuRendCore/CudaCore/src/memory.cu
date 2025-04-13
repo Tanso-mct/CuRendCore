@@ -468,6 +468,128 @@ CUDA_CORE bool CudaCore::TryFreeArray(cudaArray_t *array)
     }
 }
 
+CUDA_CORE void CudaCore::Malloc3DArray
+(
+    cudaArray_t *array, const cudaChannelFormatDesc *desc, 
+    size_t width, size_t height, size_t depth, unsigned int flags
+){
+    cudaExtent extent = make_cudaExtent(width, height, depth);
+    if (CheckCudaErr(cudaMalloc3DArray(array, desc, extent, flags)))
+    {
+#ifndef NDEBUG
+        CudaCore::CoutDebug
+        ({
+            "CUDA malloc3DArray succeeded.", 
+            "address:" + ::GetPointerAddress(*array),
+            "width:" + std::to_string(width),
+            "height:" + std::to_string(height),
+            "depth:" + std::to_string(depth),
+        });
+#endif
+    }
+    else
+    {
+        cudaError_t err = cudaGetLastError();
+        CudaCore::CoutErr
+        ({
+            "CUDA malloc3DArray failed.", 
+            "code:" + std::to_string(err),
+            "reason:" + std::string(cudaGetErrorString(err))
+        });
+
+        throw std::runtime_error("CudaCore::Malloc3DArray failed");
+    }
+}
+
+CUDA_CORE bool CudaCore::TryMalloc3DArray
+(
+    cudaArray_t *array, const cudaChannelFormatDesc *desc, 
+    size_t width, size_t height, size_t depth, unsigned int flags
+){
+    cudaExtent extent = make_cudaExtent(width, height, depth);
+    if (CheckCudaErr(cudaMalloc3DArray(array, desc, extent, flags)))
+    {
+#ifndef NDEBUG
+        CudaCore::CoutDebug
+        ({
+            "CUDA malloc3DArray succeeded.", 
+            "address:" + ::GetPointerAddress(*array),
+            "width:" + std::to_string(width),
+            "height:" + std::to_string(height),
+            "depth:" + std::to_string(depth),
+        });
+#endif
+        return true;
+    }
+    else
+    {
+        cudaError_t err = cudaGetLastError();
+        CudaCore::CoutErr
+        ({
+            "CUDA malloc3DArray failed.", 
+            "code:" + std::to_string(err),
+            "reason:" + std::string(cudaGetErrorString(err))
+        });
+
+        return false;
+    }
+}
+
+CUDA_CORE void CudaCore::Free3D(cudaArray_t *array)
+{
+    if (CheckCudaErr(cudaFreeArray(*array)))
+    {
+#ifndef NDEBUG
+        CudaCore::CoutDebug
+        ({
+            "CUDA free3DArray succeeded.", 
+            "address:" + ::GetPointerAddress(*array),
+        });
+#endif
+        *array = nullptr;
+    }
+    else
+    {
+        cudaError_t err = cudaGetLastError();
+        CudaCore::CoutErr
+        ({
+            "CUDA free3DArray failed.", 
+            "code:" + std::to_string(err),
+            "reason:" + std::string(cudaGetErrorString(err))
+        });
+
+        throw std::runtime_error("CudaCore::Free3D failed");
+    }
+}
+
+CUDA_CORE bool CudaCore::TryFree3D(cudaArray_t *array)
+{
+    if (CheckCudaErr(cudaFreeArray(*array)))
+    {
+#ifndef NDEBUG
+        CudaCore::CoutDebug
+        ({
+            "CUDA free3DArray succeeded.", 
+            "address:" + ::GetPointerAddress(*array),
+        });
+#endif
+        *array = nullptr;
+        return true;
+    }
+    else
+    {
+        cudaError_t err = cudaGetLastError();
+        CudaCore::CoutErr
+        ({
+            "CUDA free3DArray failed.", 
+            "code:" + std::to_string(err),
+            "reason:" + std::string(cudaGetErrorString(err))
+        });
+
+        return false;
+    }
+}
+
 CUDA_CORE void CudaCore::Memcpy(void *dst, const void *src, size_t size, cudaMemcpyKind kind)
 {
     if (CheckCudaErr(cudaMemcpy(dst, src, size, kind)))
@@ -517,6 +639,344 @@ CUDA_CORE bool CudaCore::TryMemcpy(void *dst, const void *src, size_t size, cuda
         CudaCore::CoutErr
         ({
             "CUDA memcpy failed.", 
+            "code:" + std::to_string(err),
+            "reason:" + std::string(cudaGetErrorString(err))
+        });
+
+        return false;
+    }
+}
+
+CUDA_CORE void CudaCore::Memcpy2DToArray
+(
+    cudaArray_t dst, size_t dstOffsetX, size_t dstOffsetY, 
+    const void *src, size_t srcPitch, size_t width, size_t height, cudaMemcpyKind kind
+){
+    if 
+    (
+        CheckCudaErr(cudaMemcpy2DToArray
+        (
+            dst, dstOffsetX, dstOffsetY, src, srcPitch, width, height, kind
+        ))
+    ){
+#ifndef NDEBUG
+        CudaCore::CoutDebug
+        ({
+            "CUDA memcpy2DToArray succeeded.", 
+            "dst address:" + ::GetPointerAddress(dst),
+            "src address:" + ::GetPointerAddress(src),
+            "width:" + std::to_string(width),
+            "height:" + std::to_string(height),
+        });
+#endif
+    }
+    else
+    {
+        cudaError_t err = cudaGetLastError();
+        CudaCore::CoutErr
+        ({
+            "CUDA memcpy2DToArray failed.", 
+            "code:" + std::to_string(err),
+            "reason:" + std::string(cudaGetErrorString(err))
+        });
+
+        throw std::runtime_error("CudaCore::Memcpy2DToArray failed");
+    }
+}
+
+CUDA_CORE bool CudaCore::TryMemcpy2DToArray
+(
+    cudaArray_t dst, size_t dstOffsetX, size_t dstOffsetY, 
+    const void *src, size_t srcPitch, size_t width, size_t height, cudaMemcpyKind kind
+){
+    if 
+    (
+        CheckCudaErr(cudaMemcpy2DToArray
+        (
+            dst, dstOffsetX, dstOffsetY, src, srcPitch, width, height, kind
+        ))
+    ){
+#ifndef NDEBUG
+        CudaCore::CoutDebug
+        ({
+            "CUDA memcpy2DToArray succeeded.", 
+            "dst address:" + ::GetPointerAddress(dst),
+            "src address:" + ::GetPointerAddress(src),
+            "width:" + std::to_string(width),
+            "height:" + std::to_string(height),
+        });
+#endif
+        return true;
+    }
+    else
+    {
+        cudaError_t err = cudaGetLastError();
+        CudaCore::CoutErr
+        ({
+            "CUDA memcpy2DToArray failed.", 
+            "code:" + std::to_string(err),
+            "reason:" + std::string(cudaGetErrorString(err))
+        });
+
+        return false;
+    }
+}
+
+CUDA_CORE void CudaCore::Memcpy2DFromArray
+(
+    void *dst, size_t dstPitch, 
+    cudaArray_t src, size_t srcOffSetW, size_t srcOffSetH, size_t width, size_t height, cudaMemcpyKind kind
+){
+    if 
+    (
+        CheckCudaErr(cudaMemcpy2DFromArray
+        (
+            dst, dstPitch, src, srcOffSetW, srcOffSetH, width, height, kind
+        ))
+    ){
+#ifndef NDEBUG
+        CudaCore::CoutDebug
+        ({
+            "CUDA memcpy2DFromArray succeeded.", 
+            "dst address:" + ::GetPointerAddress(dst),
+            "src address:" + ::GetPointerAddress(src),
+            "width:" + std::to_string(width),
+            "height:" + std::to_string(height),
+        });
+#endif
+    }
+    else
+    {
+        cudaError_t err = cudaGetLastError();
+        CudaCore::CoutErr
+        ({
+            "CUDA memcpy2DFromArray failed.", 
+            "code:" + std::to_string(err),
+            "reason:" + std::string(cudaGetErrorString(err))
+        });
+
+        throw std::runtime_error("CudaCore::Memcpy2DFromArray failed");
+    }
+}
+
+CUDA_CORE bool CudaCore::TryMemcpy2DFromArray
+(
+    void *dst, size_t dstPitch, 
+    cudaArray_t src, size_t srcOffsetW, size_t srcOffsetY, size_t width, size_t height, cudaMemcpyKind kind
+){
+    if 
+    (
+        CheckCudaErr(cudaMemcpy2DFromArray
+        (
+            dst, dstPitch, src, srcOffsetW, srcOffsetY, width, height, kind
+        ))
+    ){
+#ifndef NDEBUG
+        CudaCore::CoutDebug
+        ({
+            "CUDA memcpy2DFromArray succeeded.", 
+            "dst address:" + ::GetPointerAddress(dst),
+            "src address:" + ::GetPointerAddress(src),
+            "width:" + std::to_string(width),
+            "height:" + std::to_string(height),
+        });
+#endif
+        return true;
+    }
+    else
+    {
+        cudaError_t err = cudaGetLastError();
+        CudaCore::CoutErr
+        ({
+            "CUDA memcpy2DFromArray failed.", 
+            "code:" + std::to_string(err),
+            "reason:" + std::string(cudaGetErrorString(err))
+        });
+
+        return false;
+    }
+}
+
+CUDA_CORE void CudaCore::Memcpy3DToArray
+(
+    cudaArray_t dst, size_t dstOffsetX, size_t dstOffsetY, size_t dstOffsetZ, 
+    void *src, size_t srcPitch, size_t width, size_t height, size_t depth, cudaMemcpyKind kind
+){
+    cudaMemcpy3DParms params = {0};
+    params.kind = kind;
+    params.extent = make_cudaExtent(width, height, depth);
+
+    params.dstArray = dst;
+    params.dstPos = make_cudaPos(dstOffsetX, dstOffsetY, dstOffsetZ);
+
+    params.srcPtr = make_cudaPitchedPtr(src, srcPitch, width, height);
+    params.srcPos = make_cudaPos(0, 0, 0);
+
+    if (CheckCudaErr(cudaMemcpy3D(&params)))
+    {
+#ifndef NDEBUG
+        CudaCore::CoutDebug
+        ({
+            "CUDA memcpy3DToArray succeeded.", 
+            "dst address:" + ::GetPointerAddress(dst),
+            "src address:" + ::GetPointerAddress(src),
+            "offsetX:" + std::to_string(dstOffsetX),
+            "offsetY:" + std::to_string(dstOffsetY),
+            "offsetZ:" + std::to_string(dstOffsetZ),
+            "width:" + std::to_string(width),
+            "height:" + std::to_string(height),
+            "depth:" + std::to_string(depth),
+        });
+#endif
+    }
+    else
+    {
+        cudaError_t err = cudaGetLastError();
+        CudaCore::CoutErr
+        ({
+            "CUDA memcpy3DToArray failed.", 
+            "code:" + std::to_string(err),
+            "reason:" + std::string(cudaGetErrorString(err))
+        });
+
+        throw std::runtime_error("CudaCore::Memcpy3DToArray failed");
+    }
+}
+
+CUDA_CORE bool CudaCore::TryMemcpy3DToArray
+(
+    cudaArray_t dst, size_t dstOffsetX, size_t dstOffsetY, size_t dstOffsetZ, 
+    void *src, size_t srcPitch, size_t width, size_t height, size_t depth, cudaMemcpyKind kind
+){
+    cudaMemcpy3DParms params = {0};
+    params.kind = kind;
+    params.extent = make_cudaExtent(width, height, depth);
+
+    params.dstArray = dst;
+    params.dstPos = make_cudaPos(dstOffsetX, dstOffsetY, dstOffsetZ);
+
+    params.srcPtr = make_cudaPitchedPtr(src, srcPitch, width, height);
+    params.srcPos = make_cudaPos(0, 0, 0);
+
+    if (CheckCudaErr(cudaMemcpy3D(&params)))
+    {
+#ifndef NDEBUG
+        CudaCore::CoutDebug
+        ({
+            "CUDA memcpy3DToArray succeeded.", 
+            "dst address:" + ::GetPointerAddress(dst),
+            "src address:" + ::GetPointerAddress(src),
+            "offsetX:" + std::to_string(dstOffsetX),
+            "offsetY:" + std::to_string(dstOffsetY),
+            "offsetZ:" + std::to_string(dstOffsetZ),
+            "width:" + std::to_string(width),
+            "height:" + std::to_string(height),
+            "depth:" + std::to_string(depth),
+        });
+#endif
+        return true;
+    }
+    else
+    {
+        cudaError_t err = cudaGetLastError();
+        CudaCore::CoutErr
+        ({
+            "CUDA memcpy3DToArray failed.", 
+            "code:" + std::to_string(err),
+            "reason:" + std::string(cudaGetErrorString(err))
+        });
+
+        return false;
+    }
+}
+
+CUDA_CORE void CudaCore::Memcpy3DFromArray
+(
+    void *dst, size_t dstPitch, 
+    cudaArray_t src, size_t srcOffsetW, size_t srcOffsetY, size_t srcOffsetZ, 
+    size_t width, size_t height, size_t depth, cudaMemcpyKind kind
+){
+    cudaMemcpy3DParms params = {0};
+    params.kind = kind;
+    params.extent = make_cudaExtent(width, height, depth);
+
+    params.srcArray = src;
+    params.srcPos = make_cudaPos(srcOffsetW, srcOffsetY, srcOffsetZ);
+
+    params.dstPtr = make_cudaPitchedPtr(dst, dstPitch, width, height);
+    params.dstPos = make_cudaPos(0, 0, 0);
+
+    if (CheckCudaErr(cudaMemcpy3D(&params)))
+    {
+#ifndef NDEBUG
+        CudaCore::CoutDebug
+        ({
+            "CUDA memcpy3DFromArray succeeded.", 
+            "dst address:" + ::GetPointerAddress(dst),
+            "src address:" + ::GetPointerAddress(src),
+            "offsetX:" + std::to_string(srcOffsetW),
+            "offsetY:" + std::to_string(srcOffsetY),
+            "offsetZ:" + std::to_string(srcOffsetZ),
+            "width:" + std::to_string(width),
+            "height:" + std::to_string(height),
+            "depth:" + std::to_string(depth),
+        });
+#endif
+    }
+    else
+    {
+        cudaError_t err = cudaGetLastError();
+        CudaCore::CoutErr
+        ({
+            "CUDA memcpy3DFromArray failed.", 
+            "code:" + std::to_string(err),
+            "reason:" + std::string(cudaGetErrorString(err))
+        });
+
+        throw std::runtime_error("CudaCore::Memcpy3DFromArray failed");
+    }
+}
+
+CUDA_CORE bool CudaCore::TryMemcpy3DFromArray
+(
+    void *dst, size_t dstPitch, 
+    cudaArray_t src, size_t srcOffsetW, size_t srcOffsetY, size_t srcOffsetZ, 
+    size_t width, size_t height, size_t depth, cudaMemcpyKind kind
+){
+    cudaMemcpy3DParms params = {0};
+    params.kind = kind;
+    params.extent = make_cudaExtent(width, height, depth);
+
+    params.srcArray = src;
+    params.srcPos = make_cudaPos(srcOffsetW, srcOffsetY, srcOffsetZ);
+
+    params.dstPtr = make_cudaPitchedPtr(dst, dstPitch, width, height);
+    params.dstPos = make_cudaPos(0, 0, 0);
+
+    if (CheckCudaErr(cudaMemcpy3D(&params)))
+    {
+#ifndef NDEBUG
+        CudaCore::CoutDebug
+        ({
+            "CUDA memcpy3DFromArray succeeded.", 
+            "dst address:" + ::GetPointerAddress(dst),
+            "src address:" + ::GetPointerAddress(src),
+            "offsetX:" + std::to_string(srcOffsetW),
+            "offsetY:" + std::to_string(srcOffsetY),
+            "offsetZ:" + std::to_string(srcOffsetZ),
+            "width:" + std::to_string(width),
+            "height:" + std::to_string(height),
+            "depth:" + std::to_string(depth),
+        });
+#endif
+        return true;
+    }
+    else
+    {
+        cudaError_t err = cudaGetLastError();
+        CudaCore::CoutErr
+        ({
+            "CUDA memcpy3DFromArray failed.", 
             "code:" + std::to_string(err),
             "reason:" + std::string(cudaGetErrorString(err))
         });
