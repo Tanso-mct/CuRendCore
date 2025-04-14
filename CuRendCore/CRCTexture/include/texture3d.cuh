@@ -18,8 +18,6 @@ namespace CRC
 class CRC_TEXTURE Texture3d : public ITexture, public WACore::IContainable, public IProduct
 {
 private:
-    const std::unique_ptr<IDevice>& device_;
-
     bool isValid_ = false;
     const UINT type_;
     const cudaChannelFormatDesc channelDesc_;
@@ -37,7 +35,7 @@ public:
     Texture3d() = delete;
     Texture3d
     (
-        std::unique_ptr<IDevice>& device, UINT cpuRWFlags, UINT gpuRWFlags, cudaChannelFormatDesc channelDesc,
+        UINT cpuRWFlags, UINT gpuRWFlags, cudaChannelFormatDesc channelDesc,
         UINT stride, UINT width, UINT height, UINT depth
     );
     ~Texture3d() override;
@@ -74,11 +72,8 @@ public:
 class CRC_TEXTURE Texture3dDesc : public IDesc
 {
 public:
-    Texture3dDesc() = delete;
-    Texture3dDesc(std::unique_ptr<IDevice>& device);
+    Texture3dDesc();
     ~Texture3dDesc() override = default;
-
-    std::unique_ptr<IDevice>& device_;
 
     UINT cpuRWFlags_ = 0;
     UINT gpuRWFlags_ = 0;

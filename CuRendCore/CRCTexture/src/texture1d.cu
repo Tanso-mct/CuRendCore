@@ -3,16 +3,15 @@
 
 CRC::Texture1d::Texture1d
 (
-    std::unique_ptr<CRC::IDevice> &device, 
     UINT cpuRWFlags, UINT gpuRWFlags, cudaChannelFormatDesc channelDesc,
     UINT stride, UINT width
-): device_(device),
+):
 type_(
     ((cpuRWFlags & (UINT)CRC::RW_FLAG::READ) ? (UINT)CRC::RESOURCE_TYPE::CPU_R : 0) |
     ((cpuRWFlags & (UINT)CRC::RW_FLAG::WRITE) ? (UINT)CRC::RESOURCE_TYPE::CPU_W : 0) |
     ((gpuRWFlags & (UINT)CRC::RW_FLAG::READ) ? (UINT)CRC::RESOURCE_TYPE::GPU_R : 0) |
     ((gpuRWFlags & (UINT)CRC::RW_FLAG::WRITE) ? (UINT)CRC::RESOURCE_TYPE::GPU_W : 0) |
-    (UINT)CRC::RESOURCE_TYPE::TEXTURE2D),
+    (UINT)CRC::RESOURCE_TYPE::TEXTURE1D),
 channelDesc_(channelDesc), stride_(stride), width_(width)
 {
     // Initialize the texture with default values
@@ -138,8 +137,7 @@ HRESULT CRC::Texture1d::GetDataHostSide(void **data)
     return S_OK;
 }
 
-CRC::Texture1dDesc::Texture1dDesc(std::unique_ptr<CRC::IDevice> &device)
-: device_(device)
+CRC::Texture1dDesc::Texture1dDesc()
 {
     // Initialize the texture descriptor with default values
     cpuRWFlags_ = 0;
@@ -160,7 +158,6 @@ std::unique_ptr<CRC::IProduct> CRC::Texture1dFactory::Create(CRC::IDesc &desc) c
 
     std::unique_ptr<CRC::IProduct> product = std::make_unique<CRC::Texture1d>
     (
-        texture1dDesc->device_, 
         texture1dDesc->cpuRWFlags_, texture1dDesc->gpuRWFlags_,
         texture1dDesc->channelDesc_,
         texture1dDesc->stride_, texture1dDesc->width_

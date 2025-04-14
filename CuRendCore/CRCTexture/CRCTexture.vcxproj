@@ -176,11 +176,14 @@
     <CudaCompile Include="src\texture2d.cu">
       <FileType>Document</FileType>
     </CudaCompile>
+    <CudaCompile Include="src\texture3d.cu" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\config.h" />
     <ClInclude Include="include\console.h" />
     <ClInclude Include="include\pch.h" />
+    <ClInclude Include="include\texture.h" />
+    <CudaCompile Include="include\texture3d.cuh" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
