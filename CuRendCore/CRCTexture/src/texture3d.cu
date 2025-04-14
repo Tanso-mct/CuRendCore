@@ -55,14 +55,6 @@ HRESULT CRC::Texture3d::Release()
     return S_OK;
 }
 
-HRESULT CRC::Texture3d::GetDevice(const std::unique_ptr<CRC::IDevice> *&device) const
-{
-    if (!device_) return E_FAIL;
-
-    device = &device_;
-    return S_OK;
-}
-
 HRESULT CRC::Texture3d::GetType(UINT &type) const
 {
     if (type == 0) return E_FAIL;

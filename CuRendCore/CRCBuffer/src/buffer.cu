@@ -1,8 +1,8 @@
 ﻿#include "CRCBuffer/include/pch.h"
 #include "CRCBuffer/include/buffer.cuh"
 
-CRC::Buffer::Buffer(std::unique_ptr<CRC::IDevice>& device, UINT cpuRWFlags, UINT gpuRWFlags, UINT size)
-: device_(device),
+CRC::Buffer::Buffer(UINT cpuRWFlags, UINT gpuRWFlags, UINT size)
+: 
 type_(
     ((cpuRWFlags & (UINT)CRC::RW_FLAG::READ) ? (UINT)CRC::RESOURCE_TYPE::CPU_R : 0) |
     ((cpuRWFlags & (UINT)CRC::RW_FLAG::WRITE) ? (UINT)CRC::RESOURCE_TYPE::CPU_W : 0) |
@@ -41,18 +41,11 @@ HRESULT CRC::Buffer::Release()
     }
 
     isValid_ = false;
-    return S_OK;
-}
 
-HRESULT CRC::Buffer::GetDevice(const std::unique_ptr<CRC::IDevice>*& device) const
-{
-    if (!device_)
-    {
-        CRCBuffer::CoutWrn({"Buffer is not valid.", "Buffer has no device."});
-        return E_FAIL;
-    }
+#ifndef NDEBUG
+    CRCBuffer::CoutDebug({"Buffer released. Size: " + std::to_string(size_)});
+#endif // NDEBUG
 
-    device = &device_;
     return S_OK;
 }
 
@@ -84,7 +77,7 @@ HRESULT CRC::Buffer::GetSize(UINT &size) const
     return S_OK;
 }
 
-HRESULT CRC::Buffer::GetDataDeviceSide(void **data)
+HRESULT CRC::Buffer::GetDataDeviceSide(void **&data)
 {
     if (!isValid_) return E_FAIL;
 
@@ -92,7 +85,7 @@ HRESULT CRC::Buffer::GetDataDeviceSide(void **data)
     return S_OK;
 }
 
-HRESULT CRC::Buffer::GetDataHostSide(void **data)
+HRESULT CRC::Buffer::GetDataHostSide(void **&data)
 {
     if (!isValid_) return E_FAIL;
 
@@ -100,8 +93,7 @@ HRESULT CRC::Buffer::GetDataHostSide(void **data)
     return S_OK;
 }
 
-CRC::BufferDesc::BufferDesc(std::unique_ptr<CRC::IDevice> &device)
-: device_(device)
+CRC::BufferDesc::BufferDesc()
 {
     // Initialize the buffer description with default values
     cpuRWFlags_ = 0;
@@ -120,7 +112,6 @@ std::unique_ptr<CRC::IProduct> CRC::BufferFactory::Create(CRC::IDesc &desc) cons
 
     std::unique_ptr<CRC::IProduct> product = std::make_unique<CRC::Buffer>
     (
-        bufferDesc->device_, 
         bufferDesc->cpuRWFlags_, bufferDesc->gpuRWFlags_, bufferDesc->size_
     );
 
@@ -149,6 +140,10 @@ std::unique_ptr<CRC::IProduct> CRC::BufferFactory::Create(CRC::IDesc &desc) cons
             CudaCore::MallocHost(data, bufferDesc->size_);
         }
     }
+
+#ifndef NDEBUG
+    CRCBuffer::CoutDebug({"Buffer created. Size: " + std::to_string(bufferDesc->size_)});
+#endif // NDEBUG
 
     return product;
 }

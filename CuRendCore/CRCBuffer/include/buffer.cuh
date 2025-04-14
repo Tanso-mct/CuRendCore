@@ -18,8 +18,6 @@ namespace CRC
 class CRC_BUFFER Buffer : public IBuffer, public WACore::IContainable, public IProduct
 {
 private:
-    const std::unique_ptr<IDevice>& device_;
-
     bool isValid_ = false;
     const UINT type_ = 0;
 
@@ -29,7 +27,7 @@ private:
 
 public:
     Buffer() = delete;
-    Buffer(std::unique_ptr<IDevice>& device, UINT cpuRWFlags, UINT gpuRWFlags, UINT size);
+    Buffer(UINT cpuRWFlags, UINT gpuRWFlags, UINT size);
     ~Buffer() override;
 
     //*************************************************************************************************************** */
@@ -37,12 +35,6 @@ public:
     /**************************************************************************************************************** */
 
     HRESULT Release() override;
-
-    //*************************************************************************************************************** */
-    // IDeviceChild
-    //*************************************************************************************************************** */
-
-    HRESULT GetDevice(const std::unique_ptr<IDevice>*& device) const override;
 
     //*************************************************************************************************************** */
     // IResource
@@ -56,18 +48,15 @@ public:
     //*************************************************************************************************************** */
 
     HRESULT GetSize(UINT& size) const override;
-    HRESULT GetDataDeviceSide(void** data) override;
-    HRESULT GetDataHostSide(void** data) override;
+    HRESULT GetDataDeviceSide(void**& data) override;
+    HRESULT GetDataHostSide(void**& data) override;
 };
 
 class CRC_BUFFER BufferDesc : public IDesc
 {
 public:
-    BufferDesc() = delete;
-    BufferDesc(std::unique_ptr<IDevice>& device);
+    BufferDesc();
     ~BufferDesc() override = default;
-
-    std::unique_ptr<IDevice>& device_;
 
     UINT cpuRWFlags_ = 0;
     UINT gpuRWFlags_ = 0;

@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "CRCInterface/include/device_child.h"
+#include "CRCInterface/include/unknown.h"
 
 namespace CRC
 {
@@ -29,7 +29,7 @@ enum class RESOURCE_TYPE : UINT
     GPU_W = 1 << 8,
 };
 
-class IResource : public IDeviceChild
+class IResource : public IUnknown
 {
 public:
     virtual ~IResource() = default;
