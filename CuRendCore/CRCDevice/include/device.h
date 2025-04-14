@@ -10,7 +10,7 @@
 namespace CRC
 {
 
-class CRC_DEVICE Device : public IDevice, public WACore::IContainable, public IProduct
+class CRC_DEVICE Device : public IDevice, public WACore::IContainable
 {
 private:
     const std::unique_ptr<IFactory> bufferFactory_;
@@ -26,9 +26,9 @@ private:
     const std::unique_ptr<IFactory> depthStencilStateFactory_;
     const std::unique_ptr<IFactory> rasterizerStateFactory_;
     const std::unique_ptr<IFactory> samplerStateFactory_;
-    const std::unique_ptr<IFactory> deviceContextFactory_;
 
 public:
+    Device() = delete;
     Device
     (
         std::unique_ptr<IFactory> bufferFactory,
@@ -43,8 +43,7 @@ public:
         std::unique_ptr<IFactory> blendStateFactory,
         std::unique_ptr<IFactory> depthStencilStateFactory,
         std::unique_ptr<IFactory> rasterizerStateFactory,
-        std::unique_ptr<IFactory> samplerStateFactory,
-        std::unique_ptr<IFactory> deviceContextFactory
+        std::unique_ptr<IFactory> samplerStateFactory
     );
     virtual ~Device() = default;
 

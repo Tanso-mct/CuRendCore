@@ -15,8 +15,7 @@ CRC::Device::Device
     std::unique_ptr<IFactory> blendStateFactory, 
     std::unique_ptr<IFactory> depthStencilStateFactory, 
     std::unique_ptr<IFactory> rasterizerStateFactory, 
-    std::unique_ptr<IFactory> samplerStateFactory, 
-    std::unique_ptr<IFactory> deviceContextFactory
+    std::unique_ptr<IFactory> samplerStateFactory
 ): 
     bufferFactory_(std::move(bufferFactory)), 
     texture1dFactory_(std::move(texture1dFactory)), 
@@ -30,8 +29,7 @@ CRC::Device::Device
     blendStateFactory_(std::move(blendStateFactory)), 
     depthStencilStateFactory_(std::move(depthStencilStateFactory)), 
     rasterizerStateFactory_(std::move(rasterizerStateFactory)), 
-    samplerStateFactory_(std::move(samplerStateFactory)), 
-    deviceContextFactory_(std::move(deviceContextFactory))
+    samplerStateFactory_(std::move(samplerStateFactory))
 {}
 
 HRESULT CRC::Device::CreateBuffer(CRC::IDesc &desc, std::unique_ptr<CRC::IResource> &buffer)
@@ -322,22 +320,5 @@ HRESULT CRC::Device::CreateSamplerState(CRC::IDesc &desc, std::unique_ptr<CRC::I
 
 HRESULT CRC::Device::GetDeviceContext(std::unique_ptr<CRC::IDeviceContext> &context)
 {
-    // Create device context using the factory.
-    std::unique_ptr<CRC::IProduct> product = deviceContextFactory_->Create(CRC::IDesc{});
-    if (!product)
-    {
-        CRCDevice::CoutWrn({"Failed to create device context."});
-        return E_FAIL;
-    }
-
-    // Cast the product to IDeviceContext.
-    std::unique_ptr<CRC::IDeviceContext> deviceContext = WACore::UniqueAs<CRC::IDeviceContext>(product);
-    if (!deviceContext)
-    {
-        CRCDevice::CoutWrn({"Failed to cast product to IDeviceContext.", "Device context factory may be out of order."});
-        return E_FAIL;
-    }
-
-    context = std::move(deviceContext);
-    return S_OK;
+    return E_NOTIMPL;
 }
