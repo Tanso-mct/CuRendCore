@@ -62,8 +62,8 @@ public:
     HRESULT GetDepth(UINT& depth) const override;
     HRESULT GetFormat(cudaChannelFormatDesc& channelDesc) const override;
     HRESULT GetArray(cudaArray** array) override;
-    HRESULT GetObj(unsigned long long* object) override;
-    HRESULT GetDataHostSide(void** data) override;
+    HRESULT GetObj(unsigned long long*& object) override;
+    HRESULT GetDataHostSide(void**& data) override;
 
 };
 

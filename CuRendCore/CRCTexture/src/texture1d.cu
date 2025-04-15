@@ -56,7 +56,12 @@ HRESULT CRC::Texture1d::Release()
 
 HRESULT CRC::Texture1d::GetType(UINT &type) const
 {
-    if (type == 0) return E_FAIL;
+    if (!isValid_)
+    {
+        CRCTexture::CoutWrn({"Texture1d is not valid."});
+        return E_FAIL;
+    }
+
     type = type_;
     return S_OK;
 }
@@ -67,7 +72,11 @@ void CRC::Texture1d::GetDesc(IDesc *desc) const
 
 HRESULT CRC::Texture1d::GetSize(UINT &size) const
 {
-    if (!isValid_) return E_FAIL;
+    if (!isValid_)
+    {
+        CRCTexture::CoutWrn({"Texture1d is not valid."});
+        return E_FAIL;
+    }
 
     size = width_ * stride_;
     return S_OK;
@@ -75,7 +84,11 @@ HRESULT CRC::Texture1d::GetSize(UINT &size) const
 
 HRESULT CRC::Texture1d::GetStride(UINT &stride) const
 {
-    if (!isValid_) return E_FAIL;
+    if (!isValid_)
+    {
+        CRCTexture::CoutWrn({"Texture1d is not valid."});
+        return E_FAIL;
+    }
 
     stride = stride_;
     return S_OK;
@@ -83,7 +96,11 @@ HRESULT CRC::Texture1d::GetStride(UINT &stride) const
 
 HRESULT CRC::Texture1d::GetWidth(UINT &width) const
 {
-    if (!isValid_) return E_FAIL;
+    if (!isValid_)
+    {
+        CRCTexture::CoutWrn({"Texture1d is not valid."});
+        return E_FAIL;
+    }
 
     width = width_;
     return S_OK;
@@ -91,7 +108,11 @@ HRESULT CRC::Texture1d::GetWidth(UINT &width) const
 
 HRESULT CRC::Texture1d::GetHeight(UINT &height) const
 {
-    if (!isValid_) return E_FAIL;
+    if (!isValid_)
+    {
+        CRCTexture::CoutWrn({"Texture1d is not valid."});
+        return E_FAIL;
+    }
 
     height = 1;
     return S_OK;
@@ -99,7 +120,11 @@ HRESULT CRC::Texture1d::GetHeight(UINT &height) const
 
 HRESULT CRC::Texture1d::GetDepth(UINT &depth) const
 {
-    if (!isValid_) return E_FAIL;
+    if (!isValid_)
+    {
+        CRCTexture::CoutWrn({"Texture1d is not valid."});
+        return E_FAIL;
+    }
 
     depth = 1;
     return S_OK;
@@ -107,7 +132,11 @@ HRESULT CRC::Texture1d::GetDepth(UINT &depth) const
 
 HRESULT CRC::Texture1d::GetFormat(cudaChannelFormatDesc &channelDesc) const
 {
-    if (!isValid_) return E_FAIL;
+    if (!isValid_)
+    {
+        CRCTexture::CoutWrn({"Texture1d is not valid."});
+        return E_FAIL;
+    }
 
     channelDesc = channelDesc_;
     return S_OK;
@@ -115,23 +144,35 @@ HRESULT CRC::Texture1d::GetFormat(cudaChannelFormatDesc &channelDesc) const
 
 HRESULT CRC::Texture1d::GetArray(cudaArray **array)
 {
-    if (!isValid_) return E_FAIL;
+    if (!isValid_)
+    {
+        CRCTexture::CoutWrn({"Texture1d is not valid."});
+        return E_FAIL;
+    }
 
     array = &dArray_;
     return S_OK;
 }
 
-HRESULT CRC::Texture1d::GetObj(unsigned long long *object)
+HRESULT CRC::Texture1d::GetObj(unsigned long long *&object)
 {
-    if (!isValid_) return E_FAIL;
+    if (!isValid_)
+    {
+        CRCTexture::CoutWrn({"Texture1d is not valid."});
+        return E_FAIL;
+    }
 
     object = &object_;
     return S_OK;
 }
 
-HRESULT CRC::Texture1d::GetDataHostSide(void **data)
+HRESULT CRC::Texture1d::GetDataHostSide(void **&data)
 {
-    if (!isValid_) return E_FAIL;
+    if (!isValid_)
+    {
+        CRCTexture::CoutWrn({"Texture1d is not valid."});
+        return E_FAIL;
+    }
 
     data = &hPtr_;
     return S_OK;

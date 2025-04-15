@@ -56,7 +56,12 @@ HRESULT CRC::Texture3d::Release()
 
 HRESULT CRC::Texture3d::GetType(UINT &type) const
 {
-    if (type == 0) return E_FAIL;
+    if (!isValid_)
+    {
+        CRCTexture::CoutWrn({"Texture3d is not valid."});
+        return E_FAIL;
+    }
+
     type = type_;
     return S_OK;
 }
@@ -67,7 +72,11 @@ void CRC::Texture3d::GetDesc(IDesc *desc) const
 
 HRESULT CRC::Texture3d::GetSize(UINT &size) const
 {
-    if (!isValid_) return E_FAIL;
+    if (!isValid_)
+    {
+        CRCTexture::CoutWrn({"Texture3d is not valid."});
+        return E_FAIL;
+    }
 
     size = width_ * height_ * depth_ * stride_;
     return S_OK;
@@ -75,7 +84,11 @@ HRESULT CRC::Texture3d::GetSize(UINT &size) const
 
 HRESULT CRC::Texture3d::GetStride(UINT &stride) const
 {
-    if (!isValid_) return E_FAIL;
+    if (!isValid_)
+    {
+        CRCTexture::CoutWrn({"Texture3d is not valid."});
+        return E_FAIL;
+    }
 
     stride = stride_;
     return S_OK;
@@ -83,7 +96,11 @@ HRESULT CRC::Texture3d::GetStride(UINT &stride) const
 
 HRESULT CRC::Texture3d::GetWidth(UINT &width) const
 {
-    if (!isValid_) return E_FAIL;
+    if (!isValid_)
+    {
+        CRCTexture::CoutWrn({"Texture3d is not valid."});
+        return E_FAIL;
+    }
 
     width = width_;
     return S_OK;
@@ -91,7 +108,11 @@ HRESULT CRC::Texture3d::GetWidth(UINT &width) const
 
 HRESULT CRC::Texture3d::GetHeight(UINT &height) const
 {
-    if (!isValid_) return E_FAIL;
+    if (!isValid_)
+    {
+        CRCTexture::CoutWrn({"Texture3d is not valid."});
+        return E_FAIL;
+    }
 
     height = height_;
     return S_OK;
@@ -99,7 +120,11 @@ HRESULT CRC::Texture3d::GetHeight(UINT &height) const
 
 HRESULT CRC::Texture3d::GetDepth(UINT &depth) const
 {
-    if (!isValid_) return E_FAIL;
+    if (!isValid_)
+    {
+        CRCTexture::CoutWrn({"Texture3d is not valid."});
+        return E_FAIL;
+    }
 
     depth = depth_;
     return S_OK;
@@ -107,7 +132,11 @@ HRESULT CRC::Texture3d::GetDepth(UINT &depth) const
 
 HRESULT CRC::Texture3d::GetFormat(cudaChannelFormatDesc &channelDesc) const
 {
-    if (!isValid_) return E_FAIL;
+    if (!isValid_)
+    {
+        CRCTexture::CoutWrn({"Texture3d is not valid."});
+        return E_FAIL;
+    }
 
     channelDesc = channelDesc_;
     return S_OK;
@@ -115,23 +144,35 @@ HRESULT CRC::Texture3d::GetFormat(cudaChannelFormatDesc &channelDesc) const
 
 HRESULT CRC::Texture3d::GetArray(cudaArray **array)
 {
-    if (!isValid_) return E_FAIL;
+    if (!isValid_)
+    {
+        CRCTexture::CoutWrn({"Texture3d is not valid."});
+        return E_FAIL;
+    }
 
     array = &dArray_;
     return S_OK;
 }
 
-HRESULT CRC::Texture3d::GetObj(unsigned long long *object)
+HRESULT CRC::Texture3d::GetObj(unsigned long long *&object)
 {
-    if (!isValid_) return E_FAIL;
+    if (!isValid_)
+    {
+        CRCTexture::CoutWrn({"Texture3d is not valid."});
+        return E_FAIL;
+    }
 
     object = &object_;
     return S_OK;
 }
 
-HRESULT CRC::Texture3d::GetDataHostSide(void **data)
+HRESULT CRC::Texture3d::GetDataHostSide(void **&data)
 {
-    if (!isValid_) return E_FAIL;
+    if (!isValid_)
+    {
+        CRCTexture::CoutWrn({"Texture3d is not valid."});
+        return E_FAIL;
+    }
 
     data = &hPtr_;
     return S_OK;

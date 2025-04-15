@@ -19,8 +19,8 @@ public:
     virtual HRESULT GetDepth(UINT& depth) const = 0;
     virtual HRESULT GetFormat(cudaChannelFormatDesc& channelDesc) const = 0;
     virtual HRESULT GetArray(cudaArray** array) = 0;
-    virtual HRESULT GetObj(unsigned long long* object) = 0;
-    virtual HRESULT GetDataHostSide(void** data) = 0;
+    virtual HRESULT GetObj(unsigned long long*& object) = 0;
+    virtual HRESULT GetDataHostSide(void**& data) = 0;
 };
 
 } // namespace CRC
