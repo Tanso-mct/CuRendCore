@@ -1,0 +1,1 @@
+﻿#include "WinAppCore/include/pch.h"

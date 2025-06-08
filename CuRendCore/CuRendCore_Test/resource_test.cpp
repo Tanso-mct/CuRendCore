@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "CuRendCore/include/CuRendCore.h"
 
+
 static LRESULT CALLBACK WindowProc_ResourceTest(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
     switch (msg)
@@ -31,7 +32,7 @@ TEST(CuRendCore_resource_test, CreateBuffer)
     bufferDesc.MiscFlags = 0;
     bufferDesc.StructureByteStride = 0;
 
-    std::unique_ptr<ICRCContainable> buffer = factory.Create(desc);
+    std::unique_ptr<WACore::IContainable> buffer = factory.Create(desc);
 
     EXPECT_NE(buffer.get(), nullptr);
 }
@@ -42,7 +43,7 @@ TEST(CuRendCore_resource_test, CreateID3D11Buffer)
     CRCWindowFactory windowFactory;
 
     // Create window attributes.
-    std::unique_ptr<ICRCContainable> windowAttr;
+    std::unique_ptr<WACore::IContainable> windowAttr;
     {
         CRC_WINDOW_DESC desc = {};
         desc.wcex_.lpszClassName = L"CreateID3D11Buffer";
@@ -56,7 +57,7 @@ TEST(CuRendCore_resource_test, CreateID3D11Buffer)
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
     CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
-        CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(windowAttr);
+        WACore::RevertCast<CRCWindowAttr, WACore::IContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
 
         // Show window.
@@ -85,7 +86,7 @@ TEST(CuRendCore_resource_test, CreateID3D11Buffer)
         ASSERT_NE(d3d11SwapChain.Get(), nullptr);
     }
 
-    std::unique_ptr<ICRCContainable> buffer;
+    std::unique_ptr<WACore::IContainable> buffer;
     {
         CRCID3D11BufferFactoryL0_0 factory;
         CRC_BUFFER_DESC desc(d3d11Device);
@@ -121,7 +122,7 @@ TEST(CuRendCore_resource_test, CreateTexture2D)
     textureDesc.Usage = D3D11_USAGE_DEFAULT;
     textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
     textureDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-    std::unique_ptr<ICRCContainable> texture = factory.Create(desc);
+    std::unique_ptr<WACore::IContainable> texture = factory.Create(desc);
 
     EXPECT_NE(texture.get(), nullptr);
 }
@@ -132,7 +133,7 @@ TEST(CuRendCore_resource_test, CreateID3D11Texture2D)
     CRCWindowFactory windowFactory;
 
     // Create window attributes.
-    std::unique_ptr<ICRCContainable> windowAttr;
+    std::unique_ptr<WACore::IContainable> windowAttr;
     {
         CRC_WINDOW_DESC desc = {};
         desc.wcex_.lpszClassName = L"CreateID3D11Texture2D";
@@ -146,7 +147,7 @@ TEST(CuRendCore_resource_test, CreateID3D11Texture2D)
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
     CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
-        CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(windowAttr);
+        WACore::RevertCast<CRCWindowAttr, WACore::IContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
 
         // Show window.
@@ -175,7 +176,7 @@ TEST(CuRendCore_resource_test, CreateID3D11Texture2D)
         ASSERT_NE(d3d11SwapChain.Get(), nullptr);
     }
 
-    std::unique_ptr<ICRCContainable> texture;
+    std::unique_ptr<WACore::IContainable> texture;
     {
         CRCID3D11Texture2DFactoryL0_0 factory;
         CRC_TEXTURE2D_DESC desc(d3d11Device);

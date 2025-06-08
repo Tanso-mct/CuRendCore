@@ -1,6 +1,7 @@
 ﻿#include "pch.h"
 #include "CuRendCore/include/CuRendCore.h"
 
+
 static LRESULT CALLBACK WindowProc_DeviceContextTest(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
     switch (msg)
@@ -18,7 +19,7 @@ static LRESULT CALLBACK WindowProc_DeviceContextTest(HWND hWnd, UINT msg, WPARAM
 
 TEST(CuRendCore_device_context, GetImmediateContext)
 {
-    std::unique_ptr<ICRCContainable> windowAttr;
+    std::unique_ptr<WACore::IContainable> windowAttr;
     {
         // Create window factory.
         CRCWindowFactory windowFactory;
@@ -36,7 +37,7 @@ TEST(CuRendCore_device_context, GetImmediateContext)
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
     CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
-        CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(windowAttr);
+        WACore::RevertCast<CRCWindowAttr, WACore::IContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
 
         // Show window.
@@ -62,7 +63,7 @@ TEST(CuRendCore_device_context, GetImmediateContext)
         CRC::CreateD3D11DeviceAndSwapChain(swapChainDesc, d3d11Device, d3d11SwapChain);
     }
 
-    std::unique_ptr<ICRCContainable> crcDevice;
+    std::unique_ptr<WACore::IContainable> crcDevice;
     {
         CRC_DEVICE_DESC desc(d3d11Device);
 
@@ -73,7 +74,7 @@ TEST(CuRendCore_device_context, GetImmediateContext)
     }
 
     {
-        CRCTransCastUnique<ICRCDevice, ICRCContainable> device(crcDevice);
+        WACore::RevertCast<ICRCDevice, WACore::IContainable> device(crcDevice);
         ASSERT_NE(device(), nullptr);
 
         std::unique_ptr<ICRCDeviceContext>& immediateContext = device()->GetImmediateContext();
@@ -83,7 +84,7 @@ TEST(CuRendCore_device_context, GetImmediateContext)
 
 TEST(CuRendCore_device_context, GetD3D11ImmediateContext)
 {
-    std::unique_ptr<ICRCContainable> windowAttr;
+    std::unique_ptr<WACore::IContainable> windowAttr;
     {
         // Create window factory.
         CRCWindowFactory windowFactory;
@@ -101,7 +102,7 @@ TEST(CuRendCore_device_context, GetD3D11ImmediateContext)
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
     CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
-        CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(windowAttr);
+        WACore::RevertCast<CRCWindowAttr, WACore::IContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
 
         // Show window.
@@ -127,7 +128,7 @@ TEST(CuRendCore_device_context, GetD3D11ImmediateContext)
         CRC::CreateD3D11DeviceAndSwapChain(swapChainDesc, d3d11Device, d3d11SwapChain);
     }
 
-    std::unique_ptr<ICRCContainable> crcDevice;
+    std::unique_ptr<WACore::IContainable> crcDevice;
     {
         CRC_DEVICE_DESC desc(d3d11Device);
         desc.renderMode_ = CRC_RENDER_MODE::D3D11;
@@ -139,7 +140,7 @@ TEST(CuRendCore_device_context, GetD3D11ImmediateContext)
     }
 
     {
-        CRCTransCastUnique<ICRCDevice, ICRCContainable> device(crcDevice);
+        WACore::RevertCast<ICRCDevice, WACore::IContainable> device(crcDevice);
         ASSERT_NE(device(), nullptr);
 
         std::unique_ptr<ICRCDeviceContext>& immediateContext = device()->GetImmediateContext();
@@ -149,7 +150,7 @@ TEST(CuRendCore_device_context, GetD3D11ImmediateContext)
 
 TEST(CuRendCore_device_context, ImmediateContextMapAndUnmap)
 {
-    std::unique_ptr<ICRCContainable> windowAttr;
+    std::unique_ptr<WACore::IContainable> windowAttr;
     {
         // Create window factory.
         CRCWindowFactory windowFactory;
@@ -167,7 +168,7 @@ TEST(CuRendCore_device_context, ImmediateContextMapAndUnmap)
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
     CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
-        CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(windowAttr);
+        WACore::RevertCast<CRCWindowAttr, WACore::IContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
 
         // Show window.
@@ -193,7 +194,7 @@ TEST(CuRendCore_device_context, ImmediateContextMapAndUnmap)
         CRC::CreateD3D11DeviceAndSwapChain(swapChainDesc, d3d11Device, d3d11SwapChain);
     }
 
-    std::unique_ptr<ICRCContainable> crcDevice;
+    std::unique_ptr<WACore::IContainable> crcDevice;
     {
         CRC_DEVICE_DESC desc(d3d11Device);
 
@@ -203,7 +204,7 @@ TEST(CuRendCore_device_context, ImmediateContextMapAndUnmap)
         ASSERT_NE(crcDevice.get(), nullptr);
     }
 
-    std::unique_ptr<ICRCContainable> buffer;
+    std::unique_ptr<WACore::IContainable> buffer;
     {
         CRCBufferFactoryL0_0 factory;
         CRC_BUFFER_DESC desc(d3d11Device);
@@ -222,7 +223,7 @@ TEST(CuRendCore_device_context, ImmediateContextMapAndUnmap)
     }
 
     {
-        CRCTransCastUnique<ICRCDevice, ICRCContainable> device(crcDevice);
+        WACore::RevertCast<ICRCDevice, WACore::IContainable> device(crcDevice);
         ASSERT_NE(device(), nullptr);
 
         std::unique_ptr<ICRCDeviceContext>& immediateContext = device()->GetImmediateContext();
@@ -240,7 +241,7 @@ TEST(CuRendCore_device_context, ImmediateContextMapAndUnmap)
 
 TEST(CuRendCore_device_context, D3D11ImmediateContextMapAndUnmap)
 {
-    std::unique_ptr<ICRCContainable> windowAttr;
+    std::unique_ptr<WACore::IContainable> windowAttr;
     {
         // Create window factory.
         CRCWindowFactory windowFactory;
@@ -258,7 +259,7 @@ TEST(CuRendCore_device_context, D3D11ImmediateContextMapAndUnmap)
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
     CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
-        CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(windowAttr);
+        WACore::RevertCast<CRCWindowAttr, WACore::IContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
 
         // Show window.
@@ -284,7 +285,7 @@ TEST(CuRendCore_device_context, D3D11ImmediateContextMapAndUnmap)
         CRC::CreateD3D11DeviceAndSwapChain(swapChainDesc, d3d11Device, d3d11SwapChain);
     }
 
-    std::unique_ptr<ICRCContainable> crcDevice;
+    std::unique_ptr<WACore::IContainable> crcDevice;
     {
         CRC_DEVICE_DESC desc(d3d11Device);
         desc.renderMode_ = CRC_RENDER_MODE::D3D11;
@@ -295,7 +296,7 @@ TEST(CuRendCore_device_context, D3D11ImmediateContextMapAndUnmap)
         ASSERT_NE(crcDevice.get(), nullptr);
     }
 
-    std::unique_ptr<ICRCContainable> buffer;
+    std::unique_ptr<WACore::IContainable> buffer;
     {
         CRCID3D11BufferFactoryL0_0 factory;
         CRC_BUFFER_DESC desc(d3d11Device);
@@ -314,7 +315,7 @@ TEST(CuRendCore_device_context, D3D11ImmediateContextMapAndUnmap)
     }
 
     {
-        CRCTransCastUnique<ICRCDevice, ICRCContainable> device(crcDevice);
+        WACore::RevertCast<ICRCDevice, WACore::IContainable> device(crcDevice);
         ASSERT_NE(device(), nullptr);
 
         std::unique_ptr<ICRCDeviceContext>& immediateContext = device()->GetImmediateContext();
@@ -332,7 +333,7 @@ TEST(CuRendCore_device_context, D3D11ImmediateContextMapAndUnmap)
 
 TEST(CuRendCore_device_context, ImmediateContextUpdateSubresource)
 {
-    std::unique_ptr<ICRCContainable> windowAttr;
+    std::unique_ptr<WACore::IContainable> windowAttr;
     {
         // Create window factory.
         CRCWindowFactory windowFactory;
@@ -350,7 +351,7 @@ TEST(CuRendCore_device_context, ImmediateContextUpdateSubresource)
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
     CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
-        CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(windowAttr);
+        WACore::RevertCast<CRCWindowAttr, WACore::IContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
 
         // Show window.
@@ -376,7 +377,7 @@ TEST(CuRendCore_device_context, ImmediateContextUpdateSubresource)
         CRC::CreateD3D11DeviceAndSwapChain(swapChainDesc, d3d11Device, d3d11SwapChain);
     }
 
-    std::unique_ptr<ICRCContainable> crcDevice;
+    std::unique_ptr<WACore::IContainable> crcDevice;
     {
         CRC_DEVICE_DESC desc(d3d11Device);
 
@@ -386,7 +387,7 @@ TEST(CuRendCore_device_context, ImmediateContextUpdateSubresource)
         ASSERT_NE(crcDevice.get(), nullptr);
     }
 
-    std::unique_ptr<ICRCContainable> buffer;
+    std::unique_ptr<WACore::IContainable> buffer;
     {
         CRCBufferFactoryL0_0 factory;
         CRC_BUFFER_DESC desc(d3d11Device);
@@ -405,7 +406,7 @@ TEST(CuRendCore_device_context, ImmediateContextUpdateSubresource)
     }
 
     {
-        CRCTransCastUnique<ICRCDevice, ICRCContainable> device(crcDevice);
+        WACore::RevertCast<ICRCDevice, WACore::IContainable> device(crcDevice);
         ASSERT_NE(device(), nullptr);
 
         std::unique_ptr<ICRCDeviceContext>& immediateContext = device()->GetImmediateContext();
@@ -419,7 +420,7 @@ TEST(CuRendCore_device_context, ImmediateContextUpdateSubresource)
 
 TEST(CuRendCore_device_context, D3D11ImmediateContextUpdateSubresource)
 {
-    std::unique_ptr<ICRCContainable> windowAttr;
+    std::unique_ptr<WACore::IContainable> windowAttr;
     {
         // Create window factory.
         CRCWindowFactory windowFactory;
@@ -437,7 +438,7 @@ TEST(CuRendCore_device_context, D3D11ImmediateContextUpdateSubresource)
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
     CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
-        CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(windowAttr);
+        WACore::RevertCast<CRCWindowAttr, WACore::IContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
 
         // Show window.
@@ -463,7 +464,7 @@ TEST(CuRendCore_device_context, D3D11ImmediateContextUpdateSubresource)
         CRC::CreateD3D11DeviceAndSwapChain(swapChainDesc, d3d11Device, d3d11SwapChain);
     }
 
-    std::unique_ptr<ICRCContainable> crcDevice;
+    std::unique_ptr<WACore::IContainable> crcDevice;
     {
         CRC_DEVICE_DESC desc(d3d11Device);
         desc.renderMode_ = CRC_RENDER_MODE::D3D11;
@@ -474,7 +475,7 @@ TEST(CuRendCore_device_context, D3D11ImmediateContextUpdateSubresource)
         ASSERT_NE(crcDevice.get(), nullptr);
     }
 
-    std::unique_ptr<ICRCContainable> buffer;
+    std::unique_ptr<WACore::IContainable> buffer;
     {
         CRCID3D11BufferFactoryL0_0 factory;
         CRC_BUFFER_DESC desc(d3d11Device);
@@ -493,7 +494,7 @@ TEST(CuRendCore_device_context, D3D11ImmediateContextUpdateSubresource)
     }
 
     {
-        CRCTransCastUnique<ICRCDevice, ICRCContainable> device(crcDevice);
+        WACore::RevertCast<ICRCDevice, WACore::IContainable> device(crcDevice);
         ASSERT_NE(device(), nullptr);
 
         std::unique_ptr<ICRCDeviceContext>& immediateContext = device()->GetImmediateContext();

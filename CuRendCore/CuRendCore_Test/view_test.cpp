@@ -1,6 +1,7 @@
 ﻿#include "pch.h"
 #include "CuRendCore/include/CuRendCore.h"
 
+
 static LRESULT CALLBACK WindowProc_ViewTest(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
     switch (msg)
@@ -18,7 +19,7 @@ static LRESULT CALLBACK WindowProc_ViewTest(HWND hWnd, UINT msg, WPARAM wParam, 
 
 TEST(CuRendCore_view_test, CreateShaderResourceView)
 {
-    std::unique_ptr<ICRCContainable> windowAttr;
+    std::unique_ptr<WACore::IContainable> windowAttr;
     {
         // Create window factory.
         CRCWindowFactory windowFactory;
@@ -36,7 +37,7 @@ TEST(CuRendCore_view_test, CreateShaderResourceView)
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
     CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
-        CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(windowAttr);
+        WACore::RevertCast<CRCWindowAttr, WACore::IContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
 
         // Show window.
@@ -65,7 +66,7 @@ TEST(CuRendCore_view_test, CreateShaderResourceView)
         ASSERT_NE(d3d11SwapChain.Get(), nullptr);
     }
 
-    std::unique_ptr<ICRCContainable> texture;
+    std::unique_ptr<WACore::IContainable> texture;
     {
         CRCTexture2DFactoryL0_0 factory;
         CRC_TEXTURE2D_DESC desc(d3d11Device);
@@ -84,7 +85,7 @@ TEST(CuRendCore_view_test, CreateShaderResourceView)
         ASSERT_NE(texture.get(), nullptr);
     }
 
-    std::unique_ptr<ICRCContainable> shaderResourceView;
+    std::unique_ptr<WACore::IContainable> shaderResourceView;
     {
         CRCShaderResourceViewFactoryL0_0 factory;
         CRC_SHADER_RESOURCE_VIEW_DESC desc(d3d11Device, texture);
@@ -103,7 +104,7 @@ TEST(CuRendCore_view_test, CreateShaderResourceView)
 
 TEST(CuRendCore_view_test, CreateD3D11ShaderResourceView)
 {
-    std::unique_ptr<ICRCContainable> windowAttr;
+    std::unique_ptr<WACore::IContainable> windowAttr;
     {
         // Create window factory.
         CRCWindowFactory windowFactory;
@@ -121,7 +122,7 @@ TEST(CuRendCore_view_test, CreateD3D11ShaderResourceView)
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
     CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
-        CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(windowAttr);
+        WACore::RevertCast<CRCWindowAttr, WACore::IContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
 
         // Show window.
@@ -150,7 +151,7 @@ TEST(CuRendCore_view_test, CreateD3D11ShaderResourceView)
         ASSERT_NE(d3d11SwapChain.Get(), nullptr);
     }
 
-    std::unique_ptr<ICRCContainable> texture;
+    std::unique_ptr<WACore::IContainable> texture;
     {
         CRCID3D11Texture2DFactoryL0_0 factory;
         CRC_TEXTURE2D_DESC desc(d3d11Device);
@@ -170,7 +171,7 @@ TEST(CuRendCore_view_test, CreateD3D11ShaderResourceView)
         ASSERT_NE(texture.get(), nullptr);
     }
 
-    std::unique_ptr<ICRCContainable> shaderResourceView;
+    std::unique_ptr<WACore::IContainable> shaderResourceView;
     {
         CRCID3D11ShaderResourceViewFactoryL0_0 factory;
         CRC_SHADER_RESOURCE_VIEW_DESC desc(d3d11Device, texture);
@@ -189,7 +190,7 @@ TEST(CuRendCore_view_test, CreateD3D11ShaderResourceView)
 
 TEST(CuRendCore_view_test, CreateRenderTargetView)
 {
-    std::unique_ptr<ICRCContainable> windowAttr;
+    std::unique_ptr<WACore::IContainable> windowAttr;
     {
         // Create window factory.
         CRCWindowFactory windowFactory;
@@ -207,7 +208,7 @@ TEST(CuRendCore_view_test, CreateRenderTargetView)
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
     CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
-        CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(windowAttr);
+        WACore::RevertCast<CRCWindowAttr, WACore::IContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
 
         // Show window.
@@ -236,7 +237,7 @@ TEST(CuRendCore_view_test, CreateRenderTargetView)
         ASSERT_NE(d3d11SwapChain.Get(), nullptr);
     }
 
-    std::unique_ptr<ICRCContainable> texture;
+    std::unique_ptr<WACore::IContainable> texture;
     {
         CRCTexture2DFactoryL0_0 factory;
         CRC_TEXTURE2D_DESC desc(d3d11Device);
@@ -255,7 +256,7 @@ TEST(CuRendCore_view_test, CreateRenderTargetView)
         ASSERT_NE(texture.get(), nullptr);
     }
 
-    std::unique_ptr<ICRCContainable> renderTargetView;
+    std::unique_ptr<WACore::IContainable> renderTargetView;
     {
         CRCRenderTargetViewFactoryL0_0 factory;
         CRC_RENDER_TARGET_VIEW_DESC desc(d3d11Device, texture);
@@ -273,7 +274,7 @@ TEST(CuRendCore_view_test, CreateRenderTargetView)
 
 TEST(CuRendCore_view_test, CreateD3D11RenderTargetView)
 {
-    std::unique_ptr<ICRCContainable> windowAttr;
+    std::unique_ptr<WACore::IContainable> windowAttr;
     {
         // Create window factory.
         CRCWindowFactory windowFactory;
@@ -291,7 +292,7 @@ TEST(CuRendCore_view_test, CreateD3D11RenderTargetView)
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
     CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
-        CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(windowAttr);
+        WACore::RevertCast<CRCWindowAttr, WACore::IContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
 
         // Show window.
@@ -320,7 +321,7 @@ TEST(CuRendCore_view_test, CreateD3D11RenderTargetView)
         ASSERT_NE(d3d11SwapChain.Get(), nullptr);
     }
 
-    std::unique_ptr<ICRCContainable> texture;
+    std::unique_ptr<WACore::IContainable> texture;
     {
         CRCID3D11Texture2DFactoryL0_0 factory;
         CRC_TEXTURE2D_DESC desc(d3d11Device);
@@ -340,7 +341,7 @@ TEST(CuRendCore_view_test, CreateD3D11RenderTargetView)
         ASSERT_NE(texture.get(), nullptr);
     }
 
-    std::unique_ptr<ICRCContainable> renderTargetView;
+    std::unique_ptr<WACore::IContainable> renderTargetView;
     {
         CRCID3D11RenderTargetViewFactoryL0_0 factory;
         CRC_RENDER_TARGET_VIEW_DESC desc(d3d11Device, texture);
@@ -358,7 +359,7 @@ TEST(CuRendCore_view_test, CreateD3D11RenderTargetView)
 
 TEST(CuRendCore_view_test, CreateDepthStencilView)
 {
-    std::unique_ptr<ICRCContainable> windowAttr;
+    std::unique_ptr<WACore::IContainable> windowAttr;
     {
         // Create window factory.
         CRCWindowFactory windowFactory;
@@ -376,7 +377,7 @@ TEST(CuRendCore_view_test, CreateDepthStencilView)
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
     CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
-        CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(windowAttr);
+        WACore::RevertCast<CRCWindowAttr, WACore::IContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
 
         // Show window.
@@ -405,7 +406,7 @@ TEST(CuRendCore_view_test, CreateDepthStencilView)
         ASSERT_NE(d3d11SwapChain.Get(), nullptr);
     }
 
-    std::unique_ptr<ICRCContainable> texture;
+    std::unique_ptr<WACore::IContainable> texture;
     {
         CRCTexture2DFactoryL0_0 factory;
         CRC_TEXTURE2D_DESC desc(d3d11Device);
@@ -424,7 +425,7 @@ TEST(CuRendCore_view_test, CreateDepthStencilView)
         ASSERT_NE(texture.get(), nullptr);
     }
 
-    std::unique_ptr<ICRCContainable> depthStencilView;
+    std::unique_ptr<WACore::IContainable> depthStencilView;
     {
         CRCDepthStencilViewFactoryL0_0 factory;
         CRC_DEPTH_STENCIL_VIEW_DESC desc(d3d11Device, texture);
@@ -442,7 +443,7 @@ TEST(CuRendCore_view_test, CreateDepthStencilView)
 
 TEST(CuRendCore_view_test, CreateD3D11DepthStencilView)
 {
-    std::unique_ptr<ICRCContainable> windowAttr;
+    std::unique_ptr<WACore::IContainable> windowAttr;
     {
         // Create window factory.
         CRCWindowFactory windowFactory;
@@ -460,7 +461,7 @@ TEST(CuRendCore_view_test, CreateD3D11DepthStencilView)
     Microsoft::WRL::ComPtr<IDXGISwapChain> d3d11SwapChain;
     CRC_SWAP_CHAIN_DESC swapChainDesc(d3d11Device, d3d11SwapChain);
     {
-        CRCTransCastUnique<CRCWindowAttr, ICRCContainable> window(windowAttr);
+        WACore::RevertCast<CRCWindowAttr, WACore::IContainable> window(windowAttr);
         ASSERT_NE(window(), nullptr);
 
         // Show window.
@@ -489,7 +490,7 @@ TEST(CuRendCore_view_test, CreateD3D11DepthStencilView)
         ASSERT_NE(d3d11SwapChain.Get(), nullptr);
     }
 
-    std::unique_ptr<ICRCContainable> texture;
+    std::unique_ptr<WACore::IContainable> texture;
     {
         CRCID3D11Texture2DFactoryL0_0 factory;
         CRC_TEXTURE2D_DESC desc(d3d11Device);
@@ -509,7 +510,7 @@ TEST(CuRendCore_view_test, CreateD3D11DepthStencilView)
         ASSERT_NE(texture.get(), nullptr);
     }
 
-    std::unique_ptr<ICRCContainable> depthStencilView;
+    std::unique_ptr<WACore::IContainable> depthStencilView;
     {
         CRCID3D11DepthStencilViewFactoryL0_0 factory;
         CRC_DEPTH_STENCIL_VIEW_DESC desc(d3d11Device, texture);

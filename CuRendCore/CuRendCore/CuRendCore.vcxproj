@@ -19,72 +19,65 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\CRC_container.cpp" />
-    <ClCompile Include="src\CRC_event_caller.cpp" />
-    <CudaCompile Include="src\CRC_funcs.cu">
+    <CudaCompile Include="src\funcs.cu">
       <FileType>Document</FileType>
     </CudaCompile>
-    <ClCompile Include="src\CRC_pch.cpp">
+    <ClCompile Include="src\pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CRC_pch.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CRC_pch.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CRC_pch.h</PrecompiledHeaderFile>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CRC_pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)/CuRendCore/include/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)/CuRendCore/include/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)/CuRendCore/include/pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)/CuRendCore/include/pch.h</PrecompiledHeaderFile>
     </ClCompile>
-    <ClCompile Include="src\CRC_event.cpp" />
-    <ClCompile Include="src\CRC_scene.cpp" />
-    <ClCompile Include="src\CRC_user_input.cpp" />
-    <ClCompile Include="src\CRC_window.cpp" />
-    <CudaCompile Include="src\CRC_vertex_shader.cu" />
+    <ClCompile Include="src\scene.cpp" />
+    <ClCompile Include="src\user_input.cpp" />
+    <ClCompile Include="src\window.cpp" />
+    <CudaCompile Include="src\vertex_shader.cu" />
   </ItemGroup>
   <ItemGroup>
-    <CudaCompile Include="include\CRC_buffer.cuh" />
-    <ClInclude Include="include\CRC_config.h" />
-    <CudaCompile Include="include\CRC_device_context.cuh" />
-    <CudaCompile Include="include\CRC_device.cuh" />
-    <CudaCompile Include="include\CRC_dsv.cuh" />
-    <ClInclude Include="include\CRC_data_cast.h" />
-    <ClInclude Include="include\CRC_event_caller.h" />
-    <ClInclude Include="include\CRC_factory.h" />
-    <CudaCompile Include="include\CRC_funcs.cuh" />
-    <CudaCompile Include="include\CRC_memory.cuh" />
-    <ClInclude Include="include\CRC_pch.h" />
-    <ClInclude Include="include\CRC_container.h" />
-    <ClInclude Include="include\CRC_event.h" />
-    <ClInclude Include="include\CRC_resource.cuh" />
-    <CudaCompile Include="include\CRC_rtv.cuh" />
-    <ClInclude Include="include\CRC_scene.h" />
-    <CudaCompile Include="include\CRC_texture.cuh" />
-    <CudaCompile Include="include\CRC_srv.cuh" />
-    <CudaCompile Include="include\CRC_swap_chain.cuh" />
-    <CudaCompile Include="include\CRC_shader.cuh" />
-    <ClInclude Include="include\CRC_user_input.h" />
-    <CudaCompile Include="include\CRC_view.cuh" />
-    <CudaCompile Include="include\CRC_vertex_shader.cuh" />
-    <ClInclude Include="include\CRC_window.h" />
+    <CudaCompile Include="include\buffer.cuh" />
+    <ClInclude Include="include\config.h" />
+    <CudaCompile Include="include\device_context.cuh" />
+    <CudaCompile Include="include\device.cuh" />
+    <CudaCompile Include="include\dsv.cuh" />
+    <ClInclude Include="include\factory.h" />
+    <CudaCompile Include="include\funcs.cuh" />
+    <CudaCompile Include="include\memory.cuh" />
+    <ClInclude Include="include\pch.h" />
+    <ClInclude Include="include\resource.cuh" />
+    <CudaCompile Include="include\rtv.cuh" />
+    <ClInclude Include="include\scene.h" />
+    <CudaCompile Include="include\texture.cuh" />
+    <CudaCompile Include="include\srv.cuh" />
+    <CudaCompile Include="include\swap_chain.cuh" />
+    <CudaCompile Include="include\shader.cuh" />
+    <ClInclude Include="include\user_input.h" />
+    <CudaCompile Include="include\view.cuh" />
+    <CudaCompile Include="include\vertex_shader.cuh" />
+    <ClInclude Include="include\window.h" />
     <ClInclude Include="include\CuRendCore.h" />
     <ClInclude Include="include\stb_image.h" />
-    <CudaCompile Include="src\CRC_buffer.cu" />
-    <CudaCompile Include="src\CRC_device.cu" />
-    <CudaCompile Include="src\CRC_dsv.cu" />
-    <CudaCompile Include="src\CRC_memory.cu" />
-    <CudaCompile Include="src\CRC_rtv.cu" />
-    <CudaCompile Include="src\CRC_srv.cu" />
-    <CudaCompile Include="src\CRC_swap_chain.cu" />
-    <CudaCompile Include="src\CRC_texture.cu" />
+    <CudaCompile Include="src\buffer.cu" />
+    <CudaCompile Include="src\device.cu" />
+    <CudaCompile Include="src\dsv.cu" />
+    <CudaCompile Include="src\memory.cu" />
+    <CudaCompile Include="src\rtv.cu" />
+    <CudaCompile Include="src\srv.cu" />
+    <CudaCompile Include="src\swap_chain.cu" />
+    <CudaCompile Include="src\texture.cu" />
   </ItemGroup>
   <ItemGroup>
-    <CudaCompile Include="src\CRC_device_context.cu" />
+    <CudaCompile Include="src\device_context.cu" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{f98a275b-f9a7-4ee0-a0a9-177514a2bbaf}</ProjectGuid>
     <RootNamespace>CuRendCore</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.22621.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -105,6 +98,7 @@
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -112,6 +106,7 @@
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -145,8 +140,9 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;CURENDCORE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <ForcedIncludeFiles>CRC_pch.h</ForcedIncludeFiles>
-      <PrecompiledHeaderFile>CRC_pch.h</PrecompiledHeaderFile>
+      <ForcedIncludeFiles>$(SolutionDir)/CuRendCore/include/pch.h</ForcedIncludeFiles>
+      <PrecompiledHeaderFile>$(SolutionDir)/CuRendCore/include/pch.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -163,8 +159,9 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;CURENDCORE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <ForcedIncludeFiles>CRC_pch.h</ForcedIncludeFiles>
-      <PrecompiledHeaderFile>CRC_pch.h</PrecompiledHeaderFile>
+      <ForcedIncludeFiles>$(SolutionDir)/CuRendCore/include/pch.h</ForcedIncludeFiles>
+      <PrecompiledHeaderFile>$(SolutionDir)/CuRendCore/include/pch.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -179,19 +176,23 @@
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;CURENDCORE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)/CuRendCore/include;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.6\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ConformanceMode>Default</ConformanceMode>
+      <AdditionalIncludeDirectories>$(SolutionDir);C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.6\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <ForcedIncludeFiles>CRC_pch.h</ForcedIncludeFiles>
-      <PrecompiledHeaderFile>CRC_pch.h</PrecompiledHeaderFile>
+      <ForcedIncludeFiles>$(SolutionDir)/CuRendCore/include/pch.h</ForcedIncludeFiles>
+      <PrecompiledHeaderFile>$(SolutionDir)/CuRendCore/include/pch.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <AdditionalLibraryDirectories>C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.6\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>cudart_static.lib;d3d11.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>cudart_static.lib;d3d11.lib;$(SolutionDir)$(Platform)\$(Configuration)\WinAppCore.lib;$(SolutionDir)$(Platform)\$(Configuration)\CudaCore.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <CudaCompile>
+      <AdditionalOptions>--std=c++17 %(AdditionalOptions)</AdditionalOptions>
+    </CudaCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -200,11 +201,12 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;CURENDCORE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)/CuRendCore/include;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.6\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ConformanceMode>Default</ConformanceMode>
+      <AdditionalIncludeDirectories>$(SolutionDir);C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.6\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <ForcedIncludeFiles>CRC_pch.h</ForcedIncludeFiles>
-      <PrecompiledHeaderFile>CRC_pch.h</PrecompiledHeaderFile>
+      <ForcedIncludeFiles>$(SolutionDir)/CuRendCore/include/pch.h</ForcedIncludeFiles>
+      <PrecompiledHeaderFile>$(SolutionDir)/CuRendCore/include/pch.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -213,8 +215,11 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <AdditionalLibraryDirectories>C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.6\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>cudart_static.lib;d3d11.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>cudart_static.lib;d3d11.lib;$(SolutionDir)$(Platform)\$(Configuration)\WinAppCore.lib;$(SolutionDir)$(Platform)\$(Configuration)\CudaCore.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <CudaCompile>
+      <AdditionalOptions>--std=c++17 %(AdditionalOptions)</AdditionalOptions>
+    </CudaCompile>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

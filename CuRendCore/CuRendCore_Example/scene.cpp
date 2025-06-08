@@ -65,20 +65,20 @@ void MainSceneEvent::InputHandleExample(std::unique_ptr<CRCUserInputAttr>& input
     }
 }
 
-void MainSceneEvent::OnUpdate(std::unique_ptr<ICRCContainer>& container, UINT msg, WPARAM wParam, LPARAM lParam)
+void MainSceneEvent::OnUpdate(std::unique_ptr<WACore::IContainer>& container, UINT msg, WPARAM wParam, LPARAM lParam)
 {   
-    CRCTransCastUnique<CRCUserInputAttr, ICRCContainable> input(container->Get(idUserInput_));
+    WACore::RevertCast<CRCUserInputAttr, WACore::IContainable> input(container->Get(idUserInput_));
     if (!input()) return;
 
     InputHandleExample(input());
 }
 
-void MainSceneEvent::OnSize(std::unique_ptr<ICRCContainer>& container, UINT msg, WPARAM wParam, LPARAM lParam)
+void MainSceneEvent::OnSize(std::unique_ptr<WACore::IContainer>& container, UINT msg, WPARAM wParam, LPARAM lParam)
 {
     std::cout << "Main Scene Size" << std::endl;
 }
 
-void MainSceneEvent::OnDestroy(std::unique_ptr<ICRCContainer>& container, UINT msg, WPARAM wParam, LPARAM lParam)
+void MainSceneEvent::OnDestroy(std::unique_ptr<WACore::IContainer>& container, UINT msg, WPARAM wParam, LPARAM lParam)
 {
     std::cout << "Main Scene End" << std::endl;
 }
